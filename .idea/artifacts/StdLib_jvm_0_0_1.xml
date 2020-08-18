@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="StdLib-jvm-0.0.1">
+    <output-path>D:\Data\Pemrograman\Java\Kotlin\Library\KotlinMultiLib\StdLib\build\libs</output-path>
+    <root id="archive" name="StdLib-jvm-0.0.1.jar" />
+  </artifact>
+</component>
