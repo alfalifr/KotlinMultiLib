@@ -1,5 +1,6 @@
 package sidev.lib.annotation
 
+/*
 import sidev.lib.reflex.inner.findAnnotation
 import kotlin.reflect.*
 
@@ -26,3 +27,5 @@ val KAnnotatedElement.renamedName: String
                 else -> toString()
             }
     }
+
+ */

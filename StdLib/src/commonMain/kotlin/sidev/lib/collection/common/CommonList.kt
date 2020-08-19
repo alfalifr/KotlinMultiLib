@@ -1,5 +1,7 @@
 package sidev.lib.universal.structure.collection.common
+/*
 
+TODO temporary
 import sidev.lib.universal.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
 import sidev.lib.collection.newUniqueValueIn
@@ -392,3 +394,6 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<V> = map.values.toMutableList().subList(fromIndex, toIndex)
 }
+
+
+ */

@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.reflex.inner.declaredMemberProperties
 import sidev.lib.reflex.inner.declaredMembers
 import sidev.lib.reflex.inner.memberProperties
@@ -187,3 +187,5 @@ val KClass<*>.nestedImplementedMemberPropertiesTree: NestedSequence<KProperty1<A
             override fun skip(now: KProperty1<Any, *>): Boolean = now.isAbstract
         }
     }
+
+ */

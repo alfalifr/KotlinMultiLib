@@ -36,3 +36,5 @@ fun prin(any: Any, color: String= StringLiteral.ANSI_RESET, endWithNewLine: Bool
     }
 }
 fun prin_(any: Any) = prin(any)
+
+expect fun str(any: Any): String

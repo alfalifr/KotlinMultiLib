@@ -1,5 +1,5 @@
 package sidev.lib.collection
-
+/*
 import sidev.lib.console.prine
 import sidev.lib.number.isZero
 import sidev.lib.number.plus
@@ -246,3 +246,5 @@ fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constr
     }
     return newVal
 }
+
+ */

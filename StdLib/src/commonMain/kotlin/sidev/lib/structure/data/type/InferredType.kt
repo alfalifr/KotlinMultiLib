@@ -1,5 +1,5 @@
 package sidev.lib.structure.data.type
-
+/*
 //import sidev.lib.universal._cob.isSametypeAs
 import sidev.lib.reflex.type.isSameTypeAs
 import kotlin.reflect.KType
@@ -20,3 +20,5 @@ data class InferredType(val type: KType): KType by type{
         return type.hashCode()
     }
 }
+
+ */

@@ -4,18 +4,21 @@ import sidev.lib.reflex.common.SiParameter
 import sidev.lib.reflex.common.SiType
 
 
+internal expect val isDynamicEnabled: Boolean
+
+
 /** `this.extension` dapat berupa apa saja. */
 internal expect fun getNativeClass(any: Any): Any
 
-/** `this.extension` yg dimaksud adalah native class. */
+/** Fungsi ini hanya mengambil declared member functions saja. */
 internal expect fun getNativeFunctions(nativeClass: Any): Sequence<Any>
 //internal fun SiNativeClassifier.getNativeFunctions(): Sequence<Any> = implementation.getFunctions()
 
-/** Termasuk yg mutable. */
+/** Fungsi ini hanya mengambil declared member properties saja. */
 internal expect fun getNativeProperties(nativeClass: Any): Sequence<Any>
 //internal fun SiNativeClassifier.getNativeProperties(): Sequence<Any> = implementation.getProperties()
 
-/** Tidak termasuk property yg immutable. */
+/** Fungsi ini hanya mengambil declared member mutable properties saja. */
 internal expect fun getNativeMutableProperties(nativeClass: Any): Sequence<Any>
 //internal fun SiNativeClassifier.getNativeMutableProperties(): Sequence<Any> = implementation.getMutableProperties()
 
@@ -41,6 +44,7 @@ internal expect fun getNativeSupertypes(nativeClass: Any): Sequence<Any>
 internal expect fun getParamIsOptional(nativeParam: Any): Boolean
 internal expect fun getParamType(nativeParam: Any): SiType
 internal expect fun getParamKind(nativeParam: Any): SiParameter.Kind
+internal expect fun getParamDefaultValue(nativeParam: Any): Any?
 internal expect fun <T> getFuncCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
 
 internal expect fun <T> getPropGetValueBlock(nativeProp: Any): (receivers: Array<out Any>) -> T

@@ -1,5 +1,5 @@
 package sidev.lib.reflex.type
-
+/*
 import sidev.lib.reflex.inner.isSubclassOf
 import sidev.lib.reflex.inner.isSubtypeOf
 import sidev.lib.reflex.inner.isSuperclassOf
@@ -116,3 +116,5 @@ fun KType.isSubTypeOf(base: KType): Boolean{
     return isClassifierSubtype && isTypeArgSubtype
 }
 fun KType.isSuperTypeOf(derived: KType): Boolean = derived.isSubTypeOf(this)
+
+ */

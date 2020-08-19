@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.check.notNullTo
 import sidev.lib.reflex._ReflexConst.K_CLASS_BASE_NAME
 import sidev.lib.reflex.inner.createType
@@ -203,3 +203,5 @@ fun <T1, T2> T1.isExclusivelySubClassOf(base: T2): Boolean{
         thisClass.isSubclassOf(baseClass) && thisClass != baseClass
     } catch (e: Exception){ false }
 }
+
+ */

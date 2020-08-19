@@ -11,6 +11,10 @@ interface SiParameter: SiReflex {
     val type: SiType
     val kind: Kind
 
+    /** Property ini sementara hanya bisa didapatkan pada Js. */
+    val defaultValue: Any?
+        get()= null
+
     enum class Kind{
         /** Parameter yg menunjukan pemilik (instance) dari callable yg memiliki parameter ini. */
         INSTANCE,

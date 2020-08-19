@@ -1,5 +1,6 @@
 package sidev.lib.reflex.common.core
 
+import sidev.lib.property.mutableLazy
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.SiCallableImpl
 import sidev.lib.reflex.common.SiMutableProperty1Impl
@@ -62,7 +63,8 @@ object ReflexFactory{
         hostCallable: SiCallable<*>?,
         index: Int, isOptional: Boolean, type: SiType,
         name: String?= null,
-        kind: SiParameter.Kind= SiParameter.Kind.VALUE
+        kind: SiParameter.Kind= SiParameter.Kind.VALUE,
+        defaultValue: Any?= null
     ): SiParameter = object: SiParamterImpl() {
         override val descriptor: SiDescriptor = createDescriptor(hostCallable, nativeCounterpart)
         override val index: Int = index
@@ -70,6 +72,7 @@ object ReflexFactory{
         override val isOptional: Boolean = isOptional
         override var type: SiType = type
         override val kind: SiParameter.Kind = kind
+        override val defaultValue: Any? = defaultValue
     }
 
     fun createTypeParameter(
@@ -149,10 +152,13 @@ object ReflexFactory{
         override val simpleName: String? = nativeCounterpart.nativeSimpleName //ReflexFactoryHelper.getSimpleName(nativeCounterpart, qualifiedName)
         override var members: Collection<SiCallable<*>> = members
         override var constructors: List<SiFunction<T>> = constructors
-        override var typeParameters: List<SiTypeParameter> =
+        override val typeParameters: List<SiTypeParameter> by lazy {
             if(typeParameters.isNotEmpty()) typeParameters
             else ReflexFactoryHelper.getTypeParameter(this, nativeCounterpart.implementation, qualifiedName)
-        override var supertypes: List<SiType> = ReflexFactoryHelper.getSupertypes(this, nativeCounterpart.implementation, qualifiedName)
+        }
+        override val supertypes: List<SiType> by lazy{
+            ReflexFactoryHelper.getSupertypes(this, nativeCounterpart.implementation, qualifiedName)
+        }
     }
 
     internal fun <T, R> createPropertyGetter1(

@@ -1,5 +1,7 @@
 package sidev.lib.universal.structure.collection.common
+/*
 
+TODO temporary
 import sidev.lib.universal.`val`.SuppressLiteral
 
 /**
@@ -65,3 +67,5 @@ operator fun <V> CommonIterable<V>.plus(other: CommonIterable<V>): CommonIterabl
         = ((this as Iterable<V>) + (other as Iterable<V>)).toCommonIterable()
 
 fun <V> CommonIterable<V>.asSequence(): Sequence<V> = this
+
+ */

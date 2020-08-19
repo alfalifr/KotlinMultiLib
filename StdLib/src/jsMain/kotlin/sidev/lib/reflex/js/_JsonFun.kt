@@ -51,8 +51,7 @@ fun Any.asJson(): Json = if(!this.isUndefined) this as Json //Semua objek di Js 
  * termasuk yg enumerable dan yg tidak.
  */
 val Any.properties: Sequence<Pair<String, Any?>> get(){
-    val thisRef= this
-    val thisFullJson= js("Object.getOwnPropertyDescriptors(thisRef)") as Json
+    val thisFullJson= getPropertyDescriptors(this) //js("Object.getOwnPropertyDescriptors(thisRef)") as Json
     val keys= thisFullJson.keys
     return object : Sequence<Pair<String, Any?>>{
         override fun iterator(): Iterator<Pair<String, Any?>> =

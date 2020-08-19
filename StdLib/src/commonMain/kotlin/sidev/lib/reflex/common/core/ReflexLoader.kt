@@ -1,6 +1,7 @@
 package sidev.lib.reflex.common.core
 
 import sidev.lib.console.prine
+import sidev.lib.console.str
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.*
 import sidev.lib.reflex.common.native.getNativeFunctions
@@ -69,7 +70,7 @@ object ReflexLoader{
             ReflexFactory.createParameter(
                 createNativeWrapper(nativeParam), null, i,
                 getParamIsOptional(nativeParam), getParamType(nativeParam),
-                kind = getParamKind(nativeParam)
+                kind = getParamKind(nativeParam), defaultValue = getParamDefaultValue(nativeParam)
             )
         }
 

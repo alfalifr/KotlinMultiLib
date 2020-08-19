@@ -1,5 +1,5 @@
 package sidev.lib.reflex.type
-
+/*
 import sidev.lib.check.contentEquals
 import sidev.lib.collection.lazy_list.flattenToNested
 import sidev.lib.collection.leveledIterator
@@ -70,3 +70,6 @@ fun getCommonType(vararg types: KType): KType {
     return commonClass.createType(commonTypeArgs, isMarkedNullable)
 }
 fun getCommonType(vararg any: Any?): KType = getCommonType(*any.toArrayOf { it.inferredType.type })
+
+
+ */

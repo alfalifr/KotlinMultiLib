@@ -4,8 +4,9 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.console.prine
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.SiKClassifier
-import sidev.lib.reflex.common.native.SiNative
 import sidev.lib.reflex.common.native.SiNativeWrapper
+import sidev.lib.reflex.common.native.isDynamicEnabled
+import sidev.lib.reflex.fullName
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
 
@@ -28,11 +29,11 @@ object ReflexDescriptor {
     fun createDescriptor(
         owner: SiReflex, host: SiReflex?, nativeCounterpart: SiNativeWrapper?
     ): SiDescriptor = object : SiDescriptorImpl() {
+        override val innerName: String? = nativeCounterpart?.nativeInnerName
         override val owner: SiReflex = owner
 //        override val innerName: String = getReflexInnerName(owner)
         override val type: SiDescriptor.ElementType = getReflexElementType(owner, nativeCounterpart?.implementation)
         override var native: Any? = nativeCounterpart?.implementation
-        override val innerName: String? = nativeCounterpart?.nativeInnerName
         init{ this.host= host }
         /** Agar tidak berat saat komputasi string descriptor. */
         private lateinit var string: String //by mutab; { getDescriptorString(this) }
@@ -68,14 +69,24 @@ object ReflexDescriptor {
             "$str>"
         } else ""
     }
+
     fun List<SiParameter>.getSiParamDescStr(): String{
         var str= "("
-        for(param in this)
-            if(param.kind == SiParameter.Kind.VALUE)
-                str += "${param.type}, "
+        if(!isDynamicEnabled){
+            for(param in this)
+                if(param.kind == SiParameter.Kind.VALUE)
+                    str += "${param.type}, "
+        } else{
+            for(param in this){
+                val optionalStr= if(param.isOptional) " = ${param.defaultValue}" else ""
+                if(param.kind == SiParameter.Kind.VALUE)
+                    str += "${param.name}$optionalStr, "
+            }
+        }
         str= str.removeSuffix(", ")
         return "$str)"
     }
+
     fun List<SiTypeProjection>.getSiTypeProjectionDescStr(): String{
         return if(isNotEmpty()) {
             var str= "<"
@@ -128,12 +139,21 @@ object ReflexDescriptor {
                         owner.parameters.getSiParamDescStr()
                 else ""
 
-                " $typeParamString$hostString${owner.name}$paramStr: ${owner.returnType}"
+                val returnTypeStr= if(!isDynamicEnabled) ": ${owner.returnType}" else ""
+
+                val nameStr= if(isDynamicEnabled && hostString.removeSuffix(".") == owner.name)
+                    SI_CALLABLE_CONSTRUCTOR_NAME
+                else owner.name
+
+                " $typeParamString$hostString$nameStr$paramStr$returnTypeStr"
             }
             is SiParameter -> {
                 val optionalStr= if(owner.isOptional) "?" else ""
                 val paramStr= when(owner.kind){
-                    SiParameter.Kind.VALUE -> "${owner.name}$optionalStr: ${owner.type}"
+                    SiParameter.Kind.VALUE -> {
+                        val paramTypeStr= if(!isDynamicEnabled) ": ${owner.type}" else ""
+                        "${owner.name}$optionalStr$paramTypeStr"
+                    }
                     SiParameter.Kind.INSTANCE -> "instance parameter"
                     SiParameter.Kind.RECEIVER -> "receiver$optionalStr: ${owner.type}"
                 }
@@ -150,7 +170,7 @@ object ReflexDescriptor {
                     is SiTypeParameter -> classifier.name
                     is SiKClassifier -> when(val native= classifier.implementation){
                         is KClass<*> -> {
-                            var str= native.qualifiedName
+                            var str= native.fullName //qualifiedName
                             val typeArgStr= owner.arguments.getSiTypeProjectionDescStr()
                             "$str$typeArgStr"
                         }
@@ -176,10 +196,7 @@ fun SiReflex.createDescriptor(
 
 internal var SiReflex.mutableHost: SiReflex?
     get() = descriptor.host
-    set(v){
-        prine("SiReflex.mutableHost set() v= $v this= $this")
-        (descriptor as SiDescriptorImpl).host= v
-    }
+    set(v){ (descriptor as SiDescriptorImpl).host= v }
 
 internal fun getReflexElementType(reflexUnit: SiReflex, nativeCounterpart: Any?): SiDescriptor.ElementType = when(reflexUnit){
     is SiClass<*> -> SiDescriptor.ElementType.CLASS

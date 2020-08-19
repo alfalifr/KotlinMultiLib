@@ -13,9 +13,10 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import kotlin.reflect.*
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.*
+
+
+internal actual val isDynamicEnabled: Boolean = false
 
 
 /** `this.extension` dapat berupa apa saja. */
@@ -23,17 +24,17 @@ internal actual fun getNativeClass(any: Any): Any = if(any is KClass<*>) any els
 
 /** `this.extension` yg dimaksud adalah native class. */
 internal actual fun getNativeFunctions(nativeClass: Any): Sequence<Any> =
-    (getNativeClass(nativeClass) as KClass<*>).let { it.memberFunctions.asSequence() }
+    (getNativeClass(nativeClass) as KClass<*>).let { it.declaredFunctions.asSequence() }
 //internal fun SiNativeClassifier.getNativeFunctions(): Sequence<Any> = implementation.getFunctions()
 
 /** Termasuk yg mutable. */
 internal actual fun getNativeProperties(nativeClass: Any): Sequence<Any> =
-    (getNativeClass(nativeClass) as KClass<*>).memberProperties.asSequence()
+    (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence()
 //internal fun SiNativeClassifier.getNativeProperties(): Sequence<Any> = implementation.getProperties()
 
 /** Tidak termasuk property yg immutable. */
 internal actual fun getNativeMutableProperties(nativeClass: Any): Sequence<Any> =
-    (getNativeClass(nativeClass) as KClass<*>).memberProperties.asSequence().filter { it.isMutableProperty }
+    (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence().filter { it.isMutableProperty }
 //internal fun SiNativeClassifier.getNativeMutableProperties(): Sequence<Any> = implementation.getMutableProperties()
 
 /**
@@ -71,6 +72,8 @@ internal actual fun getParamKind(nativeParam: Any): SiParameter.Kind = when(nati
     is Parameter -> SiParameter.Kind.VALUE
     else -> throw ReflexComponentExc(currentReflexedUnit = nativeParam::class, detMsg = "nativeParam bkn parameter.")
 }
+//TODO <19 Agustus 2020> => untuk sementara JVM blum bisa ngambil defaultValue dari param.
+internal actual fun getParamDefaultValue(nativeParam: Any): Any? = null
 
 internal actual fun <T> getFuncCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T = when(nativeFunc){
     is KFunction<*> -> nativeFunc::call as (args: Array<out Any?>) -> T

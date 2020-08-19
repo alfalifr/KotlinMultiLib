@@ -94,6 +94,8 @@ internal open class AC(val poinConstr: Poin): Z, Y, X, AB(), AnnotatedFunctionCl
     lateinit var poinLate: Poin //= Poin(1, 2)
     override var ab_abs: Int= 10
 
+    val aLazy: String by lazy { "lazy" }
+
     @Anotasi<Int, Any> @FunAnot(10)
     fun someFun(x: Int) = prin("\n\n ==== Halo dari AC.someFun() x= $x ==== \n\n")
     @Anotasi<Int, Any> @FunAnot(2)
@@ -157,8 +159,15 @@ internal class NoConstr private constructor()
 @Suppress("UNREACHABLE_CODE")
 fun main(args: Array<String>){
     aadad()
-    println("=================AB::class.members===========")
-    for((i, member) in AB::class.members.withIndex()){
+    println("=================AC::class.memberProperties===========")
+    for((i, member) in AC::class.memberProperties.withIndex()){
+        println("i= $i member= $member")
+        for((u, param) in member.parameters.withIndex()){
+            println("--u= $u param= $param")
+        }
+    }
+    println("=================AC::class.declaredMemberProperties===========")
+    for((i, member) in AC::class.declaredMemberProperties.withIndex()){
         println("i= $i member= $member")
         for((u, param) in member.parameters.withIndex()){
             println("--u= $u param= $param")

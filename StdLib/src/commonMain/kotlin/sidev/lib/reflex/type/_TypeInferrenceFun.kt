@@ -1,5 +1,5 @@
 package sidev.lib.reflex.type
-
+/*
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
 import sidev.lib.collection.filterIndexed
@@ -109,3 +109,6 @@ fun KType.asInferredType(): InferredType = InferredType(this)
  */
 fun KType.isInstance(any: Any?): Boolean
         = any == null && isMarkedNullable || isAssignableFrom(any.inferredType) //any!!.clazz == classifier
+
+
+ */

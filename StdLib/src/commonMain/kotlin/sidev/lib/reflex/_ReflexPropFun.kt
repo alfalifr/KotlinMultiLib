@@ -1,18 +1,18 @@
 package sidev.lib.reflex
 
 import sidev.lib.reflex._ReflexConst.K_ARRAY_CLASS_STRING
-import sidev.lib.reflex.inner.isSubclassOf
+//import sidev.lib.reflex.inner.isSubclassOf
 import kotlin.reflect.*
 
 val KClass<*>.fullName: String
-    get()= qualifiedName ?: nativeFullName
+    get()= nativeFullName //qualifiedName ?: nativeFullName
 val KClass<*>.simpleName: String
     get()= this.simpleName ?: nativeSimpleName
 
 /** Berguna untuk mengambil kelas dari instance dg tipe generic yg tidak punya batas atas Any. */
 val Any.clazz: KClass<*>
     get()= this::class
-
+/*
 val <T: Any> KClass<T>.isInterface: Boolean
     get()= isAbstract && !isInstantiable
 
@@ -94,3 +94,5 @@ val <T: Any> KClass<T>.isPrimitiveArray: Boolean
         ByteArray::class -> true
         else -> false
     }
+
+ */

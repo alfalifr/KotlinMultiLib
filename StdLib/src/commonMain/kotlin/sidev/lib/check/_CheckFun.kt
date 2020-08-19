@@ -221,12 +221,14 @@ inline fun <T, O> runWithParamTypeSafety(
 Data Structure Check Fun
 ======================
  */
+/*
 fun KTypeParameter.contentEquals(other: KTypeParameter, ignoreAcclamation: Boolean= true): Boolean
     = if(ignoreAcclamation) name.replace("!", "") == other.name.replace("!", "")
         else name == other.name
         && upperBounds == other.upperBounds
         && variance == other.variance
         && isReified == isReified
+ */
 
 fun <T> Collection<T>.contentEquals(other: Collection<T>): Boolean = size == other.size && containsAll(other)
 fun <T> Collection<T>.contentEquals(other: Array<out T>): Boolean = size == other.size && containsAll(other.toList())

@@ -1,6 +1,5 @@
 package sidev.lib.reflex.common.native
 
-import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.core.ReflexLoader
 import sidev.lib.reflex.common.core.createDescriptor

@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.universal.`val`.StringLiteral
 import sidev.lib.universal.`val`.SuppressLiteral
 import kotlin.reflect.KClass
@@ -61,3 +61,4 @@ fun <T: Any> checkTypeSafety(any: T): Boolean{
 
 }
  */
+*/

@@ -1,5 +1,5 @@
 package sidev.lib.type
-
+/*
 import sidev.lib.reflex.inner.createType
 
 /**
@@ -9,3 +9,5 @@ import sidev.lib.reflex.inner.createType
 object Null{
     val type = this::class.createType(nullable = true)
 }
+
+ */

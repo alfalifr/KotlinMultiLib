@@ -1,5 +1,5 @@
 package sidev.lib.annotation
-
+/*
 import sidev.lib.reflex.callBySafely
 import sidev.lib.reflex.inner.isSuperclassOf
 import kotlin.reflect.KClass
@@ -46,3 +46,5 @@ open class AnnotatedFunctionClassImpl: AnnotatedFunctionClass {
         )
     }
 }
+
+ */

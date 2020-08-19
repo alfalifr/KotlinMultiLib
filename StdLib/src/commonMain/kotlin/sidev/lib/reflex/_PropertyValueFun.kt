@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.reflex._ReflexConst.K_PROPERTY_ARRAY_SIZE_STRING
 import sidev.lib.reflex.inner.declaredMemberProperties
 import sidev.lib.reflex.inner.memberProperties
@@ -167,3 +167,6 @@ val Any.implementedAccesiblePropertiesValueMapTree: Sequence<Pair<KProperty1<Any
         }
     }
 
+
+
+ */

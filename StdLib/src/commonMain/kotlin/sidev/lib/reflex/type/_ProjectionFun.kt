@@ -1,5 +1,5 @@
 package sidev.lib.reflex.type
-
+/*
 import sidev.lib.check.notNull
 import sidev.lib.collection.iterator.newIteratorSimple
 import sidev.lib.collection.lazy_list.flattenToNested
@@ -138,3 +138,6 @@ val KClass<*>.nestedTypeParameters: NestedSequence<KTypeParameter>
             }
         }
     }
+
+
+ */

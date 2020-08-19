@@ -1,5 +1,5 @@
 package sidev.lib.annotation
-
+/*
 import sidev.lib.reflex.callBySafely
 import sidev.lib.reflex.implementedAccesiblePropertiesValueMapTree
 import sidev.lib.reflex.inner.declaredMemberFunctions
@@ -60,3 +60,5 @@ interface AnnotatedFunctionClass {
         }
     }
 }
+
+ */

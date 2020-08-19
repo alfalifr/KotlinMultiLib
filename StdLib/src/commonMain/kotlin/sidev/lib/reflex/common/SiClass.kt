@@ -31,6 +31,6 @@ interface SiClass<T: Any>: SiClassifier {
 internal abstract class SiClassImpl<T: Any>: SiReflexImpl(), SiClass<T>{
     abstract override var members: Collection<SiCallable<*>>
     abstract override var constructors: List<SiFunction<T>>
-    abstract override var typeParameters: List<SiTypeParameter>
-    abstract override var supertypes: List<SiType>
+//    abstract override var typeParameters: List<SiTypeParameter>
+//    abstract override var supertypes: List<SiType>
 }

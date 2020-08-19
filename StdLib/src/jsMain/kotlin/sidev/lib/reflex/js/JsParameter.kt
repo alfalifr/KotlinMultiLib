@@ -17,7 +17,8 @@ interface JsParameter/*: KParameter*/{
     val defaultValue: Any?
         get()= null
 }
-internal interface JsParameterImpl: JsParameter{
-    override var defaultValue: Any?
-    override var isOptional: Boolean
+internal abstract class JsParameterImpl: JsParameter{
+    abstract override var defaultValue: Any?
+    abstract override var isOptional: Boolean
+    override fun toString(): String = "JsParameter #$index $name${if (this.isOptional) "?" else "" }: $type"
 }

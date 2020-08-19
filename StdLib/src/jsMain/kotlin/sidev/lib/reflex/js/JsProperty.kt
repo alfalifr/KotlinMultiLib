@@ -11,7 +11,7 @@ interface JsProperty<T, out R>: JsCallable<R>{
      * Nama yg diberikan oleh compiler Kotlin.
      * Biasanya digunakan untuk mengakses scr langsung sebuah property.
      */
-    val innerName: String
+    override val innerName: String
 
     /**
      * <14 Agustu 2020>
@@ -47,12 +47,15 @@ interface JsMutableProperty<T, R>: JsProperty<T, R>{
 internal abstract class JsPropertyImpl<T, out R> : JsCallableImpl<R>(), JsProperty<T, R>{
     abstract override val name: String
     override val parameters: List<JsParameter> = super<JsProperty>.parameters
-    override fun call(vararg args: Any?): Any? = super<JsProperty>.call(*args)
+    override fun call(vararg args: Any?): Any? = super<JsProperty>.call(*args, name)
     override fun callBy(args: Json): Any? = super<JsProperty>.callBy(args)
+    override fun toString(): String = "JsProperty $name"
+    /*
     override fun new(vararg args: Any?): R {
         return super.new(*args) //TODO clone() blum ada implementasi
     }
     override fun newBy(args: Json): R {
         return super.newBy(args)
     }
+ */
 }

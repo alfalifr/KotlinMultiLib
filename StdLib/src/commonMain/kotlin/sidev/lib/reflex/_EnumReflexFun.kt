@@ -1,8 +1,7 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.reflex.inner.declaredMemberProperties
 import kotlin.reflect.KProperty1
-
 
 /** Mengambil semua enum anggota `this.extension` [Enum] [Enum.ordinal] dan [Enum.name]. */
 inline fun <reified E: Enum<E>> ordinalNamePairs(): Array<Pair<Int, String>>{
@@ -32,3 +31,5 @@ val <E: Enum<E>> E.data: Sequence<Pair<KProperty1<*, *>, Any?>>
             }
         }
     }
+
+ */

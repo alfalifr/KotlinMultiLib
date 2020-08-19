@@ -1,5 +1,5 @@
 package sidev.lib.reflex.inner
-
+/*
 /**
  * Fungsi yg sama dg [kotlin.reflect.full.KClasses] untuk tujuan cross-platform.
  */
@@ -197,3 +197,5 @@ fun <T : Any> KClass<T>.createInstance(): T {
 
     return noArgsConstructor.callBy(emptyMap())
 }
+
+ */

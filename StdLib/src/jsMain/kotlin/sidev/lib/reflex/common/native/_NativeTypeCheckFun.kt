@@ -7,7 +7,7 @@ import kotlin.reflect.*
 internal actual val Any.isClassifier: Boolean
     get()= isClass
 internal actual val Any.isClass: Boolean
-    get()= isFunction //Pengecekan is JsClass tidak bisa karena external.
+    get()= this is JsClass_<*> || isFunction //Pengecekan is JsClass tidak bisa karena external.
 internal actual val Any.isType: Boolean
     get()= isClass
 internal actual val Any.isCallable: Boolean

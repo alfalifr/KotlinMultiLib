@@ -1,5 +1,6 @@
 package sidev.lib.collection.common
-
+/*
+TODO temporary
 import sidev.lib.universal.structure.collection.common.*
 import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl
 import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Boolean
@@ -72,3 +73,5 @@ fun <T> mutableArrayWrapperOf(vararg element: T): MutableArrayWrapper<T>
     override fun iterator(): Iterator<T> = array.iterator()
 //    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
 }
+
+ */

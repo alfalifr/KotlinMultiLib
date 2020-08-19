@@ -1,5 +1,6 @@
 package sidev.lib.universal.structure.collection.common
-
+/*
+TODO temporary
 import kotlin.reflect.KProperty
 
 /** Digunakan sbg interface common yg menunjukan sifat iterable dari [Array]. */
@@ -204,3 +205,5 @@ internal class MutableArrayWrapperImpl_Char(array: CharArray): ArrayWrapperImpl_
         return prevVal
     }
 }
+
+ */

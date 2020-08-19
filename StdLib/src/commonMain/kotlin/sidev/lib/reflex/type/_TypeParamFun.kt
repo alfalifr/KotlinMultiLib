@@ -1,5 +1,5 @@
 package sidev.lib.reflex.type
-
+/*
 import sidev.lib.reflex.inner.createType
 import sidev.lib.reflex.isArray
 import kotlin.reflect.KClass
@@ -29,3 +29,5 @@ val <T: Any> KClass<T>.arrayTypeArgument: KTypeProjection?
         }
         return KTypeProjection(variance, classifier.createType())
     }
+
+ */

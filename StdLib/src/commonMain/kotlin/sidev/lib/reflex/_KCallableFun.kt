@@ -1,11 +1,10 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.reflex.inner.isAccessible
 import sidev.lib.reflex.type.isAssignableFrom
 import sidev.lib.exception.TypeExc
 import sidev.lib.structure.data.type.TypedValue
 import kotlin.reflect.*
-
 
 /*
 ==========================
@@ -157,3 +156,6 @@ fun <I, O> KMutableProperty1<I, O>.forcedSetTyped(receiver: I, typedValue: Typed
         false
     }
 }
+
+
+ */

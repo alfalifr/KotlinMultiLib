@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-
+/*
 import sidev.lib.check.asNotNull
 import sidev.lib.check.notNullTo
 import sidev.lib.console.prine
@@ -286,3 +286,5 @@ fun <T: Any> new(clazz: KClass<out T>, constructorParamClass: Array<KClass<*>>?=
  */
     return constr.forcedCallBy(defParamVal) //.forcedCall()//.callBy(defParamVal)
 }
+
+ */

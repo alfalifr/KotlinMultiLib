@@ -1,5 +1,5 @@
 package sidev.lib.reflex.type
-
+/*
 import sidev.lib.console.prine
 import sidev.lib.reflex.classesTree
 import sidev.lib.reflex.inner.isSubtypeOf
@@ -70,3 +70,5 @@ fun KType.isAssignableFrom(value: Any?, deepInspect: Boolean= true): Boolean
     value != null -> classifier in value::class.classesTree
     else -> isMarkedNullable
 }
+
+ */

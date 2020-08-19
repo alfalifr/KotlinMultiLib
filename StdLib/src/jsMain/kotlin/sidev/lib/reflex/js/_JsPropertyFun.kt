@@ -2,6 +2,7 @@ package sidev.lib.reflex.js
 
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
+import sidev.lib.console.prine
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 
 fun <T, R> createJsProperty(
@@ -36,6 +37,7 @@ fun <T, R> createJsMutableProperty(
  */
 //TODO <16 Agustus 2020> => Untuk smtr smua properti yg diambil merupakan mutable property
 fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
+    val func= jsPureFunction(func) as Any
     if(!func.isFunction)
         throw IllegalArgumentException("func: \"${str(func)}\" bkn fungsi.") //Agar lebih kontekstual.
     val funStr= func.toString()
@@ -45,14 +47,18 @@ fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
         .findAll(funStr).forEach { res ->
             val vals= res.groupValues
             var isLateinit= false
-            var propName= if(vals.last().isNotBlank()){
+            val lastIndex= vals.lastIndex-1
+            var propName= if(vals[lastIndex].isNotBlank()){
                 isLateinit= true
-                vals.last()
+                vals[lastIndex]
             } else vals[1]
 
             val propInnerName= vals[1]
 
             KotlinJsConst.PROPERTY_LATEINIT_PATTERN.toRegex().find(propName).notNull {
+                propName= it.groupValues.last()
+            }
+            KotlinJsConst.PROPERTY_PRIVATE_PATTERN.toRegex().find(propName).notNull {
                 propName= it.groupValues.last()
             }
 

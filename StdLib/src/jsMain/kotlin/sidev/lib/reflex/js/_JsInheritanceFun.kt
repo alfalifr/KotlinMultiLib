@@ -4,7 +4,13 @@ import sidev.lib.reflex.js.kotlin.KotlinJsConst
 import sidev.lib.reflex.js.kotlin.isKotlinFun
 import sidev.lib.reflex.js.kotlin.kotlinSupertypes
 
+/**
+ * Mengambil supertype dari fungsi [func].
+ * Fungsi ini membutuhkan satu param [func] sbg fungsi, bkn objek. Walau sebenarnya
+ * supertype juga dapat diperoleh jika [func] merupakan objek, namun krg sesua konteks.
+ */
 fun getSupertypes(func: Any): List<JsCallable<*>>{
+    val func= jsPureFunction(func) as Any
     if(!func.isFunction)
         throw IllegalArgumentException("func: \"${str(func)}\" bkn fungsi.") //Agar lebih kontekstual.
     val supertypes= ArrayList<JsCallable<*>>()
