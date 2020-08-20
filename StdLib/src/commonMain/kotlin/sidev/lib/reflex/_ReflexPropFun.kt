@@ -1,6 +1,5 @@
 package sidev.lib.reflex
 
-import sidev.lib.reflex._ReflexConst.K_ARRAY_CLASS_STRING
 //import sidev.lib.reflex.inner.isSubclassOf
 import kotlin.reflect.*
 

@@ -1,21 +1,31 @@
 package sidev.lib.reflex.common.native
 
+import sidev.lib.check.notNullTo
 import sidev.lib.console.prine
 import sidev.lib.exception.ReflexComponentExc
+import sidev.lib.number.or
+import sidev.lib.reflex.common.SiModifier
 import sidev.lib.reflex.common.SiParameter
 import sidev.lib.reflex.common.SiType
+import sidev.lib.reflex.common.SiVisibility
+import sidev.lib.reflex.common.core.ReflexFactory
 import sidev.lib.reflex.common.core.ReflexTemplate
+import sidev.lib.reflex.common.core.createNativeWrapper
+import sidev.lib.reflex.common.core.createType
 import sidev.lib.reflex.js.*
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 import sidev.lib.universal.`val`.SuppressLiteral
 import kotlin.reflect.KClass
 import sidev.lib.reflex.js.isFunction
+import sidev.lib.structure.data.value.Val
+import kotlin.reflect.KCallable
+import kotlin.reflect.KParameter
 
 
 internal actual val isDynamicEnabled: Boolean = true
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-private val <T: Any> T.jsClass: JsClass_<T> get(){
+internal val <T: Any> T.jsClass: JsClass_<T> get(){
     if(this is JsClass_<*>) return this as JsClass_<T>
 
     @Suppress(SuppressLiteral.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE)
@@ -75,7 +85,11 @@ internal actual fun getNativeSupertypes(nativeClass: Any): Sequence<Any>
 
 
 internal actual fun getParamIsOptional(nativeParam: Any): Boolean = (nativeParam as JsParameter).isOptional
-internal actual fun getParamType(nativeParam: Any): SiType = ReflexTemplate.typeDynamic
+internal actual fun getParamIsVararg(nativeParam: Any): Boolean = false
+internal actual fun getParamType(nativeParam: Any): SiType = when(nativeParam){
+    is JsParameter -> nativeParam.type.classifier?.siClass?.createType() ?: ReflexTemplate.typeDynamic
+    else -> ReflexTemplate.typeDynamic
+}
 internal actual fun getParamKind(nativeParam: Any): SiParameter.Kind = SiParameter.Kind.VALUE
 internal actual fun getParamDefaultValue(nativeParam: Any): Any? = (nativeParam as JsParameter).defaultValue
 internal actual fun <T> getFuncCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
@@ -88,5 +102,34 @@ internal actual fun <T> getPropSetValueBlock(nativeProp: Any): (receivers: Array
         = { receivers, value ->
     (nativeProp as JsMutableProperty<Any, T>)[receivers.first()]= value
 }
+//TODO <20 Agustus 2020> => classifier String dan Number belum sesuai dg kriteria kelas bawaan Kotlin.
+internal actual fun getReturnType(nativeCallable: Any): SiType = when(nativeCallable){
+    is JsCallable<*> -> {
+        prine("nativeCallable.returnType.classifier == null => ${nativeCallable.returnType.classifier == null}")
+        val nativeType= nativeCallable.returnType
+        val classifier= nativeType.classifier?.siClass ?: ReflexTemplate.classifierAny
+        ReflexFactory.createType(
+            createNativeWrapper(nativeType), classifier, modifier = SiModifier.DYNAMIC.id
+        )
+    }
+    else -> ReflexTemplate.typeDynamic
+}
+/** @return `true` jika [nativeType] sudah final dan gak perlu dievaluasi lagi. */
+internal actual fun isTypeFinal(nativeType: Any): Boolean = when(nativeType){
+    is JsType -> nativeType.isClassifierResolved
+    else -> true
+}
 
-internal actual fun getReturnType(nativeCallable: Any): SiType = ReflexTemplate.typeDynamic
+/** By default, semua property di Js public. */
+internal actual fun getVisibility(nativeReflexUnit: Any): SiVisibility = SiVisibility.PUBLIC
+
+//TODO <19 Agustus 2020> => Untuk sementara akses di Js semuanya publik.
+internal actual fun getIsAccessible(nativeReflexUnit: Any): Boolean = true
+internal actual fun setIsAccessible(nativeReflexUnit: Any, isAccessible: Boolean){ /*sementara msh kosong*/ }
+
+internal actual fun getModifiers(nativeReflexUnit: Any): Int{
+    val modifier= Val(0)
+    if(nativeReflexUnit !is JsParameter)
+        modifier or SiModifier.OPEN.id
+    return modifier.value!!
+}

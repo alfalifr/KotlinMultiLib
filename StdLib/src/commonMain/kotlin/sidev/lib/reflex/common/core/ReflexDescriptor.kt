@@ -2,10 +2,13 @@ package sidev.lib.reflex.common.core
 
 import sidev.lib.check.asNotNullTo
 import sidev.lib.console.prine
+import sidev.lib.platform.Platform
+import sidev.lib.platform.platform
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.SiKClassifier
 import sidev.lib.reflex.common.native.SiNativeWrapper
 import sidev.lib.reflex.common.native.isDynamicEnabled
+import sidev.lib.reflex.common.native.isTypeFinal
 import sidev.lib.reflex.fullName
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
@@ -27,7 +30,7 @@ object ReflexDescriptor {
     const val SI_CALLABLE_SETTER_NAME= "<set-prop>"
 
     fun createDescriptor(
-        owner: SiReflex, host: SiReflex?, nativeCounterpart: SiNativeWrapper?
+        owner: SiReflex, host: SiReflex?, nativeCounterpart: SiNativeWrapper?, modifier: Int
     ): SiDescriptor = object : SiDescriptorImpl() {
         override val innerName: String? = nativeCounterpart?.nativeInnerName
         override val owner: SiReflex = owner
@@ -44,27 +47,29 @@ object ReflexDescriptor {
             }
             return string
         }
+        override var modifier: Int = modifier
     }
 
 //    fun getClassDesc(clazz: SiClass<*>): String = "class ${clazz.qualifiedName}"
 
-    fun SiTypeParameter.getDescStr(): String{
-        val upperBoundStr= if(upperBounds.size == 1) upperBounds.first().toString()
-        else upperBounds.toString()
+    fun SiTypeParameter.getDescStr(includeUpperBounds: Boolean= true): String{
+        val upperBoundStr= if(includeUpperBounds){
+            ": " +(if(upperBounds.size == 1) upperBounds.first().toString()
+            else upperBounds.joinToString(" & "))
+        } else ""
 
         val varianceStr= when(variance){
             SiVariance.IN -> "in "
             SiVariance.OUT -> "out "
             else -> ""
         }
-
-        return "$varianceStr$name: $upperBoundStr"
+        return "$varianceStr$name$upperBoundStr"
     }
-    fun List<SiTypeParameter>.getSiTypeParamDescStr(): String{
+    fun List<SiTypeParameter>.getSiTypeParamDescStr(includeUpperBounds: Boolean= true): String{
         return if(isNotEmpty()) {
             var str= "<"
             for(typeParam in this)
-                str += "${typeParam.getDescStr()}, "
+                str += "${typeParam.getDescStr(includeUpperBounds)}, "
             str= str.removeSuffix(", ")
             "$str>"
         } else ""
@@ -73,9 +78,14 @@ object ReflexDescriptor {
     fun List<SiParameter>.getSiParamDescStr(): String{
         var str= "("
         if(!isDynamicEnabled){
-            for(param in this)
+            for(param in this){
+                //TODO <20 Agustu 2020> => [optionalStr] msh " = ?" bkn value sesugguhnya karena tidak dapat mendapatkan defaultValuenya.
+                val optionalStr= if(param.isOptional) " = ?" else ""
+                val varargStr= if(param.isVararg) "*" else ""
+                val typeStr= (if(param.isVararg) param.type.arguments.first().type else param.type).toString()
                 if(param.kind == SiParameter.Kind.VALUE)
-                    str += "${param.type}, "
+                    str += "$varargStr$typeStr$optionalStr, "
+            }
         } else{
             for(param in this){
                 val optionalStr= if(param.isOptional) " = ${param.defaultValue}" else ""
@@ -123,12 +133,16 @@ object ReflexDescriptor {
     fun getDescriptorString(desc: SiDescriptor): String {
         var str= desc.type.description
         str += when(val owner= desc.owner){
-            is SiClass<*> -> " ${owner.qualifiedName}"
+            is SiKClassifier -> " ${owner.nativeFullName}"
+            is SiClass<*> -> " ${owner.qualifiedName}${owner.typeParameters.getSiTypeParamDescStr(false)}"
             is SiCallable<*> -> {
                 val hostString= if(owner.name == SI_CALLABLE_CONSTRUCTOR_NAME) ""
-                else desc.host.asNotNullTo { clazz: SiClass<*> -> clazz.qualifiedName +"." } ?: ""
+                else desc.host.asNotNullTo { clazz: SiClass<*> ->
+                    val clsTypeParamStr= clazz.typeParameters.getSiTypeParamDescStr(false)
+                    "${clazz.qualifiedName}$clsTypeParamStr."
+                } ?: ""
 
-                var typeParamString= owner.typeParameters.getSiTypeParamDescStr()
+                var typeParamString= owner.typeParameters.getSiTypeParamDescStr(false)
                 if(typeParamString.isNotBlank())
                     typeParamString += " "
 
@@ -151,8 +165,11 @@ object ReflexDescriptor {
                 val optionalStr= if(owner.isOptional) "?" else ""
                 val paramStr= when(owner.kind){
                     SiParameter.Kind.VALUE -> {
-                        val paramTypeStr= if(!isDynamicEnabled) ": ${owner.type}" else ""
-                        "${owner.name}$optionalStr$paramTypeStr"
+                        val varargStr= if(owner.isVararg) "*" else ""
+                        val paramTypeStr= if(!isDynamicEnabled){
+                            ": " +(if(!owner.isVararg) owner.type else owner.type.arguments.first().type).toString()
+                        } else ""
+                        "$varargStr${owner.name}$optionalStr$paramTypeStr"
                     }
                     SiParameter.Kind.INSTANCE -> "instance parameter"
                     SiParameter.Kind.RECEIVER -> "receiver$optionalStr: ${owner.type}"
@@ -161,9 +178,16 @@ object ReflexDescriptor {
             }
             is SiTypeParameter -> " ${owner.getDescStr()}"
             is SiType -> {
+                //TODO ada bbrp tipe di platfor Js yg name-nya jadi "KClass".
+                prine("getDescriptor() SiType native= ${owner.descriptor.native}")
                 val str= when(val classifier= owner.classifier){
+                    is SiKClassifier -> {
+                        val str= classifier.nativeFullName
+                        val typeArgStr= owner.arguments.getSiTypeProjectionDescStr()
+                        "$str$typeArgStr"
+                    }
                     is SiClass<*> -> {
-                        var str= classifier.qualifiedName
+                        val str= classifier.qualifiedName
                         val typeArgStr= owner.arguments.getSiTypeProjectionDescStr()
                         "$str$typeArgStr"
                     }
@@ -175,14 +199,18 @@ object ReflexDescriptor {
                             "$str$typeArgStr"
                         }
                         is KTypeParameter -> native.name
-                        else -> ReflexConst.TEMPLATE_TYPE_NAME
+                        else -> SiReflexConst.TEMPLATE_TYPE_NAME
                     }
-                    else -> ReflexConst.TEMPLATE_TYPE_NAME
+                    else -> SiReflexConst.TEMPLATE_TYPE_NAME
                 }
                 val nullableStr= if(owner.isMarkedNullable) "?" else ""
-                "$str$nullableStr"
+                val additionStr=
+                    if(platform == Platform.JS && !isTypeFinal(owner.descriptor.native!!))
+                        " " +SiReflexConst.NOTE_CLASSIFIER_NOT_READY
+                    else ""
+                "$str$nullableStr$additionStr"
             }
-            else -> ReflexConst.TEMPLATE_REFLEX_UNIT_NAME
+            else -> " ${SiReflexConst.TEMPLATE_REFLEX_UNIT_NAME}"
         }
         return str
     }
@@ -191,8 +219,8 @@ object ReflexDescriptor {
 }
 
 fun SiReflex.createDescriptor(
-    host: SiReflex? = null, nativeCounterpart: SiNativeWrapper? = null
-): SiDescriptor = ReflexDescriptor.createDescriptor(this, host, nativeCounterpart)
+    host: SiReflex? = null, nativeCounterpart: SiNativeWrapper? = null, modifier: Int= 0
+): SiDescriptor = ReflexDescriptor.createDescriptor(this, host, nativeCounterpart, modifier)
 
 internal var SiReflex.mutableHost: SiReflex?
     get() = descriptor.host

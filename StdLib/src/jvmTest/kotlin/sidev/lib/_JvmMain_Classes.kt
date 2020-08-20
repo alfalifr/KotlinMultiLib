@@ -1,19 +1,19 @@
 package sidev.lib
 
-import sidev.lib.annotation.AnnotatedFunctionClass
-import sidev.lib.annotation.Rename
+//import sidev.lib.annotation.AnnotatedFunctionClass
+//import sidev.lib.annotation.Rename
 import sidev.lib.check.getLateinit
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.sequence.withLevel
-import sidev.lib.collection.string
+//import sidev.lib.collection.string
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.reflex.*
 import sidev.lib.reflex.jvm.*
 import sidev.lib.collection.lazy_list.plus
 import sidev.lib.reflex.common.native.si
-import sidev.lib.reflex.type.inferElementType
+//import sidev.lib.reflex.type.inferElementType
 import kotlin.reflect.full.*
 
 internal annotation class Ano
@@ -80,13 +80,17 @@ internal sealed class AB: AA(){
 }
 
 internal annotation class FunAnot(val a: Int= 101)
+internal open class BlaBla
+internal interface BlaBlaInt
+internal open class BlaBla2: BlaBla(), BlaBlaInt
 
 @Anotasi<Int, Char>
-internal open class AC(val poinConstr: Poin): Z, Y, X, AB(), AnnotatedFunctionClass {
+internal open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, T: BlaBlaInt/*, AnnotatedFunctionClass*/ {
     constructor(): this(Poin(1, 3))
     val ac= "ppop"
     private var acPriv= "aaa"
     override val a: Boolean = true
+    var listInt: List<Int?>? = listOf(1, 2, 4)
     override val x: String
         get() = "as"
     var poin= Poin(1, 2)
@@ -99,12 +103,12 @@ internal open class AC(val poinConstr: Poin): Z, Y, X, AB(), AnnotatedFunctionCl
     @Anotasi<Int, Any> @FunAnot(10)
     fun someFun(x: Int) = prin("\n\n ==== Halo dari AC.someFun() x= $x ==== \n\n")
     @Anotasi<Int, Any> @FunAnot(2)
-    fun someOtherFun(x: Int, az: Int) = prin("\n\n ==== Halo dari AC.someOtherFun() x= $x az= $az ==== \n\n")
+    fun <T: BlaBlaInt, R: Int> someOtherFun(vararg x: Any, az: Int = 1) where T: BlaBla = prin("\n\n ==== Halo dari AC.someOtherFun() x= $x az= $az ==== \n\n")
     override fun ada() {}
 }
 
-internal class Poin(var x: Int= 13, var y: Int, @property:Rename("az") var z: Int= 10){
-    @Rename("aa_aa_diPoin") var aa_diPoin= AA_()
+internal class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az")*/ var z: Int= 10){
+    /*@Rename("aa_aa_diPoin")*/ var aa_diPoin= AA_()
 }
 
 @Anotasi<Int, Char>
@@ -137,18 +141,6 @@ class ClsS{
     val b= 2
 }
 
-fun aadad(){
-    val s= ClsS()
-    s.isi= 30
-    val ss= s.clone()
-    val newSs= ClsS()
-
-    println("s.s= ${s.isi} ss.s= ${ss.isi} newSs.s=${newSs.isi}")
-    ss.isi= 40
-    println("s.s= ${s.isi} ss.s= ${ss.isi} newSs.s=${newSs.isi}")
-    ada(ss)
-    println("s.s= ${s.isi} ss.s= ${ss.isi} newSs.s= ${newSs.isi}")
-}
 
 fun ada(z: ClsS){
     z.isi= 2
@@ -156,6 +148,7 @@ fun ada(z: ClsS){
 
 internal class NoConstr private constructor()
 
+/*
 @Suppress("UNREACHABLE_CODE")
 fun main(args: Array<String>){
     aadad()
@@ -683,7 +676,7 @@ fun main(args: Array<String>){
     oldAc == newAc1
     oldAc == newAc2
     prin("oldAc == newAc1 = ${oldAc == newAc1} oldAc == newAc2= ${oldAc == newAc2}")
- */
+ * /
 
     println("\n============= BATAS implementedPropertiesValueMap ==============\n")
     val array= Array(2){ AC(Poin(y=10)) }

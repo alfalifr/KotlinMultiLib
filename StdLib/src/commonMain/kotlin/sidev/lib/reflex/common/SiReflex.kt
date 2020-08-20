@@ -1,5 +1,7 @@
 package sidev.lib.reflex.common
 
+import sidev.lib.console.prine
+
 /**
  * Penanda bahwa suatu kelas merupakan komponen refleksi pada library ini.
  */

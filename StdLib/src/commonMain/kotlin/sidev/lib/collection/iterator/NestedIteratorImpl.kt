@@ -10,8 +10,10 @@ import sidev.lib.universal.structure.collection.iterator.NestedIterator
  * Sebagai contoh adalah [ViewGroup] pada Android yg punya banyak child view.
  *
  * Iterasi dilakukan menggunakan metode DEPTH-FIRST PRE-ORDER.
+ *
+ * [startInputIterator] hanya diubah saat operasi init untuk keperluan internal.
  */
-abstract class NestedIteratorImpl<I, O>(internal val startInputIterator: Iterator<I>?)
+abstract class NestedIteratorImpl<I, O>(internal var startInputIterator: Iterator<I>?)
     : NestedIterator<I, O>,
     SkippableIterator<O> {
     constructor(startInputIterable: Iterable<I>): this(startInputIterable.iterator())
@@ -32,6 +34,8 @@ abstract class NestedIteratorImpl<I, O>(internal val startInputIterator: Iterato
             field= v
             prind("nowOutput= $nowOutput tag= $tag")
         }
+    internal var skipBlock: (output: O) -> Boolean = { false }
+    internal var transformingBlock: (output: O) -> Boolean = { false }
 
     /** Varibael yg mengindikasikan bahwa pengecekan [hasNext] hanya sebatas pengecekan dan hasil dari [next] belum tentu dipakai oleh pemanggil. */
 //    private var isHasNextOnlyCheck= false
@@ -88,7 +92,7 @@ abstract class NestedIteratorImpl<I, O>(internal val startInputIterator: Iterato
     abstract override fun getInputIterator(nowOutput: O): Iterator<I>?
 
     /** @return true maka [now] akan dilewati. */
-    override fun skip(now: O): Boolean= false
+    override fun skip(now: O): Boolean= skipBlock(now)
 
     /**
      * @return true jika [out] menghasilkan [activeInputIterator] yg baru
@@ -162,7 +166,7 @@ abstract class NestedIteratorImpl<I, O>(internal val startInputIterator: Iterato
 
     private fun initActiveIterator(): Boolean{
         val itr= startInputIterator //?.iterator()
-            ?: if(start != null) newIteratorSimple(start!!) else null
+            ?: (if(start != null) iteratorSimple(start!!) else null).also { startInputIterator= it }
 
         return if(itr?.hasNext() == true) {
             addInputIterator(itr)

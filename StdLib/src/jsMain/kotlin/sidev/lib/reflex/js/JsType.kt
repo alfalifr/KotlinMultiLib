@@ -1,29 +1,30 @@
 package sidev.lib.reflex.js
 
-import kotlin.reflect.KClassifier
-import kotlin.reflect.KType
-import kotlin.reflect.KTypeProjection
+import sidev.lib.reflex.common.core.SiReflexConst
 
-enum class JsType(/*val jsName: String*/){
-/*
-    FUNCTION("function"),
-    OBJECT("object"),
-    UNDEFINED("undefined"),
-    STRING("string"),
-    NUMBER("number");
- */
-    FUNCTION, OBJECT, UNDEFINED,
-    STRING, NUMBER;
+interface JsType: JsReflex {
+    /**
+     * Classifier yg membedakan antar sesama [primitive].
+     * Dalam konteks Js, [classifier] dapat dibedakan dari nama dari constructor.
+     *
+     * Contoh: [primitive] sama-sama [JsPrimitiveType.OBJECT],
+     * namun yg satu berupa objek [ArrayList] dan yg satunya berupa [Sequence].
+     */
+    val classifier: JsClass_<*>?
+    val primitive: JsPrimitiveType
 
-    val jsName: String = name.toLowerCase()
+    /**
+     * Penanda apakah [classifier] sudah diresolve atau tidak karena
+     * masalah ReferenceError saat memanggil nama sebuah fungsi constructor [classifier].
+     */
+    val isClassifierResolved: Boolean
 
     companion object{
-        val dynamicType: KType = object : KType {
-            override val annotations: List<Annotation> = emptyList()
-            override val arguments: List<KTypeProjection> = emptyList()
-            override val classifier: KClassifier? = null
-            override val isMarkedNullable: Boolean = true
-            override fun toString(): String = "sidev.lib.reflex.js.JsType.dynamicType"
-        }
+        val dynamicType= createType(JsPrimitiveType.DYNAMIC)
     }
+}
+
+internal abstract class JsTypeImpl: JsType{
+    abstract override var isClassifierResolved: Boolean
+    override fun toString(): String = "JsType ${primitive.jsName} ${if(isClassifierResolved) classifier?.name else SiReflexConst.NOTE_CLASSIFIER_NOT_READY}"
 }

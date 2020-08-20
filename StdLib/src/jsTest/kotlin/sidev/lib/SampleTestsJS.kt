@@ -1,15 +1,15 @@
 package sidev.lib
 
+import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.log
 import sidev.lib.console.prin
+import sidev.lib.console.prine
+import sidev.lib.platform.globalRef
+import sidev.lib.platform.setGlobalObject
 import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.full.classesTree
-import sidev.lib.reflex.common.full.declaredMemberPropertiesTree
+import sidev.lib.reflex.common.full.*
 import sidev.lib.reflex.common.native.si
-import sidev.lib.reflex.js.JsMutableProperty
-import sidev.lib.reflex.js.JsProperty
-import sidev.lib.reflex.js.properties
-import sidev.lib.reflex.js.prototype
+import sidev.lib.reflex.js.*
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -22,13 +22,32 @@ class SampleTestsJS {
     @Test
     fun reflex(){
         println("Test halo")
+
+        println("============= AC super =============")
+        for((i, supert) in AC::class.si.classesTree.withIndex()){
+            println("i= $i super= $supert ")
+        }
+
+        setGlobalObject("getFunction", getFunctionOnGlobal)
+/*
+//        eval("window")
+        for((i, mem) in (globalRef as Any).properties.withIndex()){
+            println("i= $i mem= $mem")
+        }
+ */
+
+//        putGlobalObject("getFunction")
+//        println("getFunctionOnGlobal= $getFunctionOnGlobal")
+//        getFunctionOnGlobal("D")
+        val putGlobalObjectFunc= ::setGlobalObject
+        println("putGlobalObjectFunc= $putGlobalObjectFunc")
         println("AC::class= ${AC::class}")
         log(AC::class)
         println("AC::class.si= ${AC::class.si}")
         for((i, member) in AC::class.si.members.withIndex()){
             println("i= $i member= $member innerName= ${member.descriptor.innerName} native= ${member.descriptor.native}")
             for((u, param) in member.parameters.withIndex())
-                println("---u= $u param= $param")
+                println("---u= $u param= $param default= ${param.defaultValue}")
         }
         println("AC::class.js= ${AC::class.js}")
         log(AC::class.js)
@@ -73,15 +92,36 @@ class SampleTestsJS {
         for((i, member) in (Ab.classifier as SiClass<*>).members.withIndex()){
             println("i= $i member= $member native= ${member.descriptor.native}")
         }
-
-        println("============= AC super =============")
-        for((i, supert) in AC::class.si.classesTree.withIndex()){
-            println("i= $i super= $supert ")
+/*
+        println("============= Poin members =============")
+        for((i, member) in Poin::class.si.members.withIndex()){
+            println("i= $i members= $member ")
         }
-        println("============= AB declaredMemberPropertiesTree =============")
+ */
+        val poin= Poin(y=10)
+        val poinRef= eval("Poin")
+        println("poinRef= $poinRef")
+//        js("class;a")
+        println("============= AC declaredMemberPropertiesTree =============")
         for((i, prop) in AC::class.si.declaredMemberPropertiesTree.withIndex()){
-            println("i= $i prop= $prop")
+            println("i= $i prop= $prop type= ${prop.returnType}")
         }
+
+        println("============= Poin members =============")
+        for((i, member) in Poin::class.si.members.withIndex()){
+            println("i= $i members= $member ")
+        }
+
+        println("============= AC declaredMemberPropertiesTree II =============")
+        for((i, prop) in AC::class.si.declaredMemberPropertiesTree.withIndex()){
+            println("i= $i prop= $prop type= ${prop.returnType}")
+        }
+
+        println("============= D members =============")
+        for((i, member) in D::class.si.members.withIndex()){
+            println("i= $i members= $member ")
+        }
+
         println("AC::class.js.prototype= ${AC::class.js.prototype}")
         log(AC::class.js.prototype)
 
@@ -93,6 +133,41 @@ class SampleTestsJS {
         println("============= AC js.prototype.properties =============")
         for((i, prop) in AC::class.js.prototype.properties.withIndex()){
             println("i= $i prop= $prop")
+        }
+
+        val ac= AC(Poin(y = 199))
+
+        println("============= AC.declaredMemberPropertiesTree =============")
+        for((i, prop) in AC::class.si.declaredMemberPropertiesTree.withIndex()){
+            println("i= $i prop= $prop")
+        }
+        println("============= AC.nestedDeclaredMemberPropertiesTree =============")
+        for((i, prop) in AC::class.si.nestedDeclaredMemberPropertiesTree.withIndex()){
+            println("i= $i prop= $prop type= ${prop.returnType}")
+        }
+
+        prin("\n============= ac.implementedPropertyValuesTree =============\n")
+        for((i, prop) in ac.implementedPropertyValuesTree.withIndex()){
+/*
+            if(prop.first.name == "aLazy"){
+                prine("prop.first.name == \"aLazy\"")
+                val lazyDelName= jsName(prop.second!!)
+                prin("lazyDelName= $lazyDelName")
+                log(prop.second!!)
+                log(prop.second.asDynamic().initializer_0.toString())
+            }
+ */
+            println("i= $i prop= $prop")
+        }
+
+        prin("\n============= ac.implementedNestedPropertyValuesTree =============\n")
+        for((i, prop) in ac.implementedNestedPropertyValuesTree.withIndex()){
+            println("i= $i prop= $prop isPrimitive= ${prop.returnType.isPrimitive}")
+        }
+
+        prin("\n============= AC::class.si.nestedDeclaredMemberPropertiesTree =============\n")
+        for((i, prop) in AC::class.si.nestedDeclaredMemberPropertiesTree.withIndex()){
+            println("i= $i prop= $prop isPrimitive= ${prop.returnType.isPrimitive}")
         }
     }
 }

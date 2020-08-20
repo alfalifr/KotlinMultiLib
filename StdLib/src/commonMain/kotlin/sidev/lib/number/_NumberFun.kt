@@ -1,5 +1,6 @@
 package sidev.lib.number
 
+import sidev.lib.structure.data.value.Val
 import kotlin.math.absoluteValue
 
 
@@ -46,6 +47,7 @@ val <T: Number> T.absoluteValue: T
         else (res +1).absoluteValue as T
     }
 
+infix fun Val<Int>.or(num: Int): Val<Int> = apply { value= (value ?: 0) or num }
 
 /*
 ======================

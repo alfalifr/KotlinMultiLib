@@ -2,25 +2,26 @@ package sidev.lib.reflex.js
 
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
-import sidev.lib.console.prine
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 
-fun <T, R> createJsProperty(
-    name: String, isLateinit: Boolean, innerName: String= name
+fun <T: Any, R> createJsProperty(
+    name: String, isLateinit: Boolean, innerName: String= name, type: JsType = JsType.dynamicType
 ): JsProperty<T, R> = object : JsPropertyImpl<T, R>(){
     override val name: String = name
     override val innerName: String = innerName
     override val isLateinit: Boolean = isLateinit
-    override operator fun get(receiver: T): R = eval("$receiver.$name") as R
+    override val returnType: JsType = type
+    override operator fun get(receiver: T): R = getPropRealValue(receiver) //eval("receiver.$innerName") as R
 }
-fun <T, R> createJsMutableProperty(
-    name: String, isLateinit: Boolean, innerName: String= name
+fun <T: Any, R> createJsMutableProperty(
+    name: String, isLateinit: Boolean, innerName: String= name, type: JsType = JsType.dynamicType
 ): JsMutableProperty<T, R> = object : JsPropertyImpl<T, R>(), JsMutableProperty<T, R>{
     override val name: String = name
     override val innerName: String = innerName
     override val isLateinit: Boolean = isLateinit
-    override operator fun get(receiver: T): R = eval("$receiver.$name") as R
-    override fun set(receiver: T, value: R) = eval("$receiver.$name = $value")
+    override val returnType: JsType = type
+    override operator fun get(receiver: T): R = getPropRealValue(receiver) //eval("receiver.$innerName") as R
+    override fun set(receiver: T, value: R) = eval("receiver.$innerName = value")
 }
 
 /**
@@ -46,6 +47,7 @@ fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
     KotlinJsConst.PROPERTY_INITIALIZATION_PATTERN.toRegex()
         .findAll(funStr).forEach { res ->
             val vals= res.groupValues
+//            prine("getDeclaredProperty() vals= $vals")
             var isLateinit= false
             val lastIndex= vals.lastIndex-1
             var propName= if(vals[lastIndex].isNotBlank()){
@@ -62,10 +64,28 @@ fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
                 propName= it.groupValues.last()
             }
 
+            //TODO <20 Agustus 2020> => Untuk sementara tipe dari property yg ada di konstruktor sama dg OBJECT.
+            val type= if(propName == vals[lastIndex-1]) createTypeLazyly(JsPrimitiveType.OBJECT)
+                else inferType(vals[lastIndex-1])
+//            prine("getDeclaredProp()= type= $type val= ${vals[lastIndex-1]}")
+
             propList[propName].isNull {
-                propList[propName]= createJsMutableProperty<T, Any?>(propName, isLateinit, propInnerName)
+                propList[propName]= createJsMutableProperty<T, Any?>(propName, isLateinit, propInnerName, type)
             }
         }
     return propList.values.toList()
 }
 
+
+/**
+ * Mengambil nilai sesungguhnya dari property, terutama bagi properti dg lazy delegate.
+ */
+fun <R> JsProperty<*, R>.getPropRealValue(receiver: Any): R{
+    val vals= eval("receiver.$innerName")
+    val finalVal= when{
+        vals == undefined -> undefined
+        jsName(vals) == KotlinJsConst.LAZY_DELEGATE_NAME -> vals[KotlinJsConst.LAZY_DELEGATE_INITIALIZER_NAME]()
+        else -> vals
+    }
+    return finalVal as R
+}

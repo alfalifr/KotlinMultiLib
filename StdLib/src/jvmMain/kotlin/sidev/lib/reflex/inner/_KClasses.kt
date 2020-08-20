@@ -1,7 +1,7 @@
 @file:JvmName("KClassesKtJvm")
 
 package sidev.lib.reflex.inner
-
+/*
 import kotlin.reflect.*
 import kotlin.reflect.full.primaryConstructor as _primaryConstructor
 import kotlin.reflect.full.companionObject as _companionObject
@@ -58,3 +58,6 @@ actual val KClass<*>.allSuperclasses: Collection<KClass<*>> get()= _allSuperclas
 actual fun KClass<*>.isSubclassOf(base: KClass<*>): Boolean = _isSubclassOf(base)
 
 actual fun <T : Any> KClass<T>.cast(value: Any?): T = _cast(value)
+
+
+ */

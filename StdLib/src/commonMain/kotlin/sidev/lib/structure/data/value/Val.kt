@@ -3,12 +3,12 @@ package sidev.lib.structure.data.value
 /**
  * Versi ringan untuk wadah suatu nilai.
  */
-open class BoxedVal<T>(){
+open class Val<T>(){
     constructor(value: T?): this(){ this.value= value }
     open var value: T?= null
 
     override fun equals(other: Any?): Boolean {
-        return if(other is BoxedVal<*>) value == other.value
+        return if(other is Val<*>) value == other.value
         else this === other
     }
 /*
@@ -33,3 +33,5 @@ open class BoxedVal<T>(){
     }
  */
 }
+
+fun <T> T.asBoxed(): Val<T> = Val(this)

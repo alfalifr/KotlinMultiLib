@@ -70,7 +70,7 @@ internal sealed class AB: AA(){
 internal annotation class FunAnot(val a: Int= 101)
 
 @Anotasi<Int, Char>
-internal open class AC(val poinConstr: Poin): Z, Y, X, AB() { //, AnnotatedFunctionClass {
+internal open class AC(val poinConstr: Poin= Poin(y= 14)): Z, Y, X, AB() { //, AnnotatedFunctionClass {
     constructor(): this(Poin(1, 3))
     val ac= "ppop"
     private var acPriv= "aaa"
@@ -86,6 +86,8 @@ internal open class AC(val poinConstr: Poin): Z, Y, X, AB() { //, AnnotatedFunct
     override var ab_3: Int = 80
     val aLazy: String by lazy { "lazy" }
 
+    var dynamicVar: dynamic= 109
+
     @Anotasi<Int, Any> @FunAnot(10)
     fun someFun(x: Int) = prin("\n\n ==== Halo dari AC.someFun() x= $x ==== \n\n")
     @Anotasi<Int, Any> @FunAnot(2)
@@ -93,6 +95,6 @@ internal open class AC(val poinConstr: Poin): Z, Y, X, AB() { //, AnnotatedFunct
     override fun ada() {}
 }
 
-internal class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az") TODO temporary*/ var z: Int= 10){
-    /*@Rename("aa_aa_diPoin") TODO temporary */ var aa_diPoin= AA_()
+class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az") TODO temporary*/ var z: Int= 10){
+    /*@Rename("aa_aa_diPoin") TODO temporary */ private var aa_diPoin= AA_()
 }

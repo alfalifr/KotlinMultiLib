@@ -2,7 +2,7 @@ package sidev.lib.structure.data.value
 
 import sidev.lib.structure.prop.TagProp
 
-open class TaggedBoxedVal<T, V>() : BoxedVal<V>(), TagProp<T> {
+open class TaggedVal<T, V>() : Val<V>(), TagProp<T> {
     constructor(tag: T?= null, value: V?= null): this(){
         this.tag= tag
         this.value= value
@@ -12,8 +12,8 @@ open class TaggedBoxedVal<T, V>() : BoxedVal<V>(), TagProp<T> {
 
     override fun equals(other: Any?): Boolean {
         return when(other){
-            is TaggedBoxedVal<*, *> -> value == other.value && tag == other.tag
-            is BoxedVal<*> -> value == other.value
+            is TaggedVal<*, *> -> value == other.value && tag == other.tag
+            is Val<*> -> value == other.value
             else -> this === other
         }
     }

@@ -8,6 +8,9 @@ interface SiCallable<out R>: SiReflex {
     val returnType: SiType
     val parameters: List<SiParameter>
     val typeParameters: List<SiTypeParameter>
+    /** Visibilitas akses dari komponen SiReflex ini, default public. */
+    val visibility: SiVisibility
+    val isAbstract: Boolean
     fun call(vararg args: Any?): R
     fun callBy(args: Map<SiParameter, Any?>): R
 }

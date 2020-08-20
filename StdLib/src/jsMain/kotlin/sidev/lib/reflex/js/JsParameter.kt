@@ -3,12 +3,16 @@ package sidev.lib.reflex.js
 import kotlin.reflect.KType
 
 
-interface JsParameter/*: KParameter*/{
+interface JsParameter: JsReflex /*: KParameter*/{
     val index: Int
     val name: String?
     val isOptional: Boolean
         get()= true
-    val type: KType
+    /**
+     * TODO <20 Agustus 2020> => Untuk sementara, tipe yg didapat berdasarkan default value sehingga
+     *   tidak menjamin tipe yg sesungguhnya.
+     */
+    val type: JsType
         get() = JsType.dynamicType
     /**
      * Berisi default value yg didefinisikan untuk param ini.

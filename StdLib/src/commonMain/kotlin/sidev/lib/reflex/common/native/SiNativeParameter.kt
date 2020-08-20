@@ -9,7 +9,9 @@ interface SiNativeParameter: SiNative, SiParameter {
     override val name: String
 }
 
-internal abstract class SiNativeParamterImpl: SiReflexImpl(), SiNativeParameter
+internal abstract class SiNativeParamterImpl: SiReflexImpl(), SiNativeParameter{
+    override val isVararg: Boolean get() = false
+}
 
 /*
 internal object SiNativeParameterImplConst{

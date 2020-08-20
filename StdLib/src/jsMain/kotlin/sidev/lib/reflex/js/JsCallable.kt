@@ -1,10 +1,6 @@
 package sidev.lib.reflex.js
 
-import sidev.lib.check.notNullTo
-import sidev.lib.console.prine
-import sidev.lib.reflex.fullName
 import kotlin.js.Json
-import kotlin.reflect.KType
 import sidev.lib.reflex.js.call as _call
 import sidev.lib.reflex.js.new as _new
 
@@ -17,11 +13,16 @@ import sidev.lib.reflex.js.new as _new
  * Interface ini meng-extend [JsValueOf] dan [JsPrototype] agar nilai
  * yg dikembalikan saat mereferensi pada interface ini sama dg fungsi [JsClass] yg dibungkusnya.
  */
-interface JsCallable<out T>: JsValueOf, JsPrototype {
+interface JsCallable<out T>: JsReflex, JsValueOf, JsPrototype {
     val name: String
     val parameters: List<JsParameter>
     val innerName: String
     override val prototype: Any
+    /**
+     * TODO <20 Agustus 2020> => Untuk sementara, tipe yg didapat berdasarkan value saat deklarasi
+     *   sehingga tidak menjamin tipe yg sesungguhnya. Terutama bagi `lateinit var`.
+     */
+    val returnType: JsType
     fun call(vararg args: Any?): Any?
     fun callBy(args: Json): Any?
     fun new(vararg args: Any?): T
@@ -73,7 +74,7 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
         else emptyList()
     }
     override val prototype: Any by lazy { jsPureFunction(func).unsafeCast<Any>().prototype }
-
+    override val returnType: JsType = JsType.dynamicType
 
     private fun invoke(args: Array<out Any?>, kind: CallKind): Any?{
         return if(isPureJsFunction) when(kind){

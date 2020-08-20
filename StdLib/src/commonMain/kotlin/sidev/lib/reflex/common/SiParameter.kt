@@ -7,9 +7,10 @@ import sidev.lib.reflex.common.core.ReflexTemplate
 interface SiParameter: SiReflex {
     val index: Int
     val name: String?
-    val isOptional: Boolean
     val type: SiType
     val kind: Kind
+    val isOptional: Boolean
+    val isVararg: Boolean
 
     /** Property ini sementara hanya bisa didapatkan pada Js. */
     val defaultValue: Any?
@@ -28,7 +29,7 @@ interface SiParameter: SiReflex {
 }
 
 internal abstract class SiParamterImpl: SiReflexImpl(), SiParameter{
-    abstract override var type: SiType
+//    abstract override var type: SiType
 }
 
 internal object SiParameterImplConst{
@@ -45,9 +46,11 @@ internal object SiParameterImplConst{
  */
 
     val receiver0: SiParameter = ReflexFactory.createParameter(
-        null, null, 0, false, ReflexTemplate.typeAny, "\$receiver0"
+        null, null, 0, ReflexTemplate.typeAny, "\$receiver0"
     )
     val setterValue1: SiParameter = ReflexFactory.createParameter(
-        null, null, 1, false, ReflexTemplate.typeAnyNullable, "\$setterValue"
+        null, null, 1, ReflexTemplate.typeAnyNullable, "\$setterValue"
     )
 }
+
+//class Poin()

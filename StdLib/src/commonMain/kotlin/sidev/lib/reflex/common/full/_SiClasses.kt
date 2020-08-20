@@ -1,27 +1,56 @@
 package sidev.lib.reflex.common.full
 
-import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
-import sidev.lib.console.prine
 import sidev.lib.reflex.common.SiClass
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
-import kotlin.reflect.KClass
+import sidev.lib.reflex.common.SiDescriptor
+import sidev.lib.reflex.common.SiReflex
+import sidev.lib.reflex.common.SiType
 
-val SiClass<*>.superclasses: Sequence<SiClass<*>>
-    get()= supertypes.asSequence().filter { it.classifier is SiClass<*> }.map { it.classifier as SiClass<*> }
 
-val SiClass<*>.classesTree: NestedSequence<SiClass<*>> get()= object : NestedSequence<SiClass<*>>{
-    override fun iterator(): NestedIterator<*, SiClass<*>> = object : NestedIteratorSimpleImpl<SiClass<*>>(
-        this@classesTree
-    ){
-        override fun getOutputIterator(nowInput: SiClass<*>): Iterator<SiClass<*>>? = nowInput.superclasses.iterator()
-    }
-}
+expect val SiClass<*>.isPrimitive: Boolean
+expect val SiClass<*>.isObjectArray: Boolean
+expect val SiClass<*>.isPrimitiveArray: Boolean
+expect val Any.isNativeReflexUnit: Boolean
 
-val SiClass<*>.superclassesTree: NestedSequence<SiClass<*>> get()= object : NestedSequence<SiClass<*>>{
-    override fun iterator(): NestedIterator<*, SiClass<*>> = object : NestedIteratorSimpleImpl<SiClass<*>>(
-        this@superclassesTree.superclasses.iterator()
-    ){
-        override fun getOutputIterator(nowInput: SiClass<*>): Iterator<SiClass<*>>? = nowInput.superclasses.iterator()
-    }
-}
+val SiType.isPrimitive: Boolean
+    get()= (classifier as? SiClass<*>)?.isPrimitive == true
+
+
+val SiClass<*>.isArray: Boolean
+    get()= isObjectArray || isPrimitiveArray
+
+val Any.isReflexUnit: Boolean
+    get()= this is SiReflex || this is SiDescriptor
+            || isNativeReflexUnit
+
+val SiClass<*>.isInterface: Boolean
+    get()= isAbstract && !isInstantiable
+
+val SiClass<*>.isInstantiable: Boolean
+    get()= constructors.isNotEmpty()
+
+val SiType.isInterface: Boolean
+    get()= (this.classifier as? SiClass<*>)?.isInterface ?: false
+
+
+/**
+ * Menunjukan jika kelas `this.extension` ini merupakan anonymous karena di-extend
+ * oleh variabel lokal dan kelas yg di-extend bkn merupakan kelas abstract.
+ */
+val SiClass<*>.isShallowAnonymous: Boolean
+    get()= qualifiedName == null && supertypes.size == 1
+            && !(supertypes.first().classifier as SiClass<*>).isAbstract
+            && isAllMembersImplemented
+
+/**
+ * Menunjukan apakah `this.extension` [KClass] abstrak scr sederhana, yaitu
+ * tidak memiliki fungsi atau properti yg abstrak dan supertype hanya satu.
+ * Berguna untuk operasi [new] pada kelas abstrak sehingga dapat mengembalikan
+ * instance dg superclass.
+ */
+val SiClass<*>.isShallowAbstract: Boolean
+    get()= isAbstract && supertypes.size == 1
+            && !(supertypes.first().classifier as SiClass<*>).isAbstract
+            && isAllMembersImplemented
+
+val SiClass<*>.isAllMembersImplemented: Boolean
+    get()= members.find { it.isAbstract } == null

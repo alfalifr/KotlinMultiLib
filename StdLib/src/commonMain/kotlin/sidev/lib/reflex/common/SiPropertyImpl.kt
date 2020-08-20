@@ -1,9 +1,11 @@
 package sidev.lib.reflex.common
 
+import sidev.lib.console.prine
 import sidev.lib.reflex.common.core.ReflexFactory
 import sidev.lib.reflex.common.core.ReflexTemplate
 import sidev.lib.reflex.common.native.getPropGetValueBlock
 import sidev.lib.reflex.common.native.getPropSetValueBlock
+import sidev.lib.reflex.common.native.getVisibility
 
 
 //internal expect fun <T, R> getPropertyValue1(receiver: T): R
@@ -21,7 +23,7 @@ internal abstract class SiPropertyGetter1<T, out R>(override val property: SiPro
         val template= SiParameterImplConst.receiver0
         listOf(ReflexFactory.createParameter(
             null, this, template.index,
-            template.isOptional, template.type, template.name
+            template.type, template.name, modifier = template.descriptor.modifier
         ))
     }
     override val typeParameters: List<SiTypeParameter> = emptyList()
@@ -39,7 +41,7 @@ internal abstract class SiPropertySetter1<T, R>(override val property: SiPropert
         val template= SiParameterImplConst.setterValue1
         listOf(ReflexFactory.createParameter(
             null, this, template.index,
-            template.isOptional, returnType, template.name
+            returnType, template.name, modifier = template.descriptor.modifier
         ))
     }
     override val typeParameters: List<SiTypeParameter> = emptyList()
@@ -56,7 +58,10 @@ internal abstract class SiProperty1Impl<T, out R>
     /** Property gak punya param, aksesornya yg punya. */
     override val parameters: List<SiParameter> by lazy { getter.parameters }
     override val typeParameters: List<SiTypeParameter> = emptyList()
-    override fun get(receiver: T): R = getter.call(receiver)
+    override fun get(receiver: T): R {
+        prine("get()= receiver= $receiver prop= $this")
+        return getter.call(receiver)
+    }
     /** Call dari property sama dg call getter-nya. */
     override fun call(vararg args: Any?): R = super<SiProperty1>.call(*args) //get(args.first() as T)
 }

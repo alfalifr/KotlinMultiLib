@@ -1,9 +1,7 @@
 package sidev.lib.reflex.js
 
 import sidev.lib.console.prine
-import sidev.lib.reflex.common.core.ReflexConst
-import sidev.lib.reflex.js.kotlin.isKotlinFun
-import sidev.lib.reflex.js.kotlin.kotlinFun
+import sidev.lib.reflex.common.core.SiReflexConst
 import sidev.lib.reflex.js.kotlin.kotlinMetadata
 import kotlin.js.Json
 import kotlin.js.json
@@ -23,16 +21,16 @@ fun getParam(func: dynamic): List<JsParameter>{
 fun jsName(any: dynamic): String =
     try{ (any as Any).kotlinMetadata.simpleName } //1. Coba dulu apakah dia kotlinFun
     catch (e: Throwable){
-        prine("jsName catch 1 any= ${str(any)}")
+//        prine("jsName catch 1 any= ${str(any)}")
         try{ eval("any.name") as String } //2. Coba apakah punya property .name
         catch (e: Throwable){
-            prine("jsName catch 2 any= ${str(any)}")
+//            prine("jsName catch 2 any= ${str(any)}")
             any::class.js.name } //3. Paksa namanya dg cari di ::class.js
     }
 
 fun jsNativeName(any: dynamic): String =
     try{ js("any.name") as? String ?: any::class.js.asDynamic().name }
-    catch (e: Throwable){ ReflexConst.TEMPLATE_NO_NAME }
+    catch (e: Throwable){ SiReflexConst.TEMPLATE_NO_NAME }
 
 /**
  * Fungsi yg sama dg `Object.defineProperty(owner, propName, attr)` pada Js.

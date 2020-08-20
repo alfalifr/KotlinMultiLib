@@ -1,10 +1,13 @@
 package sidev.lib.reflex.common.core
 
 import sidev.lib.console.prine
-import sidev.lib.console.str
+import sidev.lib.platform.Platform
+import sidev.lib.platform.platform
+import sidev.lib.platform.setGlobalObject
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.*
 import sidev.lib.reflex.common.native.getNativeFunctions
+import sidev.lib.universal.`val`.SuppressLiteral
 
 /**
  * Objek yg bertugas untuk me-reload data refleksi dari sebuah instance.
@@ -50,42 +53,59 @@ object ReflexLoader{
 
     fun <T> loadSiConstructors(nativeClass: Any): Sequence<SiFunction<T>> =
         getNativeConstructors(nativeClass).map { nativeConstr ->
-            ReflexFactory.createFunction(
-                createNativeWrapper(nativeConstr), null, getReturnType(nativeConstr),
-                loadSiParam(nativeConstr).toList(), callBlock = getFuncCallBlock<T>(nativeClass, nativeConstr)
+            ReflexFactory.createFunctionLazyly(
+                createNativeWrapper(nativeConstr), null, //getReturnType(nativeConstr),
+                loadSiParam(nativeConstr).toList(), callBlock = getFuncCallBlock<T>(nativeClass, nativeConstr),
+                modifier = getModifiers(nativeConstr)
             )
         } //.apply { forEach { func -> func.parameters.forEach { it.mutableHost= func } } }
 
     fun loadSiFunction(nativeClass: Any): Sequence<SiFunction<*>> =
         getNativeFunctions(nativeClass).map { nativeFunc ->
-            ReflexFactory.createFunction(
-                createNativeWrapper(nativeFunc), null, getReturnType(nativeFunc),
-                loadSiParam(nativeFunc).toList(), callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc)
+            ReflexFactory.createFunctionLazyly(
+                createNativeWrapper(nativeFunc), null, //getReturnType(nativeFunc),
+                loadSiParam(nativeFunc).toList(), callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc),
+                modifier = getModifiers(nativeFunc)
             )
         }
 
     fun loadSiParam(nativeFunc: Any): Sequence<SiParameter> =
         getNativeParameters(nativeFunc).mapIndexed { i, nativeParam ->
-            prine("loadSiParam()= param= $nativeParam")
-            ReflexFactory.createParameter(
-                createNativeWrapper(nativeParam), null, i,
-                getParamIsOptional(nativeParam), getParamType(nativeParam),
-                kind = getParamKind(nativeParam), defaultValue = getParamDefaultValue(nativeParam)
+            var modifier= 0
+            if(getParamIsOptional(nativeParam))
+                modifier= modifier or SiModifier.OPTIONAL.id
+            if(getParamIsVararg(nativeParam))
+                modifier= modifier or SiModifier.VARARG.id
+
+            ReflexFactory.createParameterLazyly(
+                createNativeWrapper(nativeParam), null, i, //getParamType(nativeParam),
+                kind = getParamKind(nativeParam), defaultValue = getParamDefaultValue(nativeParam),
+                modifier = modifier
             )
         }
 
     fun <T> loadSiImmutableProperty(nativeClass: Any): Sequence<SiProperty1<T, Any?>> =
         (getNativeProperties(nativeClass) - getNativeMutableProperties(nativeClass))
             .map { nativeProp ->
-            ReflexFactory.createProperty1<T, Any?>(
-                createNativeWrapper(nativeProp), null, getReturnType(nativeProp)
+            ReflexFactory.createProperty1Lazyly<T, Any?>(
+                createNativeWrapper(nativeProp), null, //getReturnType(nativeProp),
+                getModifiers(nativeProp)
+            )
+        }
+
+    fun <T> loadSiProperty(nativeClass: Any): Sequence<SiProperty1<T, Any?>> =
+        getNativeProperties(nativeClass).map { nativeProp ->
+            ReflexFactory.createProperty1Lazyly<T, Any?>(
+                createNativeWrapper(nativeProp), null, //getReturnType(nativeProp),
+                getModifiers(nativeProp)
             )
         }
 
     fun <T> loadSiMutableProperty(nativeClass: Any): Sequence<SiMutableProperty1<T, Any?>> =
         getNativeMutableProperties(nativeClass).map { nativeMutableProp ->
-            ReflexFactory.createMutableProperty1<T, Any?>(
-                createNativeWrapper(nativeMutableProp), null, getReturnType(nativeMutableProp)
+            ReflexFactory.createMutableProperty1Lazyly<T, Any?>(
+                createNativeWrapper(nativeMutableProp), null, //getReturnType(nativeMutableProp),
+                getModifiers(nativeMutableProp)
             )
         }
 
@@ -108,7 +128,14 @@ object ReflexLoader{
         if(ReflexLoaderManager.checkCachedClass(nativeClass))
             return ReflexLoaderManager.loadCachedClass(nativeClass)
 //        prine("siNativeClass $siNativeClass class= ${siNativeClass::class}")
-        val siClass= ReflexFactory.createClass<T>(wrapper) as SiClassImpl
+        val siClass= ReflexFactory.createClass<T>(wrapper, modifier = getModifiers(nativeClass))
+                as SiClassImpl
+
+        if(platform == Platform.JS){
+            if(siClass.descriptor.native != null)
+                @Suppress(SuppressLiteral.DEPRECATION)
+                setGlobalObject(siClass.qualifiedName!!, siClass.descriptor.native!!)
+        }
 
         val siProps= loadSiImmutableProperty<T>(nativeClass)
 //            .apply { forEach { it.mutableHost= siClass } }

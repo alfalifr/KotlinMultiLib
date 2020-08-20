@@ -2,6 +2,7 @@ package sidev.lib.reflex.common.native
 
 import sidev.lib.reflex.common.SiParameter
 import sidev.lib.reflex.common.SiType
+import sidev.lib.reflex.common.SiVisibility
 
 
 internal expect val isDynamicEnabled: Boolean
@@ -42,6 +43,7 @@ internal expect fun getNativeSupertypes(nativeClass: Any): Sequence<Any>
 
 
 internal expect fun getParamIsOptional(nativeParam: Any): Boolean
+internal expect fun getParamIsVararg(nativeParam: Any): Boolean
 internal expect fun getParamType(nativeParam: Any): SiType
 internal expect fun getParamKind(nativeParam: Any): SiParameter.Kind
 internal expect fun getParamDefaultValue(nativeParam: Any): Any?
@@ -51,3 +53,12 @@ internal expect fun <T> getPropGetValueBlock(nativeProp: Any): (receivers: Array
 internal expect fun <T> getPropSetValueBlock(nativeProp: Any): (receivers: Array<out Any>, value: T) -> Unit
 
 internal expect fun getReturnType(nativeCallable: Any): SiType
+/** @return `true` jika [nativeType] sudah final dan gak perlu dievaluasi lagi. */
+internal expect fun isTypeFinal(nativeType: Any): Boolean
+
+internal expect fun getVisibility(nativeReflexUnit: Any): SiVisibility
+
+internal expect fun getIsAccessible(nativeReflexUnit: Any): Boolean
+internal expect fun setIsAccessible(nativeReflexUnit: Any, isAccessible: Boolean)
+
+internal expect fun getModifiers(nativeReflexUnit: Any): Int

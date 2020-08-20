@@ -35,6 +35,9 @@ interface SiDescriptor {
     /** Nama asli dari [owner] yg diambil dari [native]. */
     val innerName: String?
 
+    /** Modifier tambahan untuk [owner]. */
+    val modifier: Int
+
     enum class ElementType(val description: String){
         TYPE(""),
         TYPE_PARAMETER("type parameter"),
@@ -61,4 +64,5 @@ internal abstract class SiDescriptorImpl: SiDescriptor {
             isDescStrCalculated= false
         }
     protected var isDescStrCalculated= false
+    override var modifier: Int = 0
 }

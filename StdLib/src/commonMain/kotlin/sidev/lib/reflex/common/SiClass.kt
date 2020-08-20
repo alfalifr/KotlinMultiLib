@@ -26,6 +26,11 @@ interface SiClass<T: Any>: SiClassifier {
 
     /** Immediate supertypes. */
     val supertypes: List<SiType>
+
+    /** Visibilitas akses dari komponen SiReflex ini, default public. */
+    val visibility: SiVisibility
+
+    val isAbstract: Boolean
 }
 
 internal abstract class SiClassImpl<T: Any>: SiReflexImpl(), SiClass<T>{

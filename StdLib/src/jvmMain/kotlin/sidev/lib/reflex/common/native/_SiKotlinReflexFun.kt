@@ -2,12 +2,21 @@ package sidev.lib.reflex.common.native
 
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.core.ReflexFactory
+import sidev.lib.reflex.common.core.ReflexLoader
 import sidev.lib.reflex.common.core.createNativeWrapper
 import kotlin.reflect.*
 
 
 internal val KType.si: SiType get()= ReflexFactory.createType(
-    createNativeWrapper(this), classifier?.si, arguments.map { it.si }, isMarkedNullable
+    createNativeWrapper(this),
+    when(val cls= classifier){
+        is KClass<*> -> ReflexLoader.loadClass(cls)
+        is KTypeParameter -> ReflexFactory.createTypeParameter(
+            createNativeWrapper(cls), null, cls.upperBounds.map { it.si }, cls.variance.si
+        )
+        else -> null
+    },
+    arguments.map { it.si }, isMarkedNullable
 )
 /*
 internal val KParameter.si: SiParameter
@@ -41,4 +50,11 @@ internal val KParameter.Kind.si: SiParameter.Kind get()= when(this){
     KParameter.Kind.INSTANCE -> SiParameter.Kind.INSTANCE
     KParameter.Kind.EXTENSION_RECEIVER -> SiParameter.Kind.RECEIVER
     KParameter.Kind.VALUE -> SiParameter.Kind.VALUE
+}
+
+internal val KVisibility.si: SiVisibility get()= when(this){
+    KVisibility.PUBLIC -> SiVisibility.PUBLIC
+    KVisibility.PROTECTED -> SiVisibility.PROTECTED
+    KVisibility.INTERNAL -> SiVisibility.INTERNAL
+    KVisibility.PRIVATE -> SiVisibility.PRIVATE
 }

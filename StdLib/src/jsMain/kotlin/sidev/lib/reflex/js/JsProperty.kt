@@ -3,7 +3,7 @@ package sidev.lib.reflex.js
 import kotlin.js.Json
 
 
-interface JsProperty<T, out R>: JsCallable<R>{
+interface JsProperty<T: Any, out R>: JsCallable<R>{
     override val parameters: List<JsParameter>
         get() = emptyList()
 
@@ -39,12 +39,12 @@ interface JsProperty<T, out R>: JsCallable<R>{
     operator fun get(receiver: T): R
 }
 
-interface JsMutableProperty<T, R>: JsProperty<T, R>{
+interface JsMutableProperty<T: Any, R>: JsProperty<T, R>{
     operator fun set(receiver: T, value: R)
 }
 
 /** [func] adalah constructor dari property. Pada konteks mutable */
-internal abstract class JsPropertyImpl<T, out R> : JsCallableImpl<R>(), JsProperty<T, R>{
+internal abstract class JsPropertyImpl<T: Any, out R> : JsCallableImpl<R>(), JsProperty<T, R>{
     abstract override val name: String
     override val parameters: List<JsParameter> = super<JsProperty>.parameters
     override fun call(vararg args: Any?): Any? = super<JsProperty>.call(*args, name)

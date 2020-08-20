@@ -1,20 +1,34 @@
 package sidev.lib.reflex.js
 
 import sidev.lib.check.notNull
+import sidev.lib.check.notNullTo
+import sidev.lib.collection.findIndexed
 import sidev.lib.console.prine
 import sidev.lib.number.toNumber
+import sidev.lib.property.mutableLazy
+import sidev.lib.property.reevaluateLazy
+import sidev.lib.property.reevaluateMutableLazy
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 import sidev.lib.text.isDigit
-import kotlin.reflect.KType
 
 
-fun createJsParam(index: Int, name: String?, isOptional: Boolean= false, type: KType = JsType.dynamicType, defaultParamValue: Any?= null): JsParameter
+fun createJsParam(index: Int, name: String?, isOptional: Boolean= false, type: JsType = JsType.dynamicType,
+                  defaultParamValueStr: String?= null): JsParameter
         = object : JsParameterImpl(){
     override val index: Int = index
     override val name: String? = name
     override var isOptional: Boolean = isOptional
-    override val type: KType = type
-    override var defaultValue: Any? = defaultParamValue
+    override val type: JsType = type
+    /** [defaultValue] diinspeksi scr lazy agar fungsi pada [defaultParamValueStr] didefinisikan dulu. */
+    override var defaultValue: Any? by reevaluateMutableLazy {
+        try{
+            val v= if(defaultParamValueStr != null)
+                getRealValue(defaultParamValueStr)
+            else null
+            it.value= true
+            v
+        } catch (e: Throwable){ null }
+    }
 }
 
 fun getParam(func: Any): List<JsParameter>{
@@ -24,16 +38,25 @@ fun getParam(func: Any): List<JsParameter>{
     val funStr= func.toString() //js("func.toString()") as String
     var openParanthesesCount= 0
     var openBracesCount= 0
-    var params= ArrayList<JsParameterImpl>()
+    val params= ArrayList<JsParameter?>()
+    val paramNames= ArrayList<String>()
     var paramNameItr= ""
     var isOptionalItr= false
 
+/*
     fun addParamToList(){
-        val addedParam= createJsParam(params.size, paramNameItr, isOptionalItr) as JsParameterImpl
+        val addedParam= createJsParam(params.size, paramNameItr, isOptionalItr) //as JsParameterImpl
         params.add(addedParam)
         prine("getParam() paramNameItr= $paramNameItr func= $func")
         paramNameItr= ""
         isOptionalItr= false
+    }
+ */
+
+    fun addParamNameToList(){
+        paramNames.add(paramNameItr)
+        params.add(null)
+        paramNameItr= ""
     }
 
     var indexItr= 0
@@ -46,7 +69,7 @@ fun getParam(func: Any): List<JsParameter>{
             ')' -> {
                 if(--openParanthesesCount == 0){
                     if(paramNameItr.isNotBlank())
-                        addParamToList()
+                        addParamNameToList()
                     break@loop
                 }
             }
@@ -56,7 +79,7 @@ fun getParam(func: Any): List<JsParameter>{
                     if(!char.isWhitespace())
                         when(char){
                             '=' -> isOptionalItr= true
-                            ',' -> addParamToList()
+                            ',' -> addParamNameToList()
                             else -> paramNameItr += char
                         }
                 }
@@ -73,20 +96,16 @@ fun getParam(func: Any): List<JsParameter>{
             }
  */
             val paramName= matchResult.groupValues[1]
-            val paramInd= params.find { it.name ==  paramName }!!.index
-            params[paramInd].defaultValue= matchResult.groupValues.last().let {
-                (when{
-                    it.contains("new") -> {
-                        try{ eval(it) }
-                        catch (e: Throwable){ it }
-                    }
-                    it.contains('\'') -> it.replace("'", "")
-                    it[0].isDigit() -> it.toNumber()
-                    else -> eval(it)
-                } as? Any)
-                    .notNull { params[paramInd].isOptional= true }
-            }
+            val paramInd= paramNames.indexOfFirst { it ==  paramName }
+            val defaultValueStr= matchResult.groupValues.last()
+            params[paramInd]= createJsParam(paramInd, paramName, true,
+                inferType(defaultValueStr), defaultValueStr)
         }
 
-    return params
+    for((i, param) in params.withIndex()){
+        if(param == null)
+            params[i]= createJsParam(i, paramNames[i], false)
+    }
+
+    return params as List<JsParameter>
 }
