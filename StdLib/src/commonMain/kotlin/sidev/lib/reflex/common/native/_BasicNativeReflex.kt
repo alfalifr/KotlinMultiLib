@@ -23,6 +23,12 @@ internal expect fun getNativeProperties(nativeClass: Any): Sequence<Any>
 internal expect fun getNativeMutableProperties(nativeClass: Any): Sequence<Any>
 //internal fun SiNativeClassifier.getNativeMutableProperties(): Sequence<Any> = implementation.getMutableProperties()
 
+/** Fungsi ini hanya mengambil declared field saja. */
+internal expect fun getNativeFields(nativeClass: Any, nativeProperties: Sequence<Any>): Sequence<Any?>
+
+/** Sama dg [getNativeFields], namun hanya mengambil field dari satu [nativeProperty]. */
+internal expect fun getNativeField(nativeProperty: Any): Any?
+
 /**
  * Mengambil member yg dapat dipanggil dan dijadikan sbg [SiNativeCallable].
  * Member yg diambil termasuk fungsi dan semua properti.

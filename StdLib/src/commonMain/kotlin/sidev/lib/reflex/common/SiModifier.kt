@@ -2,11 +2,12 @@ package sidev.lib.reflex.common
 
 enum class SiModifier(val id: Int) {
     OPEN(2),
-    OVERRIDE(4),
-    ABSTRACT(8),
-    DYNAMIC(16),
-    OPTIONAL(32),
-    VARARG(64),
+    MUTABLE(4), //Untuk kasus field, khususnya pada Java dg flag `final`.
+    OVERRIDE(8),
+    ABSTRACT(16),
+    DYNAMIC(32),
+    OPTIONAL(64),
+    VARARG(128),
     ;
 
     companion object{
@@ -15,6 +16,7 @@ enum class SiModifier(val id: Int) {
             (unit.descriptor as SiDescriptorImpl).modifier = unit.descriptor.modifier or modifier.id
         }
         fun isAbstract(unit: SiReflex): Boolean = hasModifier(unit, ABSTRACT)
+        fun isMutable(unit: SiReflex): Boolean = hasModifier(unit, MUTABLE)
         fun isOpen(unit: SiReflex): Boolean = hasModifier(unit, OPEN)
         fun isOverride(unit: SiReflex): Boolean = hasModifier(unit, OVERRIDE)
         fun isDynamic(unit: SiReflex): Boolean = hasModifier(unit, DYNAMIC)

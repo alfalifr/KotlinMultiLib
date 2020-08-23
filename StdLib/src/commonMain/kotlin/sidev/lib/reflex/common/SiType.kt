@@ -46,19 +46,4 @@ interface SiType : SiReflex /*, KType -> agar dapat dijalankan di Js.*/{
 
 internal abstract class SiTypeImpl: SiReflexImpl(), SiType{
     abstract override var arguments: List<SiTypeProjection>
-
-    override fun equals(other: Any?): Boolean {
-        return if(other is SiType){
-            classifier == other.classifier
-                    && arguments == other.arguments
-                    && isMarkedNullable == other.isMarkedNullable
-        } else super.equals(other)
-    }
-
-    override fun hashCode(): Int {
-        var result = classifier.hashCode()
-        result = 31 * result + arguments.hashCode()
-        result = 31 * result + isMarkedNullable.hashCode()
-        return result
-    }
 }

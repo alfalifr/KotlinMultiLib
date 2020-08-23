@@ -1,18 +1,27 @@
 package sidev.lib.reflex.common.full
 
+import sidev.lib.collection.iterator.NestedIteratorImpl
+import sidev.lib.collection.iterator.SkippableIteratorImpl
+import sidev.lib.collection.lazy_list.asCached
 import sidev.lib.collection.string
 import sidev.lib.console.prine
 import sidev.lib.exception.NoSuchMemberExc
 import sidev.lib.property.UNINITIALIZED_VALUE
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.si
+import sidev.lib.universal.structure.collection.iterator.NestedIterator
+import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 
 
 expect val SiClass<*>.isPrimitive: Boolean
 expect val SiClass<*>.isObjectArray: Boolean
 expect val SiClass<*>.isPrimitiveArray: Boolean
-expect val Any.isNativeReflexUnit: Boolean
+internal expect val Any.isNativeReflexUnit: Boolean
+internal expect val Any.isNativeDelegate: Boolean
+internal expect val SiClass<*>.isNativeInterface: Boolean
 
 expect val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T>
 
@@ -35,8 +44,10 @@ val Any.isReflexUnit: Boolean
 val Any.isUninitializedValue: Boolean
     get()= this::class == UNINITIALIZED_VALUE::class
 
+//<23 Agustus 2020> => implementasi diganti menjadi [isNativeInterface], karena jika isAbstract && !isInstantiable,
+// belum tentu merupakan interface. Bisa jadi itu adalah abstract kelas yg hanya bisa di-instansiasi lewat builder di dalamnya.
 val SiClass<*>.isInterface: Boolean
-    get()= isAbstract && !isInstantiable
+    get()= isNativeInterface //isAbstract && !isInstantiable
 
 val SiClass<*>.isObject: Boolean
     get()= !isAbstract && !isInstantiable
@@ -93,13 +104,13 @@ val <T: Any> SiClass<T>.isCopySafe: Boolean
     }
  */
 
-/*
-//        prine("isCopySafe @$this isPrimitive= $isPrimitive this == String::class= ${this == String::class} this.isSubclassOf(Enum::class)= ${this.isSubclassOf(Enum::class)} isKReflectionElement= $isKReflectionElement")
-        val res
-//                || isKReflectionElement
-        return res
-    }
- */
+val Any.isDelegate: Boolean get()= when(this){
+//    is Lazy<*> -> true //Gak semua Lazy adalah delegate. Hal teresebut dikarenakan Lazy gak punya fungsi getValue() sbg instance member.
+    is ReadOnlyProperty<*, *> -> true
+    is ReadWriteProperty<*, *> -> true
+    else -> isNativeDelegate.let { if(!it) this is Lazy<*> else it } //Ternyata ada built-in delegate yaitu lazy yg gak punya fungsi getValue() / setValue().
+}
+
 
 fun SiClass<*>.isSubclassOf(base: SiClass<*>): Boolean = base in superclassesTree
 fun SiClass<*>.isSuperclassOf(derived: SiClass<*>): Boolean = derived.isSubclassOf(this)
@@ -109,73 +120,3 @@ fun SiClass<*>.isExclusivelySuperclassOf(derived: SiClass<*>): Boolean
 fun SiClass<*>.isExclusivelySubclassOf(base: SiClass<*>): Boolean
         = this != base && isSubclassOf(base)
 
-
-/*
-================================
-Constructor
-================================
- */
-
-/** Mengambil konstruktor dg jumlah parameter paling sedikit. */
-val <T: Any> SiClass<T>.leastParamConstructor: SiFunction<T>
-    get(){
-        var constr= try{ constructors.first() }
-        catch (e: NoSuchElementException){ throw NoSuchElementException("Kelas \"$qualifiedName\" tidak punya konstruktor (interface, abstract, anonymous class, atau null)") }
-
-        var minParamCount= constr.parameters.size
-        for(constrItr in constructors){
-            if(minParamCount > constrItr.parameters.size){
-                constr= constrItr
-                minParamCount= constrItr.parameters.size
-            }
-            if(minParamCount == 0) break //Karena gakda fungsi yg jumlah parameternya krg dari 0
-        }
-        return constr
-    }
-
-/** Mirip dg [leastParamConstructor], namun param opsional tidak disertakan. Nullable tetap disertakan. */
-val <T: Any> SiClass<T>.leastRequiredParamConstructor: SiFunction<T>
-    get(){
-        var constr= try{ constructors.first() }
-        catch (e: NoSuchElementException){ throw NoSuchElementException("Kelas \"$this\" tidak punya konstruktor (interface, abstract, anonymous class, atau null)") }
-        var minParamCount= constr.parameters.size
-        //<20 Juli 2020> => Konstruktor dg jml param tersedikit belum tentu merupakan konstruktor dg jml param wajib paling sedikit.
-        for(constrItr in constructors){
-//            prine("leastRequiredParamConstructor class= $simpleName constrItr.parameters.size= ${constrItr.parameters.size}")
-            if(minParamCount > constrItr.parameters.size){
-                constr= constrItr
-                minParamCount= constrItr.parameters.size
-                for(param in constrItr.parameters)
-                    if(param.isOptional) minParamCount--
-            }
-            if(minParamCount == 0) break //Karena gakda fungsi yg jumlah parameternya krg dari 0
-        }
-        val paramList= ArrayList<SiParameter>()
-        for(param in constr.parameters)
-            if(!param.isOptional) paramList.add(param)
-
-        //Bungkus constructor yg ditemukan dengan fungsi yg parameter listnya hanya terlihat yg non-optional.
-        return object: SiFunction<T> by constr{
-            override val parameters: List<SiParameter> = paramList
-            override fun toString(): String = constr.toString()
-        }
-    }
-
-/** Mengambil konstruktor dg param yg memiliki tipe data sesuai [paramClass]. Jika tidak ketemu, maka throw [NoSuchMethodException]. */
-fun <T: Any> SiClass<T>.findConstructorWithParam(vararg paramClass: SiClass<*>): SiFunction<T> {
-    if(!isInstantiable) throw NoSuchElementException("Kelas \"$this\" tidak punya konstruktor (interface, abstract, anonymous class, atau null)")
-
-    for(constr in constructors){
-        var paramClassMatch= true
-        if(constr.parameters.size == paramClass.size){
-            for(param in constr.parameters){
-                paramClassMatch= paramClassMatch && param.type.classifier == paramClass[param.index]
-            }
-        } else continue
-
-        if(paramClassMatch)
-            return constr
-    }
-    val kclass= descriptor.native as KClass<T>
-    throw NoSuchMemberExc(kclass, kclass, "constructors","Tidak ada konstruktor \"$qualifiedName\" dg parameter \"${paramClass.string}\"")
-}

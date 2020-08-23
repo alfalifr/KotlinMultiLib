@@ -1,5 +1,7 @@
 package sidev.lib.reflex.common.core
 
+import sidev.lib.check.notNullTo
+import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.property.reevaluateLazy
@@ -227,6 +229,7 @@ object ReflexFactory{
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType = type
+        override val backingField: SiField<T, R>? by lazy{ _createFieldFromProperty<T, R>(this) }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
     }
@@ -244,6 +247,7 @@ object ReflexFactory{
             it.value= platform != Platform.JS || isTypeFinal(type.descriptor.native!!)
             type
         }
+        override val backingField: SiField<T, R>? by lazy{ _createFieldFromProperty<T, R>(this) }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
     }
@@ -258,6 +262,7 @@ object ReflexFactory{
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType = type
+        override val backingField: SiMutableField<T, R>? by lazy{ _createFieldFromProperty<T, R>(this) }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
     }
@@ -276,6 +281,7 @@ object ReflexFactory{
             it.value= platform != Platform.JS || isTypeFinal(type.descriptor.native!!)
             type
         }
+        override val backingField: SiMutableField<T, R>? by lazy{ _createFieldFromProperty<T, R>(this) }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
     }
@@ -321,34 +327,79 @@ object ReflexFactory{
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
     }
-/*
+///*
     fun <R, T>createField(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNativeWrapper?,
         host: SiReflex?= null,
         name: String,
         type: SiType,
         modifier: Int= 0
-    ): SiField<R, T> = object : SiFieldImpl<R, T>(
-        { receiver: R -> getPropGetValueBlock<T>(nativeCounterpart.implementation)(arrayOf(receiver as Any)) }
-    ){
-        override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
-        override val name: String = name
-        override val type: SiType = type
+    ): SiField<R, T> {
+        val getBlock= if(nativeCounterpart != null) getPropGetValueBlock<T>(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
+        else {
+            val propGetter= (host as? SiProperty<T>)?.getter
+            { receivers: Array<out Any> -> propGetter?.call(receivers.first())!! }
+        }
+        return object : SiFieldImpl<R, T>(
+            { receiver: R -> getBlock(arrayOf<Any>(receiver!!)) }
+        ){
+            override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
+            override val name: String = name
+            override val type: SiType = type
+        }
     }
 
     fun <R, T>createMutableField(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNativeWrapper?,
         host: SiReflex?= null,
         name: String,
         type: SiType,
         modifier: Int= 0
-    ): SiMutableField<R, T> = object : SiMutableFieldImpl<R, T>(
-        { receiver: R -> getPropGetValueBlock<T>(nativeCounterpart.implementation)(arrayOf(receiver as Any)) },
-        { receiver: R, value: T -> getPropSetValueBlock<T>(nativeCounterpart.implementation)(arrayOf(receiver as Any), value) }
-    ){
-        override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
-        override val name: String = name
-        override val type: SiType = type
+    ): SiMutableField<R, T> {
+        val getBlock= if(nativeCounterpart != null) getPropGetValueBlock(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
+        else {
+            prine("createField() getBlock else")
+            val propGetter= (host as? SiProperty<T>)?.getter
+            { receivers: Array<out Any> -> propGetter?.call(receivers.first())!! }
+        }
+        val setBlock= if(nativeCounterpart != null) getPropSetValueBlock(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
+        else {
+            val propSetter= (host as? SiMutableProperty<T>)?.setter
+            { receivers: Array<out Any>, value: T -> propSetter?.call(receivers.first(), value)!! }
+        }
+        return object : SiMutableFieldImpl<R, T>(
+            { receiver: R -> getBlock(arrayOf<Any>(receiver!!)) },
+            { receiver: R, value: T -> setBlock(arrayOf<Any>(receiver!!), value) }
+        ){
+            override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
+            override val name: String = name
+            override val type: SiType = type
+        }
     }
- */
+
+    /**
+     * Untuk kepentingan internal, semua field adalah mutable field, namun bbrp tidak diekspos fungsi set-nya.
+     * Pada dasarnya, semua field itu mutable. Namun API Reflex sangat menyarankan immutability sehingga
+     * bbrp akses `set` dibatasi.
+     */
+    internal fun <R, T>_createField(
+        nativeCounterpart: SiNativeWrapper?,
+        host: SiReflex?= null,
+        name: String,
+        type: SiType,
+        modifier: Int= 0
+    ): SiMutableField<R, T> = createMutableField(nativeCounterpart, host, name, type, modifier)
+
+    /**
+     * Untuk kepentingan internal, semua field adalah mutable field, namun bbrp tidak diekspos fungsi set-nya.
+     * Pada dasarnya, semua field itu mutable. Namun API Reflex sangat menyarankan immutability sehingga
+     * bbrp akses `set` dibatasi.
+     */
+    internal fun <R, T> _createFieldFromProperty(property: SiProperty<T>): SiMutableField<R, T>?{
+        return property.descriptor.native?.let { getNativeField(it) }?.let { createNativeWrapper(it) }
+            ?.let { nativeField ->
+                _createField(nativeField, property, property.name, property.returnType, getModifiers(nativeField.implementation))
+            }
+    }
+// */
 }

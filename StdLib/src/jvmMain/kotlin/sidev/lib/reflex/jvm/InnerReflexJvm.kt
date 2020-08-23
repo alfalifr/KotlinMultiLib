@@ -1,11 +1,17 @@
 package sidev.lib.reflex.jvm
 
+import sidev.lib.check.asNotNullTo
 import sidev.lib.console.prine
+import sidev.lib.reflex.InnerReflex
+import sidev.lib.reflex.common.native.si
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import kotlin.math.ceil
 import kotlin.reflect.KCallable
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 object InnerReflexJvm{
@@ -45,6 +51,43 @@ object InnerReflexJvm{
         return bool
 //                && javaMethod.parameterTypes.last() == java.lang.Object::class //Gak bisa dicek tipe data parameter yg trahir kalau constructor
     }
+
+    fun isDelegateGetValueMethodOf(javaMethod: Method, property: KProperty<*>): Boolean{
+        val paramTypes= javaMethod.parameterTypes
+        return javaMethod.name == InnerReflex.K_DELEGATE_GET_VALUE_FUNCTION_NAME
+                && paramTypes.size == 2
+                && paramTypes.last().kotlin.isSubclassOf(KProperty::class)
+                && property.returnType.classifier.asNotNullTo { cls: KClass<*> ->
+                    cls.java.isAssignableFrom(javaMethod.returnType)
+        } ?: (javaMethod.returnType == Object::class.java)
+    }
+
+    fun isDelegateSetValueMethodOf(javaMethod: Method, property: KProperty<*>): Boolean{
+        val paramTypes= javaMethod.parameterTypes
+        return javaMethod.name == InnerReflex.K_DELEGATE_SET_VALUE_FUNCTION_NAME
+                && paramTypes.size == 3
+                && paramTypes[1].kotlin.isSubclassOf(KProperty::class)
+                && property.returnType.classifier.asNotNullTo { cls: KClass<*> ->
+                    cls.java.isAssignableFrom(paramTypes.last())
+        } ?: (paramTypes.last() == Object::class.java)
+    }
+
+    fun isDelegateGetValueMethod(javaMethod: Method, propClass: Class<*>): Boolean{
+        val paramTypes= javaMethod.parameterTypes
+        return javaMethod.name == InnerReflex.K_DELEGATE_GET_VALUE_FUNCTION_NAME
+                && paramTypes.size == 2
+                && paramTypes.last().kotlin.isSubclassOf(KProperty::class)
+                && propClass.isAssignableFrom(javaMethod.returnType)
+    }
+
+    fun isDelegateSetValueMethod(javaMethod: Method, propClass: Class<*>): Boolean{
+        val paramTypes= javaMethod.parameterTypes
+        return javaMethod.name == InnerReflex.K_DELEGATE_SET_VALUE_FUNCTION_NAME
+                && paramTypes.size == 3
+                && paramTypes[1].kotlin.isSubclassOf(KProperty::class)
+                && propClass.isAssignableFrom(paramTypes.last())
+    }
+
 /*
     fun <T> isDefaultOfConst(javaConstr: Constructor<T>, kotlinFun: KCallable<T>): Boolean{
         val kotlinParam= kotlinFun.parameters
@@ -59,3 +102,4 @@ object InnerReflexJvm{
     }
  */
 }
+

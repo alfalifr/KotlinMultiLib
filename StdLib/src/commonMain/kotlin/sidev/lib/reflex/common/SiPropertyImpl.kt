@@ -62,9 +62,11 @@ internal abstract class SiProperty1Impl<T, out R>
     /** Property gak punya param, aksesornya yg punya. */
     override val parameters: List<SiParameter> by lazy { getter.parameters }
     override val typeParameters: List<SiTypeParameter> = emptyList()
+/*
     override val hasBackingField: Boolean by lazy {
         ReflexFactoryHelper.hasBackingField(this, descriptor.native!!)
     }
+ */
     override fun get(receiver: T): R {
 //        prine("get()= receiver= $receiver prop= $this")
         return getter.call(receiver)

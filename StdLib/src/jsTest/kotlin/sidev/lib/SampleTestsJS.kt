@@ -226,7 +226,7 @@ class SampleTestsJS {
         prin("ac.poin.x= ${ac.poin.x} ac2.poin.x= ${ac2.poin.x}")
         prin("ac.ab_abs= ${ac.ab_abs} ac2.ab_abs= ${ac2.ab_abs}")
         prin("ac.dDariAA.d= ${ac.dDariAA.d} ac2.dDariAA.d= ${ac2.dDariAA.d} ")
-        ac.poin.x= 10
+        ac.poin.x= 12
         ac.dDariAA.d= 19
         ac.acStr1= "bbb1"
         ac2.acStr2= "bbb2"

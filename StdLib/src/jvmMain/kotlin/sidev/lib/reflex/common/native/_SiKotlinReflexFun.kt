@@ -10,7 +10,7 @@ import kotlin.reflect.*
 internal val KType.si: SiType get()= ReflexFactory.createType(
     createNativeWrapper(this),
     when(val cls= classifier){
-        is KClass<*> -> ReflexLoader.loadClass(cls)
+        is KClass<*> -> try{ ReflexLoader.loadClass(cls) } catch (e: Error){ (cls as KClassifier).si }
         is KTypeParameter -> ReflexFactory.createTypeParameter(
             createNativeWrapper(cls), null, cls.upperBounds.map { it.si }, cls.variance.si
         )

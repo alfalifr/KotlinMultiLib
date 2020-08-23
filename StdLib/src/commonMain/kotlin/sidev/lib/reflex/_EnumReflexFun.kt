@@ -1,6 +1,10 @@
 package sidev.lib.reflex
-/*
-import sidev.lib.reflex.inner.declaredMemberProperties
+
+import sidev.lib.reflex.common.SiProperty1
+import sidev.lib.reflex.common.full.contructorPropertiesTree
+import sidev.lib.reflex.common.full.declaredMemberProperties
+import sidev.lib.reflex.common.full.forceGet
+import sidev.lib.reflex.common.native.si
 import kotlin.reflect.KProperty1
 
 /** Mengambil semua enum anggota `this.extension` [Enum] [Enum.ordinal] dan [Enum.name]. */
@@ -14,22 +18,20 @@ inline fun <reified E: Enum<E>, reified A> Enum<E>.toArray(init: (E) -> A): Arra
     return Array(vals.size){init(vals[it])}
 }
 /** Mengambil data Enum yg berada pada konstruktor. Selain di konstruktor tidak diambil. */
-val <E: Enum<E>> E.data: Sequence<Pair<KProperty1<*, *>, Any?>>
+val <E: Enum<E>> E.data: Sequence<Pair<SiProperty1<*, *>, Any?>>
     get(){
         val constrProps=
-            (this::class.contructorPropertiesTree - Enum::class.declaredMemberProperties).iterator()
-        return object : Sequence<Pair<KProperty1<*, *>, Any?>>{
-            override fun iterator(): Iterator<Pair<KProperty1<*, *>, Any?>>
-                    = object : Iterator<Pair<KProperty1<*, *>, Any?>>{
+            (this::class.si.contructorPropertiesTree - Enum::class.si.declaredMemberProperties).iterator()
+        return object : Sequence<Pair<SiProperty1<*, *>, Any?>>{
+            override fun iterator(): Iterator<Pair<SiProperty1<*, *>, Any?>>
+                    = object : Iterator<Pair<SiProperty1<*, *>, Any?>>{
                 override fun hasNext(): Boolean = constrProps.hasNext()
 
-                override fun next(): Pair<KProperty1<*, *>, Any?> {
+                override fun next(): Pair<SiProperty1<*, *>, Any?> {
                     val next= constrProps.next()
-                    val value= (next as KProperty1<E, *>).forcedGet(this@data)
+                    val value= (next as SiProperty1<E, *>).forceGet(this@data)
                     return Pair(next, value)
                 }
             }
         }
     }
-
- */

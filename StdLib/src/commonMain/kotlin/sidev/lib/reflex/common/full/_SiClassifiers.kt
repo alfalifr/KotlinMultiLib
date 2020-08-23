@@ -9,6 +9,18 @@ import sidev.lib.reflex.common.native.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
 
 
+/**
+ * Mengambil supertype yg merupakan kelas namun bkn interface.
+ * @return `null` jika `this.extension` merupakan interface atau [Array].
+ */
+val SiClass<*>.superclass: SiClass<*>?
+    get()= supertypes.find { it.classifier.asNotNullTo { cls: SiClass<*> -> !cls.isInterface } == true }
+        ?.classifier as? SiClass<*>
+
+/**
+ * Mengubah [SiClass.supertypes] menjadi superclasses dg cara mengambil supertype yg
+ * memiliki classifier brp [SiClass].
+ */
 val SiClass<*>.superclasses: Sequence<SiClass<*>>
     get()= supertypes.asSequence().filter { it.classifier is SiClass<*> }.map { it.classifier as SiClass<*> }
 

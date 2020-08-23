@@ -16,6 +16,8 @@ import sidev.lib.reflex.common.native.si
 //import sidev.lib.reflex.type.inferElementType
 import kotlin.reflect.full.*
 
+class ClsGen<T, R>(val isi: T, val list: List<R>)
+
 class AE<out E, S: AE<out E, S, F>, F: S> where S: CharSequence
 
 internal annotation class Ano
@@ -109,8 +111,8 @@ internal open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, 
 //    @JvmField
     override var ab_abs: Int= 10
 
-    val aLazy: String by lazy {
-        "lazy"
+    val aLazy: CharSequence by lazy {
+        "nilai lazy"
     }
 
     @Anotasi<Int, Any> @FunAnot(10)

@@ -36,7 +36,9 @@ object ReflexDescriptor {
         override val innerName: String? = nativeCounterpart?.nativeInnerName
         override val owner: SiReflex = owner
 //        override val innerName: String = getReflexInnerName(owner)
-        override val type: SiDescriptor.ElementType = getReflexElementType(owner, nativeCounterpart?.implementation)
+        override val type: SiDescriptor.ElementType by lazy { getReflexElementType(owner, nativeCounterpart?.implementation) }
+        override val identifier: Int by lazy{ getReflexHashCode(this, owner, nativeCounterpart?.implementation) }
+        override var modifier: Int = modifier
         override var native: Any? = nativeCounterpart?.implementation
         init{ this.host= host }
         /** Agar tidak berat saat komputasi string descriptor. */
@@ -48,7 +50,8 @@ object ReflexDescriptor {
             }
             return string
         }
-        override var modifier: Int = modifier
+        override fun hashCode(): Int = identifier
+        override fun equals(other: Any?): Boolean = hashCode() == other.hashCode()
     }
 
 //    fun getClassDesc(clazz: SiClass<*>): String = "class ${clazz.qualifiedName}"
@@ -162,7 +165,6 @@ object ReflexDescriptor {
 
                 " $typeParamString$hostString$nameStr$paramStr$returnTypeStr"
             }
-/*
             is SiField<*, *> -> {
                 //Host dari field adalah property, host dari property adalah kelas. Yg diambil adalah host berupa kelas.
                 val hostString= desc.host?.descriptor?.host.asNotNullTo { clazz: SiClass<*> ->
@@ -173,7 +175,6 @@ object ReflexDescriptor {
 
                 " $hostString${owner.name}$returnTypeStr"
             }
- */
             is SiParameter -> {
                 val optionalStr= if(owner.isOptional) "?" else ""
                 val paramStr= when(owner.kind){
@@ -246,14 +247,29 @@ internal fun getReflexElementType(reflexUnit: SiReflex, nativeCounterpart: Any?)
     is SiFunction<*> -> SiDescriptor.ElementType.FUNCTION
     is SiMutableProperty<*> -> SiDescriptor.ElementType.MUTABLE_PROPERTY
     is SiProperty<*> -> SiDescriptor.ElementType.PROPERTY
-//    is SiMutableField<*, *> -> SiDescriptor.ElementType.MUTABLE_FIELD
-//    is SiField<*, *> -> SiDescriptor.ElementType.FIELD
+    is SiMutableField<*, *> -> {
+        //Karena implementasi pada SiReflex untuk semua Field adalah mutable.
+        if(SiModifier.isMutable(reflexUnit))
+            SiDescriptor.ElementType.MUTABLE_FIELD
+        else SiDescriptor.ElementType.FIELD
+    }
+    is SiField<*, *> -> SiDescriptor.ElementType.FIELD
     is SiCallable<*> -> SiDescriptor.ElementType.FUNCTION
     is SiParameter -> SiDescriptor.ElementType.PARAMETER
     is SiTypeParameter -> SiDescriptor.ElementType.TYPE_PARAMETER
     is SiType -> SiDescriptor.ElementType.TYPE
     else -> (if(nativeCounterpart != null) getNativeReflexDescription(nativeCounterpart) else null)
         ?: SiDescriptor.ElementType.ANY
+}
+
+internal fun getReflexHashCode(desc: SiDescriptor, reflexUnit: SiReflex, nativeCounterpart: Any?): Int = when(reflexUnit){
+    is SiClass<*> -> reflexUnit.qualifiedName.hashCode() //Karena tidak ada kelas dg nama lengkap yg sama.
+    is SiCallable<*> -> getHashCode(desc.host, reflexUnit.name, reflexUnit.parameters, reflexUnit.returnType)
+    is SiField<*, *> -> getHashCode(desc.host, reflexUnit.name, reflexUnit.type)
+    is SiParameter -> getHashCode(desc.host, reflexUnit.name, reflexUnit.index, reflexUnit.type, reflexUnit.kind, reflexUnit.isOptional)
+    is SiTypeParameter -> getHashCode(reflexUnit.name, reflexUnit.upperBounds)
+    is SiType -> getHashCode(reflexUnit.classifier, reflexUnit.arguments, reflexUnit.isMarkedNullable)
+    else -> 0
 }
 
 //internal expect fun getReflexInnerName(reflexUnit: SiReflex): String

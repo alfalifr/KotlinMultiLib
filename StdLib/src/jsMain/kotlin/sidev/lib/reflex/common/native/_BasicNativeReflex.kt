@@ -59,6 +59,19 @@ internal actual fun getNativeMutableProperties(nativeClass: Any): Sequence<Any>
         = getDeclaredProperty(nativeClass.jsClass).asSequence()
 
 /**
+ * Fungsi ini hanya mengambil declared field saja.
+ * <JS, 23 Agustus 2020> => Untuk Js, field dan property sama.
+ */
+internal actual fun getNativeFields(nativeClass: Any, nativeProperties: Sequence<Any>): Sequence<Any?>
+        = nativeProperties
+
+/**
+ * Sama dg [getNativeFields], namun hanya mengambil field dari satu [nativeProperty].
+ * <JS, 23 Agustus 2020> => Untuk Js, field dan property sama.
+ */
+internal actual fun getNativeField(nativeProperty: Any): Any? = nativeProperty
+
+/**
  * Mengambil member yg dapat dipanggil dan dijadikan sbg [SiNativeCallable].
  * Member yg diambil termasuk fungsi dan semua properti.
  */
@@ -136,6 +149,6 @@ internal actual fun setIsAccessible(nativeReflexUnit: Any, isAccessible: Boolean
 internal actual fun getModifiers(nativeReflexUnit: Any): Int{
     val modifier= Val(0)
     if(nativeReflexUnit !is JsParameter)
-        modifier or SiModifier.OPEN.id
+        modifier or SiModifier.OPEN.id or SiModifier.MUTABLE.id
     return modifier.value!!
 }

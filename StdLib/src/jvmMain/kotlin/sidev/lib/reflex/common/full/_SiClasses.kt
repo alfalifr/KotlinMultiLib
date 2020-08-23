@@ -7,6 +7,7 @@ import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.InnerReflex
 import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.common.SiFunction
+import sidev.lib.reflex.jvm.InnerReflexJvm
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Type
 import kotlin.reflect.*
@@ -54,6 +55,17 @@ actual val Any.isNativeReflexUnit: Boolean get()= when(this){
 
     else -> false
 }
+
+internal actual val Any.isNativeDelegate: Boolean get(){
+    return this::class.java.methods.find { InnerReflexJvm.isDelegateGetValueMethod(it, this::class.java) } != null
+            || this::class.java.methods.find { InnerReflexJvm.isDelegateSetValueMethod(it, this::class.java) } != null
+}
+
+internal actual val SiClass<*>.isNativeInterface: Boolean get()= (when(val native= descriptor.native){
+    is KClass<*> -> native.java
+    is Class<*> -> native
+    else -> null
+})?.isInterface == true
 
 
 actual val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T> get() = when(val native= descriptor.native){

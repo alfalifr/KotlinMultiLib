@@ -128,7 +128,7 @@ fun main(){
 
     prin("\n=============== AC::class.si.declaredMemberPropertiesTree ====================\n")
     for((i, prop) in AC::class.si.declaredMemberPropertiesTree.withIndex()){
-        prin("i= $i prop= $prop hasField= ${prop.hasBackingField} nativeField= ${(prop.descriptor.native as KProperty<*>).javaField}")
+        prin("i= $i prop= $prop hasField= ${prop.backingField != null} nativeField= ${(prop.descriptor.native as KProperty<*>).javaField}")
     }
     prin("\n=============== AC::class.si.nestedDeclaredMemberPropertiesTree ====================\n")
     for((i, member) in AC::class.si.nestedDeclaredMemberPropertiesTree.withIndex()){
@@ -144,6 +144,13 @@ fun main(){
     prin("AC::class.si.supertypes= ${AC::class.si.supertypes}")
 
     val ac= AC<BlaBla2>(Poin(16, 199))
+
+    prin("\n============= ac.implementedFieldValuesTree =============\n")
+    for((i, field) in ac.fieldValuesTree.withIndex()){
+//        prin("i= $i field= $field valType= ${(field.second as Object).`class`} valCls= ${field.second!!::class} val= ${field.second}")
+        prin("i= $i field= $field")
+    }
+
     ac.poin.x= 27
     val ac2= ac.clone()
 

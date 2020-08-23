@@ -12,6 +12,7 @@ import java.lang.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaField
 
 
 internal actual val isDynamicEnabled: Boolean = false
@@ -34,6 +35,21 @@ internal actual fun getNativeProperties(nativeClass: Any): Sequence<Any>
 internal actual fun getNativeMutableProperties(nativeClass: Any): Sequence<Any> =
     (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence().filter { it.isMutableProperty }
 //internal fun SiNativeClassifier.getNativeMutableProperties(): Sequence<Any> = implementation.getMutableProperties()
+
+
+/** Fungsi ini hanya mengambil declared field saja. */
+internal actual fun getNativeFields(nativeClass: Any, nativeProperties: Sequence<Any>): Sequence<Any?> = when(nativeProperties.first()){
+    is KProperty<*> -> (nativeProperties as Sequence<KProperty<*>>).map { it.javaField }
+    is Field -> (nativeProperties as Sequence<Field>).asSequence()
+    else -> throw ReflexComponentExc(currentReflexedUnit = nativeProperties.first()::class, detMsg = "nativeProperties bkn property.")
+}
+
+/** Sama dg [getNativeFields], namun hanya mengambil field dari satu [nativeProperty]. */
+internal actual fun getNativeField(nativeProperty: Any): Any? = when(nativeProperty){
+    is KProperty<*> -> nativeProperty.javaField
+    is Field -> nativeProperty
+    else -> throw ReflexComponentExc(currentReflexedUnit = nativeProperty::class, detMsg = "nativeProperty bkn property.")
+}
 
 /**
  * Mengambil member yg dapat dipanggil dan dijadikan sbg [SiNativeCallable].
@@ -175,6 +191,8 @@ internal actual fun getModifiers(nativeReflexUnit: Any): Int {
                 modifier or SiModifier.ABSTRACT.id
             if(nativeReflexUnit.isOpen)
                 modifier or SiModifier.OPEN.id
+            if(nativeReflexUnit is KMutableProperty<*>)
+                modifier or SiModifier.MUTABLE.id
         }
         is KClass<*> -> {
             if(nativeReflexUnit.isAbstract)
@@ -194,6 +212,10 @@ internal actual fun getModifiers(nativeReflexUnit: Any): Int {
                 modifier or SiModifier.ABSTRACT.id
             if(!Modifier.isFinal(nativeReflexUnit.modifiers))
                 modifier or SiModifier.OPEN.id
+        }
+        is Field -> {
+            if(!Modifier.isFinal(nativeReflexUnit.modifiers))
+                modifier or SiModifier.MUTABLE.id
         }
         is Class<*> -> {
             if(Modifier.isAbstract(nativeReflexUnit.modifiers))

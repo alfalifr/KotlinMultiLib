@@ -40,12 +40,17 @@ interface SiDescriptor {
     /** Modifier tambahan untuk [owner]. */
     val modifier: Int
 
+    /** Id unik yg digunakan untuk mengidentifikasi apakah 2 [SiReflex] sama walau instance-nya beda. */
+    val identifier: Int
+
     enum class ElementType(val description: String){
         TYPE(""),
         TYPE_PARAMETER("type parameter"),
         CLASS("class"),
         PROPERTY("val"),
         MUTABLE_PROPERTY("var"),
+        FIELD("field"),
+        MUTABLE_FIELD("mutable field"),
         PARAMETER("parameter"),
         FUNCTION("fun"),
 

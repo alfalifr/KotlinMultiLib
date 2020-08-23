@@ -4,13 +4,18 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.collection.iterator.nestedSequence
 import sidev.lib.collection.iterator.nestedSequenceSimple
 import sidev.lib.collection.iterator.skip
+import sidev.lib.exception.TypeExc
 import sidev.lib.property.UNINITIALIZED_VALUE
+import sidev.lib.reflex.clazz
 import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.common.SiFunction
 import sidev.lib.reflex.common.SiMutableProperty1
 import sidev.lib.reflex.common.SiProperty1
+import sidev.lib.reflex.common.full.types.TypedValue
+import sidev.lib.reflex.common.full.types.isAssignableFrom
 import sidev.lib.reflex.common.native.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import kotlin.reflect.KClass
 
 /*
 val SiClass<*>.memberFunctions: Sequence<SiFunction<*>>
@@ -32,16 +37,16 @@ val <T: Any> SiClass<T>.declaredMemberPropertiesTree: NestedSequence<SiProperty1
     get()= nestedSequence(classesTree){ cls: SiClass<*> -> cls.declaredMemberProperties.iterator() }
             as NestedSequence<SiProperty1<T, *>>
 
-val <T: Any> SiClass<T>.nestedDeclaredMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
-    get()= nestedSequence(classesTree, {
+val SiClass<*>.nestedDeclaredMemberPropertiesTree: NestedSequence<SiProperty1<Any, *>>
+    get()= nestedSequence<SiClass<*>, SiProperty1<Any, *>>(classesTree, {
         it.returnType.classifier.asNotNullTo { cls: SiClass<*> -> cls.classesTree.iterator() }
     })
-    { cls: SiClass<*> -> cls.declaredMemberProperties.iterator() } as NestedSequence<SiProperty1<T, *>>
+    { cls: SiClass<*> -> cls.declaredMemberProperties.iterator() as Iterator<SiProperty1<Any, *>> } //as NestedSequence<SiProperty1<T, *>>
 
 val <T: Any> SiClass<T>.implementedMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
     get()= declaredMemberPropertiesTree.skip { it.isAbstract }
 
-val <T: Any> SiClass<T>.implementedNestedMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
+val SiClass<*>.implementedNestedMemberPropertiesTree: NestedSequence<SiProperty1<Any, *>>
     get()= nestedDeclaredMemberPropertiesTree.skip { it.isAbstract }
 
 
@@ -148,6 +153,52 @@ fun <T, V> SiMutableProperty1<T, V>.forceSet(receiver: T, value: V){
     isAccessible= initAccessible
 }
 
+
+/** @return -> `true` jika operasi set berhasil,
+ *   -> `false` jika refleksi dilarang,
+ *   -> @throws [TypeExc] jika [value] yg dipass tidak sesuai tipe `this.extension`. */
+fun <I, O> SiMutableProperty1<I, O>.forceSetTyped(receiver: I, typedValue: TypedValue<O>): Boolean{
+    return try{
+        if(returnType.isAssignableFrom(typedValue.type)){
+            val oldIsAccesible= isAccessible
+            isAccessible= true
+            set(receiver, typedValue.value)
+            isAccessible= oldIsAccesible
+            true
+        } else {
+            throw TypeExc(
+                expectedType = returnType.classifier as KClass<*>, actualType = (typedValue.value as? Any)?.clazz,
+                msg = "Tidak dapat meng-assign value dg tipe tersebut ke properti: $this."
+            )
+        }
+    } catch (e: Exception){
+        //Jika Kotlin melarang melakukan call melalui refleksi
+        // --- atau ---
+        //Jika terjadi error secara internal pada refleksi Java.
+        // Biasanya terjadi pada operasi call melibatkan `lateinit var`
+        false
+    }
+}
+
+
+/**
+ * Melakukan copy properti dari [source] ke [destination] yg memiliki nama dan tipe data yg sama.
+ *
+ * Fungsi ini berbeda [clone] karena hanya melakukan copy referential scr langsung tanpa melakukan
+ * instantiate. Operasi copy nilai hanya dilakukan pada permukaan.
+ */
+fun copySimilarProperty(source: Any, destination: Any){
+    for(valMap in source.implementedPropertyValues){ //implementedAccesiblePropertiesValueMapTree
+        if(valMap.second?.isUninitializedValue == true)
+            continue
+        (destination.implementedPropertyValues.find {
+            it.first.name == valMap.first.name
+                    && it.first.returnType.classifier == valMap.first.returnType.classifier
+                    && it.first is SiMutableProperty1<*, *>
+        }?.first as? SiMutableProperty1<Any, Any?>)
+            ?.forceSet(destination, valMap.second)
+    }
+}
 
 /*
 val <T: Any> SiClass<T>.nestedDeclaredMemberPropertiesTree: NestedSequence<SiProperty1<T, *>> get()= object : NestedSequence<SiProperty1<T, *>>{

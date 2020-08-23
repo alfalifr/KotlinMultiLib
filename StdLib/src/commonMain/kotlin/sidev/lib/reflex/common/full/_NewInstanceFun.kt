@@ -9,7 +9,6 @@ import sidev.lib.reflex.clazz
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.isDynamicEnabled
 import sidev.lib.reflex.common.native.si
-import sidev.lib.reflex.copySimilarProperty
 import sidev.lib.reflex.defaultPrimitiveValue
 import sidev.lib.universal.`val`.SuppressLiteral
 import kotlin.reflect.KParameter
@@ -52,7 +51,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
     if(isReflexUnit || isUninitializedValue) return this
     var clazz= this::class.si.also { if(it.isCopySafe) return this }
     var continueCreateNewInstance= true
-    val valueMapTree= implementedPropertyValuesTree.filter { it.first.hasBackingField } //Hanya yg punya backingField agar setiap state pada kelas terjamin. //implementedPropertiesValueMapTree
+    val valueMapTree= fieldValuesTree //implementedPropertyValuesTree.filter { it.first.hasBackingField } //Hanya yg punya backingField agar setiap state pada kelas terjamin. //implementedPropertiesValueMapTree
     //clazz.declaredMemberPropertiesTree.filter { !it.isAbstract && it.hasBackingField }
     //Berguna untuk mengecek apakah `KProperty` merupakan properti dg mengecek kesamaannya dg `KParameter` di contrustor.
 
@@ -62,7 +61,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
     } catch (e: Exception){
         if(clazz.isShallowAnonymous){
             continueCreateNewInstance= false
-            clazz= clazz.supertypes.first().classifier as SiClass<T>
+            clazz= clazz.superclass as SiClass<out T>
             clazz.leastRequiredParamConstructor
         } //else if(clazz.isCopySafe || isReflexUnit || isUninitializedValue) return this //Karena pengecekan udah dilakukan di awal.
         else throw NonInstantiableTypeExc(typeClass = this::class,
@@ -71,7 +70,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
 
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->
         if(constr.parameters.find { it == param } != null){
-            valueMapTree.find { valueMap -> param.isPropertyLike(valueMap.first) }
+            valueMapTree.find { valueMap -> param.isPropertyLike(valueMap.first.property) }
                 .notNullTo {
                     if(!isDeepClone) it.second
                     else it.second?.clone(true, constructorParamValFunc)
@@ -85,45 +84,49 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
     val newInstance= if(continueCreateNewInstance){
         if(!clazz.isArray)
             new(clazz, constructor = constr, defParamValFunc = newInsConstrParamValFuncWrapper)
-                ?: throw NonInstantiableTypeExc(typeClass = this::class,
+                ?: if(isDelegate) return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
+                else throw NonInstantiableTypeExc(typeClass = this::class,
                     msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
         else
             arrayClone(isDeepClone, newInsConstrParamValFunc) //as T
     } else{
-        new(clazz.supertypes.first().classifier as SiClass<out T>,  constructor = constr,
+        new(clazz,  constructor = constr,
             defParamValFunc = newInsConstrParamValFuncWrapper)
-            ?: throw NonInstantiableTypeExc(typeClass = this::class,
+            ?:  if(isDelegate) return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
+            else throw NonInstantiableTypeExc(typeClass = this::class,
                 msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     }
 
 
     for(valueMap in valueMapTree){
         prine("clone() valMap= $valueMap")
-        val prop= valueMap.first
-        val continueCopy= prop is SiMutableProperty1<*, *>
+        val field= valueMap.first
+/*
+        val continueCopy= field is SiMutableProperty1<*, *>
                 || (constr.parameters.isNotEmpty() //Jika property ada di primary constr walaupun val, maka copy aja.
-                && { constr.parameters.find { it.isPropertyLike(prop) } != null }())
-        if(continueCopy){
+                && { constr.parameters.find { it.isPropertyLike(field.descriptor.host as SiProperty<*>) } != null }())
+ */
+//        if(continueCopy){ //Karena semua field, baik yg final maupun tidak harus di-copy value-nya.
             @Suppress(SuppressLiteral.UNCHECKED_CAST)
             val value= valueMap.second
             if(value?.isUninitializedValue == true) continue
 //            prine("clone() prop= $prop value= $value value.clazz.isPrimitive= ${value?.clazz?.isPrimitive} bool=${!isDeepClone || value == null || value.clazz.isPrimitive}")
-            prop.asNotNull { mutableProp: SiMutableProperty1<T, Any?> ->
-//                prine(" masukkkk... clone() prop= $prop value= $value value.clazz.isPrimitive= ${value?.clazz?.isPrimitive} bool=${!isDeepClone || value == null || (value.clazz.isPrimitive && constr.parameters.find { it.isPropertyLike(mutableProp, true) } == null)}")
+            field.asNotNull { mutableField: SiMutableField<T, Any?> ->
+//                prine(" masukkkk... clone() prop= $prop value= $value value.clazz.isPrimitive= ${value?.clazz?.isPrimitive} bool=${!isDeepClone || value == null || (value.clazz.isPrimitive && constr.parameters.find { it.isPropertyLike(mutableField, true) } == null)}")
                 if(!isDeepClone || value == null || value.clazz.si.isCopySafe || value.isReflexUnit){
-                    if(constr.parameters.find { it.isPropertyLike(mutableProp, true) } == null)
-                    //Jika ternyata [mutableProp] terletak di konstruktor dan sudah di-instansiasi,
+                    if(constr.parameters.find { it.isPropertyLike((mutableField as SiField<*, *>).property, true) } == null)
+                    //Jika ternyata [mutableField] terletak di konstruktor dan sudah di-instansiasi,
                     // itu artinya programmer sudah memberikan definisi nilainya sendiri saat intansiasi,
-                    // maka jangan salin nilai lama [mutableProp] ke objek yg baru di-intansiasi.
-                        mutableProp.forceSet(newInstance, value) //value.withType(mutableProp.returnType)
-//                        mutableProp.forcedSetTyped(newInstance, value.withType(mutableProp.returnType))
+                    // maka jangan salin nilai lama [mutableField] ke objek yg baru di-intansiasi.
+                        mutableField.forceSet(newInstance, value) //value.withType(mutableField.returnType)
+//                        mutableField.forcedSetTyped(newInstance, value.withType(mutableField.returnType))
                 } else{
-//                    prine("prop= $mutableProp mutableProp.returnType= ${mutableProp.returnType.classifier}")
-//                    mutableProp.forcedSetTyped<T, Any?>(newInstance, value.clone(true, constructorParamValFunc).withType(mutableProp.returnType))
-                    mutableProp.forceSet(newInstance, value.clone(true, constructorParamValFunc))
+//                    prine("prop= $mutableField mutableField.returnType= ${mutableField.returnType.classifier}")
+//                    mutableField.forcedSetTyped<T, Any?>(newInstance, value.clone(true, constructorParamValFunc).withType(mutableField.returnType))
+                    mutableField.forceSet(newInstance, value.clone(true, constructorParamValFunc))
                 }
             }
-        }
+//        }
     }
 //    prine("this::class= ${this::class} newInstance::class= ${newInstance::class}")
     if(newInstance::class.si.isExclusivelySuperclassOf(this::class.si))
@@ -239,7 +242,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
     val usedClazz=
         if(!clazz.isShallowAbstract) clazz
         else try{
-            val superclazz= clazz.supertypes.first().classifier as SiClass<out T>
+            val superclazz= clazz.superclass as SiClass<out T>
             prine("""Kelas: "$clazz" merupakan shallow-abstract, newInstance yg di-intanstiate adalah superclass: "$superclazz".""")
             superclazz
         } catch (e: ClassCastException){
@@ -256,7 +259,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
             prine("""Kelas: "$clazz" tidak punya konstruktor sehingga tidak dapat di-intanstiate.""")
             null
         } else {
-            val superclazz= clazz.supertypes.first().classifier as SiClass<out T>
+            val superclazz= clazz.superclass as SiClass<out T>
             prine("""Kelas: "$clazz" merupakan shallow-anonymous, newInstance yg di-intanstiate adalah superclass: "$superclazz".""")
             new(superclazz, constructorParamClass, constructor, defParamValFunc)
         }
@@ -269,7 +272,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
 
     for(param in params){
         val type= param.type
-//        prine("new() param= $param type= $type type.classifier= ${type.classifier} native= ${type.classifier?.descriptor?.native}")
+        prine("new() param= $param type= $type type.classifier= ${type.classifier} native= ${type.classifier?.descriptor?.native}")
 //        val typeClass= type.classifier as SiClass<*>
         val paramVal=
             try{

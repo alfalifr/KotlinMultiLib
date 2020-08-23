@@ -1,15 +1,39 @@
 package sidev.lib
 
 import sidev.lib.console.prin
-import kotlin.jvm.internal.CallableReference
-import kotlin.math.ceil
-import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.full.memberProperties
+import sidev.lib.console.prine
+import sidev.lib.property.MutableLazy
+import sidev.lib.property.mutableLazy
+import sidev.lib.reflex.common.full.declaredFieldsTree
+import sidev.lib.reflex.common.full.forceGet
+import sidev.lib.reflex.common.full.fieldValuesTree
+import sidev.lib.reflex.common.native.si
 
 object OP
 
 fun main(){
+    prin("\n================= MutableLazy::class.java.methods ================\n")
+    for((i, method) in MutableLazy::class.java.methods.withIndex()){
+        prin("i= $i method= $method")
+    }
 
+    val ao= AO()
+
+    prin("\n================= AO::class.si.declaredFieldsTree ================\n")
+    for((i, field) in AO::class.si.declaredFieldsTree.withIndex()){
+        val value= field.forceGet(ao). also { value ->
+            if(value is Lazy<*>)
+                value.getValue(null, AO::b)
+        }
+        val valIsStr= value is String
+        prin("i= $i field= $field value= $value valIsStr= $valIsStr")
+    }
+
+    prin("\n================= ao.implementedFieldValuesTree ================\n")
+    for((i, field) in ao.fieldValuesTree.withIndex()){
+        prin("i= $i field= $field isStr= ${field.second is String} native= ${field.first.descriptor.native}")
+    }
+/*
     prin("OP::class.java.constructors= ${OP::class.java.constructors.isEmpty()}")
 
     val ao= AO(111)
@@ -51,6 +75,7 @@ fun main(){
             "gakda yg lebih dari 10"
         }())
  */
+ */
 }
 class AO(val b: Int= 10){
     constructor(a: Int, b: Boolean= true): this(a){
@@ -60,6 +85,12 @@ class AO(val b: Int= 10){
     }
     fun defFun(a: Int= 0, b: Boolean, c: Long= 10, d: Int= 10, e: Boolean= false, f: Double= 0.0, g: Boolean= false, h: Int= 10, i: Int= 10, j: Int= 10){
 
+    }
+
+    val str by lazy { "afaf" }
+    var strMutab by mutableLazy {
+        prine("strMutab initialized")
+        "afaf"
     }
 
     override fun toString(): String {

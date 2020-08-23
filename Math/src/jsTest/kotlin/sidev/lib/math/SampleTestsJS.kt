@@ -1,5 +1,6 @@
 package main
 
+import sidev.lib.hello
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
