@@ -55,16 +55,28 @@ object ReflexLoader{
         getNativeConstructors(nativeClass).map { nativeConstr ->
             ReflexFactory.createFunctionLazyly(
                 createNativeWrapper(nativeConstr), null, //getReturnType(nativeConstr),
-                loadSiParam(nativeConstr).toList(), callBlock = getFuncCallBlock<T>(nativeClass, nativeConstr),
+                loadSiParam(nativeConstr).toList(), callBlock = getConstrCallBlock<T>(nativeClass, nativeConstr),
+                defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeConstr),
                 modifier = getModifiers(nativeConstr)
             )
-        } //.apply { forEach { func -> func.parameters.forEach { it.mutableHost= func } } }
+        }.toList().apply { forEach { func -> func.parameters.forEach { it.mutableHost= func } } }
+            .asSequence()
+/*
+            .apply {
+                forEach { func ->
+                    func.parameters.forEach {
+                        prine("after constr param = ${it.name} host==null => ${it.descriptor.host == null} it.mutableHost == null => ${it.mutableHost == null} host= ${(it.descriptor.host as? SiCallable<*>)?.name} mutabHost= ${(it.mutableHost as? SiCallable<*>)?.name} descriptor==null => ${it.descriptor == null}")
+                    }
+                }
+            }
+ */
 
     fun loadSiFunction(nativeClass: Any): Sequence<SiFunction<*>> =
         getNativeFunctions(nativeClass).map { nativeFunc ->
             ReflexFactory.createFunctionLazyly(
                 createNativeWrapper(nativeFunc), null, //getReturnType(nativeFunc),
                 loadSiParam(nativeFunc).toList(), callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc),
+                defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeFunc),
                 modifier = getModifiers(nativeFunc)
             )
         }
@@ -127,7 +139,9 @@ object ReflexLoader{
 
         if(ReflexLoaderManager.checkCachedClass(nativeClass))
             return ReflexLoaderManager.loadCachedClass(nativeClass)
-//        prine("siNativeClass $siNativeClass class= ${siNativeClass::class}")
+
+//        prine("loadClass() native= $native nativeClass= $nativeClass")
+
         val siClass= ReflexFactory.createClass<T>(wrapper, modifier = getModifiers(nativeClass))
                 as SiClassImpl
 
@@ -160,6 +174,7 @@ object ReflexLoader{
                     }
                 }
             }
+
         return siClass.also {
             ReflexLoaderManager.saveLoadedClass(it)
         }

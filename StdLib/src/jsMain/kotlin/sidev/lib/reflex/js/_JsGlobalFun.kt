@@ -1,8 +1,5 @@
 package sidev.lib.reflex.js
 
-import sidev.lib.reflex.InnerReflexConst
-import sidev.lib.reflex.common.core.SiReflexConst
-import kotlin.js.json
 /*
 /**
  * Menaruh objek dg nama [name] dg nilai [value] pada global.

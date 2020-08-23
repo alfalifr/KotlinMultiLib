@@ -1,5 +1,7 @@
 package sidev.lib.reflex.common
 
+import sidev.lib.console.prine
+
 interface SiDescriptor {
     /** Komponen [SiReflex] yg memiliki descriptor ini. */
     val owner: SiReflex

@@ -1,11 +1,9 @@
 package sidev.lib.reflex.common.full
 
 import sidev.lib.check.asNotNullTo
-import sidev.lib.check.notNull
 import sidev.lib.collection.iterator.nestedSequence
 import sidev.lib.collection.iterator.nestedSequenceSimple
 import sidev.lib.collection.iterator.skip
-import sidev.lib.collection.lazy_list.isNotEmpty
 import sidev.lib.property.UNINITIALIZED_VALUE
 import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.common.SiFunction
@@ -31,11 +29,11 @@ val <T: Any> SiClass<T>.declaredMemberProperties: Sequence<SiProperty1<T, *>>
 
 
 val <T: Any> SiClass<T>.declaredMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
-    get()= nestedSequence(classesTree.iterator()){ cls: SiClass<*> -> cls.declaredMemberProperties.iterator() }
+    get()= nestedSequence(classesTree){ cls: SiClass<*> -> cls.declaredMemberProperties.iterator() }
             as NestedSequence<SiProperty1<T, *>>
 
 val <T: Any> SiClass<T>.nestedDeclaredMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
-    get()= nestedSequence(classesTree.iterator(), {
+    get()= nestedSequence(classesTree, {
         it.returnType.classifier.asNotNullTo { cls: SiClass<*> -> cls.classesTree.iterator() }
     })
     { cls: SiClass<*> -> cls.declaredMemberProperties.iterator() } as NestedSequence<SiProperty1<T, *>>
@@ -47,10 +45,18 @@ val <T: Any> SiClass<T>.implementedNestedMemberPropertiesTree: NestedSequence<Si
     get()= nestedDeclaredMemberPropertiesTree.skip { it.isAbstract }
 
 
+val <T: Any> T.implementedPropertyValues: Sequence<Pair<SiProperty1<T, *>, Any?>>
+    get(){
+        return this::class.si.declaredMemberProperties.asSequence().map {
+            val vals= (it as SiProperty1<T, Any?>).forceGet(this)
+            Pair(it, vals)
+        }
+    }
+
 val <T: Any> T.implementedPropertyValuesTree: NestedSequence<Pair<SiProperty1<T, *>, Any?>>
     get(){
-        return nestedSequence(this::class.si.classesTree.iterator()){ innerCls: SiClass<*> ->
-            innerCls.declaredMemberProperties.iterator().asSequence()
+        return nestedSequence(this::class.si.classesTree){ innerCls: SiClass<*> ->
+            innerCls.declaredMemberProperties//.iterator()//.asSequence()
                 .filter { !it.isAbstract }
                 .map {
                     val vals= (it as SiProperty1<T, Any?>).forceGet(this)
@@ -59,10 +65,34 @@ val <T: Any> T.implementedPropertyValuesTree: NestedSequence<Pair<SiProperty1<T,
                 .iterator()
         }
     }
-val Any.implementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<*, *>, Any?>>
-    get()= nestedSequenceSimple<Pair<SiProperty1<*, *>, Any?>>(implementedPropertyValuesTree.iterator()){
+val Any.implementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
+    get()= nestedSequenceSimple<Pair<SiProperty1<Any, *>, Any?>>(implementedPropertyValuesTree.iterator()){
         it.second?.implementedPropertyValuesTree?.iterator()
     }
+/*
+/** Sama dg [implementedPropertyValuesTree], namun tidak mengambil property yg `private`. */
+//@Suppress(SuppressLiteral.UNCHECKED_CAST)
+val <T: Any> T.implementedAccesiblePropertyValuesTree: Sequence<Pair<SiProperty1<Any, *>, Any?>>
+    get()= object : Sequence<Pair<KProperty1<Any, *>, Any?>>{
+        override fun iterator(): Iterator<Pair<KProperty1<Any, *>, Any?>>
+                = object: Iterator<Pair<KProperty1<Any, *>, Any?>>{
+            private val memberPropsItr=
+                this@implementedAccesiblePropertiesValueMapTree::class.memberProperties
+                    .asSequence().filterNot { it.isAbstract }.iterator()
+                        as Iterator<KProperty1<Any, *>>
+
+            override fun hasNext(): Boolean = memberPropsItr.hasNext()
+
+            override fun next(): Pair<KProperty1<Any, *>, Any?> {
+                val prop= memberPropsItr.next()
+                val value= if(prop.toString() != K_PROPERTY_ARRAY_SIZE_STRING)
+                    prop.getter.forcedCall(this@implementedAccesiblePropertiesValueMapTree)
+                else (this@implementedAccesiblePropertiesValueMapTree as Array<*>).size
+                return Pair(prop, value)
+            }
+        }
+    }
+ */
 /*
     get(){
         var lastValue: Any?= this
@@ -89,7 +119,7 @@ val Any.implementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<*, 
 
 
 val SiClass<*>.declaredMemberFunctionsTree: NestedSequence<SiFunction<*>>
-    get()= nestedSequence(classesTree.iterator()){ cls: SiClass<*> -> cls.declaredMemberFunctions.iterator() }
+    get()= nestedSequence(classesTree){ cls: SiClass<*> -> cls.declaredMemberFunctions.iterator() }
 
 
 /**

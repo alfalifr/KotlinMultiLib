@@ -104,4 +104,9 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
                     throw IllegalArgumentException("""Fungsi: "$name" memiliki ${parameters.size} parameter, namun tersedia ${processedArgs.size} argumen yg tidak dapat memenuhi parameter wajib.""")
         }
     }
+
+    override fun equals(other: Any?): Boolean =
+        if(other is JsClassImpl_<*>) func == other.func
+        else super.equals(other)
+    override fun hashCode(): Int = func.hashCode()
 }

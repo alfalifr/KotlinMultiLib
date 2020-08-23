@@ -4,6 +4,7 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
+import sidev.lib.reflex.clazz
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.SiKClassifier
 import sidev.lib.reflex.common.native.SiNativeWrapper
@@ -161,6 +162,18 @@ object ReflexDescriptor {
 
                 " $typeParamString$hostString$nameStr$paramStr$returnTypeStr"
             }
+/*
+            is SiField<*, *> -> {
+                //Host dari field adalah property, host dari property adalah kelas. Yg diambil adalah host berupa kelas.
+                val hostString= desc.host?.descriptor?.host.asNotNullTo { clazz: SiClass<*> ->
+                    val clsTypeParamStr= clazz.typeParameters.getSiTypeParamDescStr(false)
+                    "${clazz.qualifiedName}$clsTypeParamStr."
+                } ?: ""
+                val returnTypeStr= if(!isDynamicEnabled) ": ${owner.type}" else ""
+
+                " $hostString${owner.name}$returnTypeStr"
+            }
+ */
             is SiParameter -> {
                 val optionalStr= if(owner.isOptional) "?" else ""
                 val paramStr= when(owner.kind){
@@ -179,13 +192,15 @@ object ReflexDescriptor {
             is SiTypeParameter -> " ${owner.getDescStr()}"
             is SiType -> {
                 //TODO ada bbrp tipe di platfor Js yg name-nya jadi "KClass".
-                prine("getDescriptor() SiType native= ${owner.descriptor.native}")
+//                prine("getDescriptor() SiType native= ${owner.descriptor.native} class= ${owner.descriptor.native?.clazz}") //owner.classifier.class= ${owner.classifier?.clazz}
                 val str= when(val classifier= owner.classifier){
+/*
                     is SiKClassifier -> {
                         val str= classifier.nativeFullName
                         val typeArgStr= owner.arguments.getSiTypeProjectionDescStr()
                         "$str$typeArgStr"
                     }
+ */
                     is SiClass<*> -> {
                         val str= classifier.qualifiedName
                         val typeArgStr= owner.arguments.getSiTypeProjectionDescStr()
@@ -231,6 +246,8 @@ internal fun getReflexElementType(reflexUnit: SiReflex, nativeCounterpart: Any?)
     is SiFunction<*> -> SiDescriptor.ElementType.FUNCTION
     is SiMutableProperty<*> -> SiDescriptor.ElementType.MUTABLE_PROPERTY
     is SiProperty<*> -> SiDescriptor.ElementType.PROPERTY
+//    is SiMutableField<*, *> -> SiDescriptor.ElementType.MUTABLE_FIELD
+//    is SiField<*, *> -> SiDescriptor.ElementType.FIELD
     is SiCallable<*> -> SiDescriptor.ElementType.FUNCTION
     is SiParameter -> SiDescriptor.ElementType.PARAMETER
     is SiTypeParameter -> SiDescriptor.ElementType.TYPE_PARAMETER

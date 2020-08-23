@@ -89,6 +89,7 @@ fun <T: Any> inferClassifier(value: String): JsClass_<T>?{
         JsPrimitiveType.FUNCTION -> eval("${SiReflexConst.TEMP_VAR_NAME} = value")
         JsPrimitiveType.NUMBER -> eval(JsPrimitiveType.NUMBER.jsConstructorName)
         JsPrimitiveType.STRING -> eval(JsPrimitiveType.STRING.jsConstructorName)
+        JsPrimitiveType.BOOLEAN -> eval(JsPrimitiveType.BOOLEAN.jsConstructorName)
         else -> null
     } as? Any)
         ?.jsClass as? JsClass_<T>

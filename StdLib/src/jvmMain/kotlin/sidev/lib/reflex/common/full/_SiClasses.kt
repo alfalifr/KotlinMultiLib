@@ -2,15 +2,15 @@
 
 package sidev.lib.reflex.common.full
 
+import sidev.lib.console.prine
 import sidev.lib.exception.ReflexComponentExc
-import sidev.lib.reflex.InnerReflexConst
+import sidev.lib.reflex.InnerReflex
 import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.SiDescriptor
-import sidev.lib.reflex.common.SiReflex
-import sidev.lib.reflex.common.SiType
+import sidev.lib.reflex.common.SiFunction
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Type
 import kotlin.reflect.*
+import kotlin.reflect.full.primaryConstructor
 
 
 actual val SiClass<*>.isPrimitive: Boolean get()= when(val native= descriptor.native){
@@ -20,7 +20,7 @@ actual val SiClass<*>.isPrimitive: Boolean get()= when(val native= descriptor.na
 }
 
 actual val SiClass<*>.isObjectArray: Boolean get()= when(val native= descriptor.native){
-    is KClass<*> -> native.toString() == InnerReflexConst.K_ARRAY_CLASS_STRING
+    is KClass<*> -> native.toString() == InnerReflex.K_ARRAY_CLASS_STRING
     is Class<*> -> native.isArray && native.componentType?.isPrimitive?.not() == true
     else -> throw ReflexComponentExc(currentReflexedUnit = native ?: "<null>", detMsg = "`this` bkn merupakan golongan Class.")
 }
@@ -53,4 +53,13 @@ actual val Any.isNativeReflexUnit: Boolean get()= when(this){
     is Type -> true
 
     else -> false
+}
+
+
+actual val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T> get() = when(val native= descriptor.native){
+    is KClass<*> -> {
+        val nativeConstr= native.primaryConstructor
+        constructors.find { it.descriptor.native == nativeConstr }!!
+    }
+    else -> throw ReflexComponentExc(currentReflexedUnit = this::class, detMsg = "Kelas native: \"$this\" bkn kelas.")
 }

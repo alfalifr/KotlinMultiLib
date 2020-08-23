@@ -25,7 +25,7 @@ import kotlin.reflect.KParameter
 internal actual val isDynamicEnabled: Boolean = true
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-internal val <T: Any> T.jsClass: JsClass_<T> get(){
+val <T: Any> T.jsClass: JsClass_<T> get(){
     if(this is JsClass_<*>) return this as JsClass_<T>
 
     @Suppress(SuppressLiteral.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE)
@@ -95,6 +95,12 @@ internal actual fun getParamDefaultValue(nativeParam: Any): Any? = (nativeParam 
 internal actual fun <T> getFuncCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
         = { (nativeFunc as JsCallable<T>).call(*it) as T }
 
+internal actual fun <T> getConstrCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
+        = { (nativeFunc as JsCallable<T>).new(*it) }
+
+internal actual fun <T> getFuncDefaultCallBlock(nativeFuncHost: Any, nativeFunc: Any): ((args: Array<out Any?>) -> T)?
+        = getFuncCallBlock(nativeFuncHost, nativeFunc)
+
 internal actual fun <T> getPropGetValueBlock(nativeProp: Any): (receivers: Array<out Any>) -> T = {
     (nativeProp as JsProperty<Any, T>)[it.first()]
 }
@@ -105,11 +111,11 @@ internal actual fun <T> getPropSetValueBlock(nativeProp: Any): (receivers: Array
 //TODO <20 Agustus 2020> => classifier String dan Number belum sesuai dg kriteria kelas bawaan Kotlin.
 internal actual fun getReturnType(nativeCallable: Any): SiType = when(nativeCallable){
     is JsCallable<*> -> {
-        prine("nativeCallable.returnType.classifier == null => ${nativeCallable.returnType.classifier == null}")
+//        prine("nativeCallable.returnType.classifier == null => ${nativeCallable.returnType.classifier == null} nativeCallable= $nativeCallable")
         val nativeType= nativeCallable.returnType
         val classifier= nativeType.classifier?.siClass ?: ReflexTemplate.classifierAny
         ReflexFactory.createType(
-            createNativeWrapper(nativeType), classifier, modifier = SiModifier.DYNAMIC.id
+            createNativeWrapper(nativeType), classifier, nullable = true, modifier = SiModifier.DYNAMIC.id
         )
     }
     else -> ReflexTemplate.typeDynamic

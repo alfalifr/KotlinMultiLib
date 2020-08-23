@@ -4,8 +4,9 @@ package sidev.lib.reflex.common.native
 
 import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.number.or
+import sidev.lib.reflex.InnerReflex
 import sidev.lib.reflex.common.*
-import sidev.lib.reflex.common.core.ReflexFactory
+import sidev.lib.reflex.jvm.InnerReflexJvm
 import sidev.lib.structure.data.value.Val
 import java.lang.reflect.*
 import kotlin.reflect.*
@@ -25,8 +26,8 @@ internal actual fun getNativeFunctions(nativeClass: Any): Sequence<Any> =
 //internal fun SiNativeClassifier.getNativeFunctions(): Sequence<Any> = implementation.getFunctions()
 
 /** Termasuk yg mutable. */
-internal actual fun getNativeProperties(nativeClass: Any): Sequence<Any> =
-    (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence()
+internal actual fun getNativeProperties(nativeClass: Any): Sequence<Any>
+        = (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence()
 //internal fun SiNativeClassifier.getNativeProperties(): Sequence<Any> = implementation.getProperties()
 
 /** Tidak termasuk property yg immutable. */
@@ -82,6 +83,40 @@ internal actual fun <T> getFuncCallBlock(nativeFuncHost: Any, nativeFunc: Any): 
     is Method -> { args: Array<out Any?> -> nativeFunc.invoke(nativeFunc, *args) as T }
     is Constructor<*> -> nativeFunc::newInstance as (args: Array<out Any?>) -> T
     else -> throw ReflexComponentExc(currentReflexedUnit = nativeFunc::class, detMsg = "nativeFunc bkn fungsi.")
+}
+internal actual fun <T> getConstrCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
+        = getFuncCallBlock(nativeFuncHost, nativeFunc)
+internal actual fun <T> getFuncDefaultCallBlock(nativeFuncHost: Any, nativeFunc: Any): ((args: Array<out Any?>) -> T)? {
+    var isConstructor= false
+    val funcName= when(nativeFunc){
+        is KFunction<*> -> {
+            nativeFunc.name.also {
+                isConstructor= it == InnerReflex.K_FUNCTION_CONSTRUCTOR_NAME
+            }
+        }
+/*
+        is Executable -> {
+            isConstructor= nativeFunc is Constructor<*>
+            nativeFunc.name
+        }
+ */
+        else -> throw ReflexComponentExc(currentReflexedUnit = nativeFunc::class, detMsg = "nativeFunc bkn fungsi.")
+    }
+
+    return { args ->
+        val javaClass= (when(nativeFuncHost){
+            is KClass<*> -> nativeFuncHost.java
+            is Class<*> -> nativeFuncHost
+            else -> throw ReflexComponentExc(currentReflexedUnit = nativeFuncHost::class, detMsg = "nativeFuncHost bkn host yg valid untuk nativeFunc: \"$nativeFunc\".")
+        })
+        val slicedArgs= args.slice(1 until args.size).toTypedArray()
+        (
+            if(!isConstructor)
+                javaClass.methods.find { InnerReflexJvm.isDefaultOfFun(it, nativeFunc as KCallable<*>) }!!.invoke(args.first(), *slicedArgs)
+            else
+                javaClass.constructors.find { InnerReflexJvm.isDefaultOfFun(it, nativeFunc as KCallable<*>) }!!.newInstance(*args)
+        ) as T
+    }
 }
 
 internal actual fun <T> getPropGetValueBlock(nativeProp: Any): (receivers: Array<out Any>) -> T = {

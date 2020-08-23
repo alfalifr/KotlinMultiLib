@@ -7,10 +7,13 @@ import sidev.lib.universal.`val`.SuppressLiteral
 import sidev.lib.annotation.renamedName
 import sidev.lib.collection.iterator.NestedIteratorSimple
 import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty1
+ */
+import sidev.lib.check.notNull
+import sidev.lib.console.prine
+import sidev.lib.reflex.common.SiMutableProperty1
+import sidev.lib.reflex.common.full.forceSet
+import sidev.lib.reflex.common.full.implementedPropertyValues
+import sidev.lib.reflex.common.full.isUninitializedValue
 
 
 /*
@@ -25,17 +28,19 @@ Properties Tree - Value
  * instantiate. Operasi copy nilai hanya dilakukan pada permukaan.
  */
 fun copySimilarProperty(source: Any, destination: Any){
-    for(valMap in source.implementedAccesiblePropertiesValueMapTree){
-        (destination.implementedAccesiblePropertiesValueMapTree.find {
-            it.first.renamedName == valMap.first.renamedName
+    for(valMap in source.implementedPropertyValues){ //implementedAccesiblePropertiesValueMapTree
+        if(valMap.second?.isUninitializedValue == true)
+            continue
+        (destination.implementedPropertyValues.find {
+            it.first.name == valMap.first.name
                     && it.first.returnType.classifier == valMap.first.returnType.classifier
-                    && it.first is KMutableProperty1<*, *>
-        }?.first as? KMutableProperty1<Any, Any?>)
-            ?.set(destination, valMap.second)
+                    && it.first is SiMutableProperty1<*, *>
+        }?.first as? SiMutableProperty1<Any, Any?>)
+            ?.forceSet(destination, valMap.second)
     }
 }
 
-
+/*
 /** Mengambil semua properti berserta nilainya dari `this.extension` termasuk yg `private`. */
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 val Any.implementedPropertiesValueMap: Sequence<Pair<KProperty1<Any, *>, Any?>>

@@ -1,4 +1,5 @@
 package sidev.lib.reflex
+
 /*
 import sidev.lib.check.asNotNull
 import sidev.lib.check.notNullTo
@@ -6,11 +7,15 @@ import sidev.lib.console.prine
 import sidev.lib.universal.`val`.SuppressLiteral
 import sidev.lib.exception.ClassCastExc
 import sidev.lib.exception.NonInstantiableTypeExc
-import sidev.lib.structure.data.type.withType
+import sidev.lib.reflex.common.SiClass
+import sidev.lib.reflex.common.SiFunction
+import sidev.lib.reflex.common.SiMutableProperty1
+import sidev.lib.reflex.common.SiParameter
+import sidev.lib.reflex.common.full.*
+import sidev.lib.reflex.common.native.si
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KParameter
+
 
 
 /*
@@ -286,5 +291,4 @@ fun <T: Any> new(clazz: KClass<out T>, constructorParamClass: Array<KClass<*>>?=
  */
     return constr.forcedCallBy(defParamVal) //.forcedCall()//.callBy(defParamVal)
 }
-
  */

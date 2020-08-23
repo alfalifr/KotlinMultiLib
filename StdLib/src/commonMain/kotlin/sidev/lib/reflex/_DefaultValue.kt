@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-/*
+
 import sidev.lib.universal.`val`.StringLiteral
 import sidev.lib.universal.`val`.SuppressLiteral
 import kotlin.reflect.KClass
@@ -13,7 +13,7 @@ inline fun <reified T: Any> defaultPrimitiveValue(): T?= defaultPrimitiveValue(T
  *
  * Fungsi ini tidak dapat menghasilkan nilai default dari Array<*>.
  */
-@Suppress(SuppressLiteral.UNCHECKED_CAST)
+@Suppress(SuppressLiteral.UNCHECKED_CAST, SuppressLiteral.IMPLICIT_CAST_TO_ANY)
 fun <T: Any> defaultPrimitiveValue(clazz: KClass<T>): T?{
 
 //    Log.e("defaultPrimitiveValue()", "clazz.simpleName= ${clazz.simpleName} String.classSimpleName_k()= ${String::class.classSimpleName()}")
@@ -47,13 +47,18 @@ fun <T: Any> defaultPrimitiveValue(clazz: KClass<T>): T?{
 //        Array(0){it as T}.classSimpleName_k() -> Array(0){ it as T }
 
         else -> {
-            println("${StringLiteral.ANSI_RED}defaultPrimitiveValue(): Kelas: ${clazz.qualifiedName} bkn merupakan primitif. Hasil akhir == NULL ${StringLiteral.ANSI_RESET}")
+            println("${StringLiteral.ANSI_RED}defaultPrimitiveValue(): Kelas: $clazz bkn merupakan primitif. Hasil akhir == NULL ${StringLiteral.ANSI_RESET}")
 //            Log.e("defaultPrimitiveValue()", "Kelas: ${clazz.simpleName} bkn merupakan primitif. Hasil akhir == NULL")
             null
         } //throw Exception("Tipe data \"${clazz.simpleName}\" bukan nilai primitif.")
     }
     return res as? T
 }
+/*
+fun <T: Any> nativeDefaultPrimitiveValue(clazz: KClass<T>): T?{
+
+}
+ */
 
 
 /*
@@ -61,4 +66,3 @@ fun <T: Any> checkTypeSafety(any: T): Boolean{
 
 }
  */
-*/

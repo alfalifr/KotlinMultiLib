@@ -16,6 +16,8 @@ import sidev.lib.reflex.common.native.si
 //import sidev.lib.reflex.type.inferElementType
 import kotlin.reflect.full.*
 
+class AE<out E, S: AE<out E, S, F>, F: S> where S: CharSequence
+
 internal annotation class Ano
 internal annotation class Anotasi<T: Number, O>(val a: Int= 1) //: Ano()
 
@@ -53,7 +55,7 @@ internal open class E{
     val fDiE= F()
 }
 internal open class D{
-    val d= 1
+    var d= 1
     val dStr= ""
     val eDiD= E()
     val fDiD= F()
@@ -69,12 +71,13 @@ internal open class AA_: AA__(){
 }
 internal sealed class AA: AA_(){
     private val aa= ""
-    val dDariAA= D()
+    var dDariAA= D()
 }
 internal sealed class AB: AA(){
     protected val ab= "ok"
     private val ab_2= "ok"
     var ab_3= 6
+//    @JvmField
     abstract var ab_abs: Int
     abstract fun ada()
 }
@@ -89,16 +92,26 @@ internal open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, 
     constructor(): this(Poin(1, 3))
     val ac= "ppop"
     private var acPriv= "aaa"
+    var acStr1= "aaa1"
+    var acStr2= "aaa2"
     override val a: Boolean = true
-    var listInt: List<Int?>? = listOf(1, 2, 4)
+//    var listInt: List<Int?>? = listOf(1, 2, 4)
     override val x: String
         get() = "as"
     var poin= Poin(1, 2)
+
+    var acStr3: String
+        set(v){ acStr1= v }
+        get()= acStr2
+
     var array= arrayOf(1, 2, 3)
     lateinit var poinLate: Poin //= Poin(1, 2)
+//    @JvmField
     override var ab_abs: Int= 10
 
-    val aLazy: String by lazy { "lazy" }
+    val aLazy: String by lazy {
+        "lazy"
+    }
 
     @Anotasi<Int, Any> @FunAnot(10)
     fun someFun(x: Int) = prin("\n\n ==== Halo dari AC.someFun() x= $x ==== \n\n")
@@ -108,6 +121,7 @@ internal open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, 
 }
 
 internal class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az")*/ var z: Int= 10){
+    constructor(): this(12, 100)
     /*@Rename("aa_aa_diPoin")*/ var aa_diPoin= AA_()
 }
 

@@ -39,11 +39,11 @@ fun <O> nestedIteratorSimple(startIterator: Iterator<O>, getOutputBlock: (input:
 
 fun <I, O> nestedSequence(start: I, getInputBlock: ((output: O) -> Iterator<I>?)?= null, getOutputBlock: (input: I) -> Iterator<O>?)
 : NestedSequence<O> = object : NestedSequence<O>{
-    override fun iterator(): NestedIterator<*, O> = nestedIterator(start, getInputBlock, getOutputBlock)
+    override fun iterator(): NestedIterator<I, O> = nestedIterator(start, getInputBlock, getOutputBlock)
 }
-fun <I, O> nestedSequence(startIterator: Iterator<I>, getInputBlock: ((output: O) -> Iterator<I>?)?= null, getOutputBlock: (input: I) -> Iterator<O>?)
+fun <I, O> nestedSequence(startSequence: Sequence<I>, getInputBlock: ((output: O) -> Iterator<I>?)?= null, getOutputBlock: (input: I) -> Iterator<O>?)
 : NestedSequence<O> = object : NestedSequence<O>{
-    override fun iterator(): NestedIterator<*, O> = nestedIterator(startIterator, getInputBlock, getOutputBlock)
+    override fun iterator(): NestedIterator<I, O> = nestedIterator(startSequence.iterator(), getInputBlock, getOutputBlock)
 }
 
 

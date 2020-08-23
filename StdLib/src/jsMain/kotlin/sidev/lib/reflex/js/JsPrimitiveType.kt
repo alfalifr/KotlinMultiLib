@@ -32,6 +32,7 @@ enum class JsPrimitiveType(/*val jsName: String*/){
         fun infer(value: String): JsPrimitiveType = when{
             value.matches("'.*'".toRegex()) -> STRING
             value.matches("[\\d.]+".toRegex()) -> NUMBER
+            value == "true" || value == "false" -> BOOLEAN
             value.startsWith("new") -> OBJECT
             value.matches("\\[.*\\]".toRegex()) -> ARRAY
             value.startsWith("function") -> FUNCTION

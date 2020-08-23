@@ -36,6 +36,13 @@ internal val KTypeParameter.siNative: SiNativeClassifier
 internal val KTypeParameter.si: SiTypeParameter get()= ReflexFactory.createTypeParameter(
     createNativeWrapper(this), null, upperBounds.map { it.si }, variance.si
 )
+/**
+ * Untuk type param yg upperBound-nya circular,
+ * misalkan: class Enum<E: Enum<E>>
+ */
+internal val KTypeParameter.siCircular: SiTypeParameter get()= ReflexFactory.createTypeParameter(
+    createNativeWrapper(this), null, emptyList(), variance.si
+)
 
 internal val KTypeProjection.si: SiTypeProjection
     get()= SiTypeProjection(variance?.si, type?.si)

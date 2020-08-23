@@ -41,7 +41,7 @@ internal open class E{
     val fDiE= F()
 }
 internal open class D{
-    val d= 1
+    var d= 1
     val dStr= ""
     val eDiD= E()
     val fDiD= F()
@@ -85,6 +85,12 @@ internal open class AC(val poinConstr: Poin= Poin(y= 14)): Z, Y, X, AB() { //, A
     override var ab_abs: Int= 10
     override var ab_3: Int = 80
     val aLazy: String by lazy { "lazy" }
+
+    var acStr1= "aaa1"
+    var acStr2= "aaa2"
+    var acStr3: String
+        set(v){ acStr1= v }
+        get()= acStr2
 
     var dynamicVar: dynamic= 109
 

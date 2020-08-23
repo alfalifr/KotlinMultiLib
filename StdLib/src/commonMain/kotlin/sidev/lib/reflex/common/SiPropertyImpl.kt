@@ -2,6 +2,7 @@ package sidev.lib.reflex.common
 
 import sidev.lib.console.prine
 import sidev.lib.reflex.common.core.ReflexFactory
+import sidev.lib.reflex.common.core.ReflexFactoryHelper
 import sidev.lib.reflex.common.core.ReflexTemplate
 import sidev.lib.reflex.common.native.getPropGetValueBlock
 import sidev.lib.reflex.common.native.getPropSetValueBlock
@@ -17,6 +18,7 @@ internal abstract class SiPropertyGetter1<T, out R>(override val property: SiPro
     override val callBlock: (args: Array<out Any?>) -> R by lazy{
         getPropGetValueBlock<R>(property.descriptor.native!!) as (Array<out Any?>) -> R
     }
+    override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = null
     override val name: String by lazy { "<get-${property.name}>" } //Agar [property] di-init dulu dan gak leak.
     override val returnType: SiType get()= property.returnType
     override val parameters: List<SiParameter> by lazy{ //listOf(SiParameterImplConst.receiver0)
@@ -35,6 +37,7 @@ internal abstract class SiPropertySetter1<T, R>(override val property: SiPropert
             getPropSetValueBlock<R>(property.descriptor.native!!)(args as Array<out Any>, args[1] as R)
         }
     }
+    override val defaultCallBlock: ((args: Array<out Any?>) -> Unit)? = null
     override val name: String by lazy { "<set-${property.name}>" } //Agar [property] di-init dulu dan gak leak.
     override val returnType: SiType = ReflexTemplate.typeUnit
     override val parameters: List<SiParameter> by lazy { //listOf(SiParameterImplConst.setterValue1)
@@ -52,14 +55,18 @@ internal abstract class SiPropertySetter1<T, R>(override val property: SiPropert
 internal abstract class SiProperty1Impl<T, out R>
     : SiCallableImpl<R>(), SiProperty1<T, R> {
     override val callBlock: (args: Array<out Any?>) -> R = { null as R } //Karena callBlocknya ikut SiProperty1, pake getter.
+    override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = null
     override val getter: SiProperty1.Getter<T, R> by lazy {
         ReflexFactory.createPropertyGetter1(this)
     }
     /** Property gak punya param, aksesornya yg punya. */
     override val parameters: List<SiParameter> by lazy { getter.parameters }
     override val typeParameters: List<SiTypeParameter> = emptyList()
+    override val hasBackingField: Boolean by lazy {
+        ReflexFactoryHelper.hasBackingField(this, descriptor.native!!)
+    }
     override fun get(receiver: T): R {
-        prine("get()= receiver= $receiver prop= $this")
+//        prine("get()= receiver= $receiver prop= $this")
         return getter.call(receiver)
     }
     /** Call dari property sama dg call getter-nya. */

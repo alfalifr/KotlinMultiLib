@@ -1,9 +1,6 @@
 package sidev.lib.reflex.common.core
 
-import sidev.lib.reflex.common.SiCallable
-import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.SiType
-import sidev.lib.reflex.common.SiTypeParameter
+import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.SiNativeCallable
 import sidev.lib.reflex.common.native.SiNativeClassifier
 import kotlin.reflect.KClass
@@ -14,8 +11,11 @@ internal expect object ReflexFactoryHelper{
      * [native] dapat berupa [KClass]
      * atau [JsClass]/function dg tipe [dynamic] pada konteks Js.
      */
-    fun getSupertypes(classifier: SiClass<*>, native: Any, name: String?): List<SiType>
-    fun getTypeParameter(classifier: SiClass<*>, native: Any, name: String?): List<SiTypeParameter>
-    fun getTypeParameter(callable: SiCallable<*>, native: Any, name: String?): List<SiTypeParameter>
+    fun getSupertypes(classifier: SiClass<*>, native: Any): List<SiType>
+    fun getTypeParameter(classifier: SiClass<*>, native: Any): List<SiTypeParameter>
+    fun getTypeParameter(hostClass: SiClass<*>?, callable: SiCallable<*>, native: Any): List<SiTypeParameter>
+    fun hasBackingField(property: SiProperty1<*, *>, native: Any): Boolean
+//    fun <R, T> getBackingField(property: SiProperty1<R, T>, native: Any): SiField<R, T>?
+//    fun <R, T> getMutableBackingField(property: SiMutableProperty1<R, T>, native: Any): SiMutableField<R, T>?
 //    fun getSimpleName(classifier: SiNativeClassifier, qualifiedName: String?): String?
 }

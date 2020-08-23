@@ -1,17 +1,11 @@
 package sidev.lib.reflex.common.core
 
 import sidev.lib.exception.ReflexComponentExc
-import sidev.lib.reflex.common.SiCallable
-import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.SiType
-import sidev.lib.reflex.common.SiTypeParameter
-import sidev.lib.reflex.common.native.SiNativeCallable
-import sidev.lib.reflex.common.native.SiNativeClassifier
-import sidev.lib.reflex.common.native.si
+import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.siClass
 import sidev.lib.reflex.js.JsCallableImpl
 import sidev.lib.reflex.js.JsClassImpl_
-import kotlin.reflect.KCallable
+import sidev.lib.reflex.js.JsProperty
 import kotlin.reflect.KClass
 
 
@@ -20,15 +14,40 @@ internal actual object ReflexFactoryHelper{
      * [native] dapat berupa [KClass]
      * atau [JsClass]/function dg tipe [dynamic] pada konteks Js.
      */
-    actual fun getSupertypes(classifier: SiClass<*>, native: Any, name: String?): List<SiType>{
+    actual fun getSupertypes(classifier: SiClass<*>, native: Any): List<SiType>{
         return sidev.lib.reflex.js.getSupertypes(native).map {
             JsClassImpl_<Any>((it as JsCallableImpl<*>).func).siClass as SiClass<Any>
         }.map {
             it.createType()
         }
     }
-    actual fun getTypeParameter(classifier: SiClass<*>, native: Any, name: String?): List<SiTypeParameter>
+    actual fun getTypeParameter(classifier: SiClass<*>, native: Any): List<SiTypeParameter>
             = emptyList()
-    actual fun getTypeParameter(callable: SiCallable<*>, native: Any, name: String?): List<SiTypeParameter>
+    actual fun getTypeParameter(
+        hostClass: SiClass<*>?,
+        callable: SiCallable<*>,
+        native: Any
+    ): List<SiTypeParameter>
             = emptyList()
+
+
+    actual fun hasBackingField(property: SiProperty1<*, *>, native: Any): Boolean = when(native){
+        is JsProperty<*, *> -> true
+        else -> throw ReflexComponentExc(currentReflexedUnit = native::class, detMsg = "native bkn property di js.")
+    }
+/*
+    actual fun <R, T> getBackingField(property: SiProperty1<R, T>, native: Any): SiField<R, T>? = when(native){
+        is JsProperty<*, *> -> ReflexFactory.createField(
+            createNativeWrapper(native), property, native.innerName, property.returnType
+        )
+        else -> throw ReflexComponentExc(currentReflexedUnit = native::class, detMsg = "native bkn property di js.")
+    }
+
+    actual fun <R, T> getMutableBackingField(property: SiMutableProperty1<R, T>, native: Any): SiMutableField<R, T>? = when(native){
+        is JsMutableProperty<*, *> -> ReflexFactory.createMutableField(
+            createNativeWrapper(native), property, native.innerName, property.returnType
+        )
+        else -> throw ReflexComponentExc(currentReflexedUnit = native::class, detMsg = "native bkn mutable property di js.")
+    }
+ */
 }

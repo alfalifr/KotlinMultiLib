@@ -48,6 +48,9 @@ internal expect fun getParamType(nativeParam: Any): SiType
 internal expect fun getParamKind(nativeParam: Any): SiParameter.Kind
 internal expect fun getParamDefaultValue(nativeParam: Any): Any?
 internal expect fun <T> getFuncCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
+internal expect fun <T> getConstrCallBlock(nativeFuncHost: Any, nativeFunc: Any): (args: Array<out Any?>) -> T
+//untuk receiver2, sbenarnya gak tau guna yg sebenarnya.
+internal expect fun <T> getFuncDefaultCallBlock(nativeFuncHost: Any, nativeFunc: Any): ((args: Array<out Any?>) -> T)?
 
 internal expect fun <T> getPropGetValueBlock(nativeProp: Any): (receivers: Array<out Any>) -> T
 internal expect fun <T> getPropSetValueBlock(nativeProp: Any): (receivers: Array<out Any>, value: T) -> Unit

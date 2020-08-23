@@ -3,6 +3,7 @@ package sidev.lib.reflex.common
 
 interface SiProperty<out R>: SiCallable<R> {
     val getter: Getter<R>
+    val hasBackingField: Boolean
 
     /** Call dari property sama dg call getter-nya. */
     override fun call(vararg args: Any?): R = getter.call(*args)
@@ -20,8 +21,7 @@ interface SiMutableProperty<R>: SiProperty<R> {
     interface Setter<R>: SiProperty.Accessor<R>, SiCallable<Unit>
 }
 
-interface SiProperty1<T, out R>:
-    SiProperty<R>/*, (T) -> R karena dilarang di Js*/{
+interface SiProperty1<T, out R>: SiProperty<R>/*, (T) -> R karena dilarang di Js*/{
     fun get(receiver: T): R
     override val getter: Getter<T, R>
 

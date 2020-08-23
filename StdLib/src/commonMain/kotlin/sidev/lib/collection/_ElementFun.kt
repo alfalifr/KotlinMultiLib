@@ -1,15 +1,16 @@
 package sidev.lib.collection
-/*
+///*
 import sidev.lib.console.prine
 import sidev.lib.number.isZero
 import sidev.lib.number.plus
 import sidev.lib.reflex.clazz
-import sidev.lib.reflex.clone
-import sidev.lib.reflex.isInstantiable
-import sidev.lib.reflex.isKReflectionElement
+import sidev.lib.reflex.common.SiClass
+import sidev.lib.reflex.common.SiParameter
+import sidev.lib.reflex.common.full.clone
+import sidev.lib.reflex.common.full.isInstantiable
+import sidev.lib.reflex.common.full.isReflexUnit
+import sidev.lib.reflex.common.native.si
 import sidev.lib.universal.`val`.SuppressLiteral
-import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 
 /*
 ===============
@@ -127,7 +128,7 @@ toString
 
 val Map<*, *>.string: String
     get(){
-        return if(!this::class.isInstantiable){
+        return if(!this::class.si.isInstantiable){
             var res= "{"
             for(e in entries)
                 res += "${e.key}=${e.value}, "
@@ -142,7 +143,7 @@ val Map<*, *>.namedString: String
 
 val Collection<*>.string: String
     get(){
-        return if(!this::class.isInstantiable){
+        return if(!this::class.si.isInstantiable){
             var res= "["
             for(e in this)
                 res += "$e, "
@@ -223,7 +224,7 @@ New Unique Value Creation
 =============================
  */
 @Suppress(SuppressLiteral.UNCHECKED_CAST, SuppressLiteral.IMPLICIT_CAST_TO_ANY)
-fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constructorParamValFunc: ((KClass<*>, KParameter) -> Any?)?= null): T? {
+fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): T? {
     var newVal= inCollection.lastOrNull()
     if(newVal == null){
         prine("inCollection kosong, nilai default: \"$default\" dikembalikan.")
@@ -234,7 +235,7 @@ fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constr
             is Number -> newVal + 1
             is String -> "$newVal:@"
             else -> {
-                if(!newVal.isKReflectionElement)
+                if(!newVal.clazz.si.isReflexUnit)
                     try{ (newVal as Any).clone(constructorParamValFunc = constructorParamValFunc)!! }
                     catch (e: Exception){
                         prine("Tidak dapat meng-instantiate key dg kelas: \"${(newVal as Any).clazz}\", nilai default: \"$default\" dikembalikan.")
@@ -246,5 +247,3 @@ fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constr
     }
     return newVal
 }
-
- */
