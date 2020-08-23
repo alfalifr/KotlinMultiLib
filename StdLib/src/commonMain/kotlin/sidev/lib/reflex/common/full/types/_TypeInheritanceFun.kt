@@ -103,6 +103,8 @@ fun SiType.isSameTypeAs(other: SiType, includeNullability: Boolean= true): Boole
  *  -> `this.extension`.arguments merupakan subtype atau sama dg [base].arguments.
  */
 fun SiType.isSubTypeOf(base: SiType): Boolean{
+    if((base.isMarkedNullable || !isMarkedNullable).not())
+        return false
     val isClassifierSubtype= base.classifier != null && classifier?.isUpperBoundSubTypeOf(base.classifier!!) ?: { prine("SiType.isSubTypeOf masuk ke null"); false }()
     var isTypeArgSubtype= true
 
@@ -113,7 +115,7 @@ fun SiType.isSubTypeOf(base: SiType): Boolean{
         catch (e: Exception){ break }
         isTypeArgSubtype= isTypeArgSubtype && (otherTypeArg != null && typeArg.type?.isSubTypeOf(otherTypeArg) ?: true)
     }
-    prine("SiType.isSubTypeOf isClassifierSubtype= $isClassifierSubtype isTypeArgSubtype= $isTypeArgSubtype")
+    prine("SiType.isSubTypeOf this= $this base= $base isClassifierSubtype= $isClassifierSubtype isTypeArgSubtype= $isTypeArgSubtype")
     return isClassifierSubtype && isTypeArgSubtype
 }
 fun SiType.isSuperTypeOf(derived: SiType): Boolean = derived.isSubTypeOf(this)

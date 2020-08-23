@@ -111,8 +111,8 @@ val Any.isDelegate: Boolean get()= when(this){
     else -> isNativeDelegate.let { if(!it) this is Lazy<*> else it } //Ternyata ada built-in delegate yaitu lazy yg gak punya fungsi getValue() / setValue().
 }
 
-
-fun SiClass<*>.isSubclassOf(base: SiClass<*>): Boolean = base in superclassesTree
+/** @return `true` jika `this.extension` merupakan subclass atau sama dg [base]. */
+fun SiClass<*>.isSubclassOf(base: SiClass<*>): Boolean = base in classesTree
 fun SiClass<*>.isSuperclassOf(derived: SiClass<*>): Boolean = derived.isSubclassOf(this)
 
 fun SiClass<*>.isExclusivelySuperclassOf(derived: SiClass<*>): Boolean

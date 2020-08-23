@@ -2,10 +2,12 @@ package sidev.lib
 
 import sidev.lib.console.prin
 import sidev.lib.number.asNumber
+import sidev.lib.reflex.common.full.classesTree
 import sidev.lib.reflex.common.full.implementedPropertyValuesTree
 import sidev.lib.reflex.common.full.types.getCommonClass
 import sidev.lib.reflex.common.full.types.inferredType
 import sidev.lib.reflex.common.full.types.isSubTypeOf
+import sidev.lib.reflex.common.native.si
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -36,7 +38,7 @@ class SampleTestsJVM {
         val inferreType3= array3.inferredType
         val inferreType4= array4.inferredType
 
-        val is2SubtypeOf4= inferreType2.isSubTypeOf(inferreType4)
+        val is2SubtypeOf4= inferreType1.isSubTypeOf(inferreType3)
 
         prin("inferreType1= $inferreType1")
         prin("inferreType2= $inferreType2")
@@ -54,6 +56,11 @@ class SampleTestsJVM {
         prin("\n=============== listSingle.implementedPropertyValuesTree ===============\n")
         for((i, prop) in listSingle.implementedPropertyValuesTree.withIndex()){
             prin("i= $i prop= $prop returnType.class= ${prop.first.returnType.classifier}")
+        }
+
+        prin("\n=============== Number::class.si.classesTree ===============\n")
+        for((i, cls) in Number::class.si.classesTree.withIndex()){
+            prin("i= $i cls= $cls")
         }
     }
 }
