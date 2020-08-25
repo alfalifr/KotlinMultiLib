@@ -81,25 +81,29 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
         newInsConstrParamValFunc.invoke(clazz, paramOfNew)
     }
 
-    val newInstance= if(continueCreateNewInstance){
-        if(!clazz.isArray)
-            new(clazz, constructor = constr, defParamValFunc = newInsConstrParamValFuncWrapper)
-                ?: if(isDelegate) return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
-                else throw NonInstantiableTypeExc(typeClass = this::class,
-                    msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
-        else
-            arrayClone(isDeepClone, newInsConstrParamValFunc) //as T
+//    prine("clone() clazz= $clazz ke new this= $this")
+
+    val newInstance= if(continueCreateNewInstance) when{
+        clazz.isArray -> return arrayClone(isDeepClone, newInsConstrParamValFunc) //as T
+        clazz.isCollection -> return (this as Collection<T>).deepClone(isDeepClone, newInsConstrParamValFunc) as T
+        else -> new(clazz, constructor = constr, defParamValFunc = newInsConstrParamValFuncWrapper)
+            ?: if(isDelegate) {
+                prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")
+                return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
+            } else throw NonInstantiableTypeExc(typeClass = this::class,
+                msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     } else{
         new(clazz,  constructor = constr,
             defParamValFunc = newInsConstrParamValFuncWrapper)
-            ?:  if(isDelegate) return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
-            else throw NonInstantiableTypeExc(typeClass = this::class,
+            ?:  if(isDelegate) {
+                prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")
+                return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
+            } else throw NonInstantiableTypeExc(typeClass = this::class,
                 msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     }
 
-
     for(valueMap in valueMapTree){
-        prine("clone() valMap= $valueMap")
+//        prine("clone() valMap= $valueMap")
         val field= valueMap.first
 /*
         val continueCopy= field is SiMutableProperty1<*, *>
@@ -107,25 +111,23 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
                 && { constr.parameters.find { it.isPropertyLike(field.descriptor.host as SiProperty<*>) } != null }())
  */
 //        if(continueCopy){ //Karena semua field, baik yg final maupun tidak harus di-copy value-nya.
-            @Suppress(SuppressLiteral.UNCHECKED_CAST)
-            val value= valueMap.second
-            if(value?.isUninitializedValue == true) continue
-//            prine("clone() prop= $prop value= $value value.clazz.isPrimitive= ${value?.clazz?.isPrimitive} bool=${!isDeepClone || value == null || value.clazz.isPrimitive}")
-            field.asNotNull { mutableField: SiMutableField<T, Any?> ->
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
+        val value= valueMap.second
+        if(value?.isUninitializedValue == true) continue
+        field.asNotNull { mutableField: SiMutableField<T, Any?> ->
 //                prine(" masukkkk... clone() prop= $prop value= $value value.clazz.isPrimitive= ${value?.clazz?.isPrimitive} bool=${!isDeepClone || value == null || (value.clazz.isPrimitive && constr.parameters.find { it.isPropertyLike(mutableField, true) } == null)}")
-                if(!isDeepClone || value == null || value.clazz.si.isCopySafe || value.isReflexUnit){
-                    if(constr.parameters.find { it.isPropertyLike((mutableField as SiField<*, *>).property, true) } == null)
-                    //Jika ternyata [mutableField] terletak di konstruktor dan sudah di-instansiasi,
-                    // itu artinya programmer sudah memberikan definisi nilainya sendiri saat intansiasi,
-                    // maka jangan salin nilai lama [mutableField] ke objek yg baru di-intansiasi.
-                        mutableField.forceSet(newInstance, value) //value.withType(mutableField.returnType)
+            if(!isDeepClone || value == null || value.clazz.si.isCopySafe || value.isReflexUnit){
+                if(constr.parameters.find { it.isPropertyLike((mutableField as SiField<*, *>).property, true) } == null)
+                //Jika ternyata [mutableField] terletak di konstruktor dan sudah di-instansiasi,
+                // itu artinya programmer sudah memberikan definisi nilainya sendiri saat intansiasi,
+                // maka jangan salin nilai lama [mutableField] ke objek yg baru di-intansiasi.
+                    mutableField.forceSet(newInstance, value) //value.withType(mutableField.returnType)
 //                        mutableField.forcedSetTyped(newInstance, value.withType(mutableField.returnType))
-                } else{
-//                    prine("prop= $mutableField mutableField.returnType= ${mutableField.returnType.classifier}")
+            } else{
 //                    mutableField.forcedSetTyped<T, Any?>(newInstance, value.clone(true, constructorParamValFunc).withType(mutableField.returnType))
-                    mutableField.forceSet(newInstance, value.clone(true, constructorParamValFunc))
-                }
+                mutableField.forceSet(newInstance, value.clone(true, constructorParamValFunc))
             }
+        }
 //        }
     }
 //    prine("this::class= ${this::class} newInstance::class= ${newInstance::class}")
@@ -187,6 +189,31 @@ fun CharArray.deepClone(): CharArray = sliceArray(indices)
 fun ShortArray.deepClone(): ShortArray = sliceArray(indices)
 fun BooleanArray.deepClone(): BooleanArray = sliceArray(indices)
 fun ByteArray.deepClone(): ByteArray = sliceArray(indices)
+
+
+/**
+ * Meng-clone array berupa apapun itu.
+ * @return -> array baru hasil deepClone() jika `this.extension` berupa [Array],
+ *   -> array hasil clone() biasa jika `this.extension` berupa array primitif,
+ *   -> `this.extension` sendiri jika berupa array yg lain.
+ */
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Collection<T>.deepClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): Collection<T>{
+    val newColl= mutableListOf<T>()
+
+    for(e in this)
+        newColl.add(
+            (if(e != null)
+                try{ (e as Any).clone(isElementDeepClone, elementConstructorParamValFunc) }
+                catch (e: NonInstantiableTypeExc){ e }
+            else null) as T //Jika `this.extension` merupakan collection of nullables.
+        )
+
+    return when(this){
+        is MutableCollection<*> -> newColl
+        else -> newColl.toList()
+    }
+}
 
 
 
@@ -272,24 +299,24 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
 
     for(param in params){
         val type= param.type
-        prine("new() param= $param type= $type type.classifier= ${type.classifier} native= ${type.classifier?.descriptor?.native}")
+//        prine("new() param= $param type= $type type.classifier= ${type.classifier} native= ${type.classifier?.descriptor?.native}")
 //        val typeClass= type.classifier as SiClass<*>
         val paramVal=
             try{
-                prine("new() defParamValFunc!!(param) mulai")
-                val vals= defParamValFunc!!(param)
-                prine("new() defParamValFunc!!(param) val= $vals")
-                vals
+//                prine("new() defParamValFunc!!(param) mulai")
+                val vals= defParamValFunc?.invoke(param)
+//                prine("new() defParamValFunc!!(param) val= $vals")
+                vals!!
             } //Yg diprioritaskan pertama adalah definisi value dari programmer.
             catch (e: Exception) { //Jika programmer tidak mendefinisikan, coba cari nilai default.
                 if(param.isOptional) continue //Tapi sebelum ke nilai default, cek apakah param opsional.
                 //Jika opsional, maka artinya programmer udah memberikan definisi sendiri untuk param itu.
                 // Maka gak perlu ditambahkan ke konstruktor.
-                try{
-                    if(!isDynamicEnabled) defaultPrimitiveValue((type.classifier as SiClass<*>).kotlin)!!
-                    else null
-                } //Jika ternyata gak opsional, maka coba cari nilai default.
-                catch (e: Exception){ null }
+                try{  //Jika ternyata gak opsional, maka coba cari nilai default.
+                    param.defaultValue ?:
+                        if(!isDynamicEnabled) defaultPrimitiveValue((type.classifier as SiClass<*>).kotlin)!!
+                        else null
+                } catch (e: Exception){ null }
             }
         if(paramVal != null){
             defParamVal[param]= paramVal

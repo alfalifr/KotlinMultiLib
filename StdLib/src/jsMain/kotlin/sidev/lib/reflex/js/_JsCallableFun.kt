@@ -7,6 +7,7 @@ import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.fullName
 import sidev.lib.reflex.js.kotlin.KotlinJsFunction
 import kotlin.js.Json
+import kotlin.js.json
 
 
 internal fun jsPureFunction(func: Any): dynamic = when(func){
@@ -17,7 +18,14 @@ internal fun jsPureFunction(func: Any): dynamic = when(func){
     else -> {
         if(!func.isFunction)
             throw IllegalArgumentException("""Objek: "${str(func)}" bkn fungsi.""")
-        func
+
+        val checkObj= json().also { it[JsReflexConst.PARAMETER_CHECK_FUN_IS_WRAPPER]= false }
+        try{
+            val res= func.asDynamic()(checkObj)
+            if(!(checkObj[JsReflexConst.PARAMETER_CHECK_FUN_IS_WRAPPER] as Boolean))
+                func
+            else res
+        } catch (e: Throwable){ func } //Jika terjadi error karena parameter tidak sesuai, maka return `func`.
     }
 }
 

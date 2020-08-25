@@ -1,7 +1,7 @@
 package sidev.lib.reflex.common
 
 //Agar dapat dijalankan di Js.
-enum class SiVariance {
+enum class SiVariance: SiReflex by SiReflexImpl() {
     /**
      * The affected type parameter or type is *invariant*, which means it has no variance applied to it.
      */

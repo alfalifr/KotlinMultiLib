@@ -6,4 +6,6 @@ object JsReflexConst {
     const val FUNCTION_BODY_PATTERN= "\\{(?<block>[\\S\\s]+)?\\}"
     const val FUNCTION_PATTERN= "function(?:\\s+(?<functionname>[a-zA-Z0-9_$]+))?\\s*$FUNCTION_PARAMETER_PATTERN\\s*$FUNCTION_BODY_PATTERN"
     const val FUNCTION_NEW_INSTANTIATION_PATTERN= "new\\s+(?<functionname>[a-zA-Z0-9_\$]+)\\s*$FUNCTION_PARAMETER_PATTERN"
+
+    const val PARAMETER_CHECK_FUN_IS_WRAPPER = "__\$isFunTypeWrapper\$__"
 }

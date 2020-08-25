@@ -23,6 +23,6 @@ interface SiTypeParameter: SiClassifier /*: KTypeParameter -> agar dapat dijalan
     val variance: SiVariance
 }
 
-internal abstract class SiTypeParameterImpl: SiReflexImpl(), SiTypeParameter{
+internal abstract class SiTypeParameterImpl: SiDescriptorContainerImpl(), SiTypeParameter{
     abstract override var upperBounds: List<SiType>
 }

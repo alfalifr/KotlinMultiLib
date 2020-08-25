@@ -3,6 +3,7 @@ package sidev.lib.reflex.js
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.findIndexed
+import sidev.lib.console.log
 import sidev.lib.console.prine
 import sidev.lib.number.toNumber
 import sidev.lib.property.mutableLazy
@@ -35,6 +36,9 @@ fun getParam(func: Any): List<JsParameter>{
     val func= jsPureFunction(func) as Any
     if(!func.isFunction)
         throw IllegalArgumentException("func: \"${str(func)}\" bkn fungsi.") //Agar lebih kontekstual.
+
+//    prine("getParam() func= $func")
+
     val funStr= func.toString() //js("func.toString()") as String
     var openParanthesesCount= 0
     var openBracesCount= 0
@@ -52,7 +56,6 @@ fun getParam(func: Any): List<JsParameter>{
         isOptionalItr= false
     }
  */
-
     fun addParamNameToList(){
         paramNames.add(paramNameItr)
         params.add(null)
@@ -102,10 +105,10 @@ fun getParam(func: Any): List<JsParameter>{
                 inferType(defaultValueStr), defaultValueStr)
         }
 
-    for((i, param) in params.withIndex()){
+    for((i, param) in params.withIndex())
         if(param == null)
             params[i]= createJsParam(i, paramNames[i], false)
-    }
+
 
     return params as List<JsParameter>
 }

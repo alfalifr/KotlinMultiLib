@@ -1,10 +1,8 @@
 package sidev.lib.reflex.common
 
-import sidev.lib.console.prine
-
-interface SiDescriptor {
-    /** Komponen [SiReflex] yg memiliki descriptor ini. */
-    val owner: SiReflex
+interface SiDescriptor: SiReflex {
+    /** Komponen [SiDescriptorContainer] yg memiliki descriptor ini. */
+    val owner: SiDescriptorContainer
 
     /**
      * String tambahan yg menjelaskan lebih lanjut ttg [owner],
@@ -16,7 +14,7 @@ interface SiDescriptor {
     val type: ElementType
 
     /**
-     * Tampat kompononen [owner] menempel pada [SiReflex] lain.
+     * Tampat kompononen [owner] menempel pada [SiDescriptorContainer] lain.
      *
      * Jika [owner] berupa, maka [host] berupa:
      *   -> [SiClass] : [SiClass] lainnya atau `null`,
@@ -26,7 +24,7 @@ interface SiDescriptor {
      *   -> [SiParameter] : [SiCallable]
      *   -> [SiType] : `null` karena tipe tidak terikat pada apapun.
      */
-    val host: SiReflex?
+    val host: SiDescriptorContainer?
 
     /**
      * Implementasi native code dari [owner].
@@ -40,7 +38,7 @@ interface SiDescriptor {
     /** Modifier tambahan untuk [owner]. */
     val modifier: Int
 
-    /** Id unik yg digunakan untuk mengidentifikasi apakah 2 [SiReflex] sama walau instance-nya beda. */
+    /** Id unik yg digunakan untuk mengidentifikasi apakah 2 [SiDescriptorContainer] sama walau instance-nya beda. */
     val identifier: Int
 
     enum class ElementType(val description: String){
@@ -63,9 +61,9 @@ interface SiDescriptor {
 }
 
 
-internal abstract class SiDescriptorImpl: SiDescriptor {
+internal abstract class SiDescriptorImpl: SiReflexImpl(), SiDescriptor {
     abstract override var native: Any? //Agar dapat diganti nilainya setelah interface ini di-init.
-    final override var host: SiReflex?= null //Untuk mengakomodasi ketergantungan cyclic, misalnya SiCallable butuh SiParameter, namun SiParameter juga butuh SiCallable sbg hostnya dalam descriptor.
+    final override var host: SiDescriptorContainer?= null //Untuk mengakomodasi ketergantungan cyclic, misalnya SiCallable butuh SiParameter, namun SiParameter juga butuh SiCallable sbg hostnya dalam descriptor.
         set(v){
             field= v
             isDescStrCalculated= false

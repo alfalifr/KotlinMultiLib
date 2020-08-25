@@ -1,10 +1,9 @@
 package sidev.lib.platform
 
-import sidev.lib.console.log
 import sidev.lib.console.prine
 import sidev.lib.reflex.common.core.SiReflexConst
-import sidev.lib.reflex.js.JsCallable
-import sidev.lib.reflex.js.JsCallableImpl
+import sidev.lib.reflex.js.asJson
+import kotlin.js.Json
 import kotlin.js.json
 
 /**
@@ -47,6 +46,20 @@ actual fun getGlobalObject(name: String): Any?{
 }
 
 val globalRef= try{ eval("global") } catch (e: Throwable){ eval("window") }
+
+internal actual fun putInternalObjectOnGlobal(obj: Any){
+    prine("putInternalObjectOnGlobal() obj= $obj")
+    val name= obj::class.simpleName!!
+    prine("putInternalObjectOnGlobal() obj= $obj name= $name")
+    val internalObj= (getGlobalObject(SiReflexConst.SI_JS_GLOBAL_INTERNAL_OBJECT_NAME) ?: json()) as Json
+    internalObj[name]= obj
+    setGlobalObject(SiReflexConst.SI_JS_GLOBAL_INTERNAL_OBJECT_NAME, internalObj)
+}
+
+internal actual fun getInternalObject(name: String): Any{
+    return getGlobalObject(SiReflexConst.SI_JS_GLOBAL_INTERNAL_OBJECT_NAME)?.let { it.asJson()[name] as Any }
+        ?: throw NoSuchElementException("Tidak ada internal object dg nama $name")
+}
 
 /*
 val getFunctionOnGlobal: (funcName: String) -> JsCallable<*> = {

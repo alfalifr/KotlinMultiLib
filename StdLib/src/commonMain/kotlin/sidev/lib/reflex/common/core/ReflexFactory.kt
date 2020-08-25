@@ -1,6 +1,5 @@
 package sidev.lib.reflex.common.core
 
-import sidev.lib.check.notNullTo
 import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
@@ -116,7 +115,7 @@ object ReflexFactory{
 
     fun createTypeParameter(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?,
+        host: SiDescriptorContainer?,
         upperBounds: List<SiType>, variance: SiVariance,
         modifier: Int= 0
     ): SiTypeParameter = object: SiTypeParameterImpl() {
@@ -128,7 +127,7 @@ object ReflexFactory{
 
     fun <R> createCallable(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
         returnType: SiType= ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
         typeParameters: List<SiTypeParameter> = emptyList(),
@@ -152,7 +151,7 @@ object ReflexFactory{
 
     internal fun <R> createCallableLazyly(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
 //        returnType: SiType= ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
         typeParameters: List<SiTypeParameter> = emptyList(),
@@ -181,7 +180,7 @@ object ReflexFactory{
 
     fun <R> createFunction(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
         returnType: SiType= ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
         typeParameters: List<SiTypeParameter> = emptyList(),
@@ -201,7 +200,7 @@ object ReflexFactory{
 
     internal fun <R> createFunctionLazyly(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
 //        returnType: SiType= ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
         typeParameters: List<SiTypeParameter> = emptyList(),
@@ -222,7 +221,7 @@ object ReflexFactory{
 
     fun <T, R> createProperty1(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
         type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiProperty1<T, R> = object : SiProperty1Impl<T, R>(){
@@ -236,7 +235,7 @@ object ReflexFactory{
 
     internal fun <T, R> createProperty1Lazyly(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
 //        type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiProperty1<T, R> = object : SiProperty1Impl<T, R>(){
@@ -255,7 +254,7 @@ object ReflexFactory{
 
     fun <T, R> createMutableProperty1(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
         type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiMutableProperty1<T, R> = object : SiMutableProperty1Impl<T, R>(){
@@ -270,7 +269,7 @@ object ReflexFactory{
 
     internal fun <T, R> createMutableProperty1Lazyly(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
 //        type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiMutableProperty1<T, R> = object : SiMutableProperty1Impl<T, R>(){
@@ -306,7 +305,7 @@ object ReflexFactory{
 
     fun <T: Any> createClass(
         nativeCounterpart: SiNativeWrapper,
-        host: SiReflex? = null,
+        host: SiDescriptorContainer? = null,
         constructors: List<SiFunction<T>> = emptyList(),
         members: Collection<SiCallable<*>> = emptyList(),
         typeParameters: List<SiTypeParameter> = emptyList(),
@@ -329,11 +328,11 @@ object ReflexFactory{
     }
 ///*
     fun <R, T>createField(
-        nativeCounterpart: SiNativeWrapper?,
-        host: SiReflex?= null,
-        name: String,
-        type: SiType,
-        modifier: Int= 0
+    nativeCounterpart: SiNativeWrapper?,
+    host: SiDescriptorContainer?= null,
+    name: String,
+    type: SiType,
+    modifier: Int= 0
     ): SiField<R, T> {
         val getBlock= if(nativeCounterpart != null) getPropGetValueBlock<T>(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
         else {
@@ -351,7 +350,7 @@ object ReflexFactory{
 
     fun <R, T>createMutableField(
         nativeCounterpart: SiNativeWrapper?,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
         name: String,
         type: SiType,
         modifier: Int= 0
@@ -384,7 +383,7 @@ object ReflexFactory{
      */
     internal fun <R, T>_createField(
         nativeCounterpart: SiNativeWrapper?,
-        host: SiReflex?= null,
+        host: SiDescriptorContainer?= null,
         name: String,
         type: SiType,
         modifier: Int= 0

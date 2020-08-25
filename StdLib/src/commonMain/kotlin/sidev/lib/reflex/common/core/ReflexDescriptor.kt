@@ -4,7 +4,6 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
-import sidev.lib.reflex.clazz
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.SiKClassifier
 import sidev.lib.reflex.common.native.SiNativeWrapper
@@ -31,13 +30,16 @@ object ReflexDescriptor {
     const val SI_CALLABLE_SETTER_NAME= "<set-prop>"
 
     fun createDescriptor(
-        owner: SiReflex, host: SiReflex?, nativeCounterpart: SiNativeWrapper?, modifier: Int
+        owner: SiDescriptorContainer, host: SiDescriptorContainer?, nativeCounterpart: SiNativeWrapper?, modifier: Int
     ): SiDescriptor = object : SiDescriptorImpl() {
         override val innerName: String? = nativeCounterpart?.nativeInnerName
-        override val owner: SiReflex = owner
+        override val owner: SiDescriptorContainer = owner
 //        override val innerName: String = getReflexInnerName(owner)
         override val type: SiDescriptor.ElementType by lazy { getReflexElementType(owner, nativeCounterpart?.implementation) }
-        override val identifier: Int by lazy{ getReflexHashCode(this, owner, nativeCounterpart?.implementation) }
+        override val identifier: Int by lazy{
+//            prine("SiDescripto getReflexHashCode() owner::class= ${owner::class}")
+            getReflexHashCode(this, owner, nativeCounterpart?.implementation)
+        }
         override var modifier: Int = modifier
         override var native: Any? = nativeCounterpart?.implementation
         init{ this.host= host }
@@ -234,15 +236,15 @@ object ReflexDescriptor {
 
 }
 
-fun SiReflex.createDescriptor(
-    host: SiReflex? = null, nativeCounterpart: SiNativeWrapper? = null, modifier: Int= 0
+fun SiDescriptorContainer.createDescriptor(
+    host: SiDescriptorContainer? = null, nativeCounterpart: SiNativeWrapper? = null, modifier: Int= 0
 ): SiDescriptor = ReflexDescriptor.createDescriptor(this, host, nativeCounterpart, modifier)
 
-internal var SiReflex.mutableHost: SiReflex?
+internal var SiDescriptorContainer.mutableHost: SiDescriptorContainer?
     get() = descriptor.host
     set(v){ (descriptor as SiDescriptorImpl).host= v }
 
-internal fun getReflexElementType(reflexUnit: SiReflex, nativeCounterpart: Any?): SiDescriptor.ElementType = when(reflexUnit){
+internal fun getReflexElementType(reflexUnit: SiDescriptorContainer, nativeCounterpart: Any?): SiDescriptor.ElementType = when(reflexUnit){
     is SiClass<*> -> SiDescriptor.ElementType.CLASS
     is SiFunction<*> -> SiDescriptor.ElementType.FUNCTION
     is SiMutableProperty<*> -> SiDescriptor.ElementType.MUTABLE_PROPERTY
@@ -262,11 +264,11 @@ internal fun getReflexElementType(reflexUnit: SiReflex, nativeCounterpart: Any?)
         ?: SiDescriptor.ElementType.ANY
 }
 
-internal fun getReflexHashCode(desc: SiDescriptor, reflexUnit: SiReflex, nativeCounterpart: Any?): Int = when(reflexUnit){
+internal fun getReflexHashCode(desc: SiDescriptor, reflexUnit: SiDescriptorContainer, nativeCounterpart: Any?): Int = when(reflexUnit){
     is SiClass<*> -> reflexUnit.qualifiedName.hashCode() //Karena tidak ada kelas dg nama lengkap yg sama.
     is SiCallable<*> -> getHashCode(desc.host, reflexUnit.name, reflexUnit.parameters, reflexUnit.returnType)
     is SiField<*, *> -> getHashCode(desc.host, reflexUnit.name, reflexUnit.type)
-    is SiParameter -> getHashCode(desc.host, reflexUnit.name, reflexUnit.index, reflexUnit.type, reflexUnit.kind, reflexUnit.isOptional)
+    is SiParameter -> getHashCode(reflexUnit.name, reflexUnit.index, reflexUnit.type, reflexUnit.kind, reflexUnit.isOptional)
     is SiTypeParameter -> getHashCode(reflexUnit.name, reflexUnit.upperBounds)
     is SiType -> getHashCode(reflexUnit.classifier, reflexUnit.arguments, reflexUnit.isMarkedNullable)
     else -> 0

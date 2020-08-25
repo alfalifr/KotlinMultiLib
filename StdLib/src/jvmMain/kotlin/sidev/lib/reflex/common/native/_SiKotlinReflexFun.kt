@@ -1,9 +1,13 @@
 package sidev.lib.reflex.common.native
 
+import sidev.lib.check.asNotNullTo
+import sidev.lib.collection.findIndexed
+import sidev.lib.console.prine
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.core.ReflexFactory
 import sidev.lib.reflex.common.core.ReflexLoader
 import sidev.lib.reflex.common.core.createNativeWrapper
+import sidev.lib.reflex.common.core.createType
 import kotlin.reflect.*
 
 
@@ -16,7 +20,17 @@ internal val KType.si: SiType get()= ReflexFactory.createType(
         )
         else -> null
     },
-    arguments.map { it.si }, isMarkedNullable
+    arguments.map { typeProjection ->
+//        prine("KType.si argument it= $typeProjection")
+        val siType= if(classifier is KClass<*>)
+            typeProjection.type?.classifier.asNotNullTo { typeParam: KTypeParameter ->
+                typeParam.upperBounds.findIndexed { it.value.classifier == classifier }
+                    ?.let { (it.value.classifier as KClass<*>).si.typeParameters[it.index] }
+                    ?.let { it.createType() }
+            }
+        else typeProjection.type?.si
+        SiTypeProjection(typeProjection.variance?.si, siType)
+    }, isMarkedNullable
 )
 /*
 internal val KParameter.si: SiParameter

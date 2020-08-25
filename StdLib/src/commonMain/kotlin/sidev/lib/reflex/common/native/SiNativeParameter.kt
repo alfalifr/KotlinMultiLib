@@ -1,15 +1,14 @@
 package sidev.lib.reflex.common.native
 
 import sidev.lib.reflex.common.SiParameter
-import sidev.lib.reflex.common.SiReflexImpl
-import sidev.lib.reflex.common.core.ReflexTemplate
+import sidev.lib.reflex.common.SiDescriptorContainerImpl
 
 
 interface SiNativeParameter: SiNative, SiParameter {
     override val name: String
 }
 
-internal abstract class SiNativeParamterImpl: SiReflexImpl(), SiNativeParameter{
+internal abstract class SiNativeParamterImpl: SiDescriptorContainerImpl(), SiNativeParameter{
     override val isVararg: Boolean get() = false
 }
 

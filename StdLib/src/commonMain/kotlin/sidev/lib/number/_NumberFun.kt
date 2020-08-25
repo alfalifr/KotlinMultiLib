@@ -1,5 +1,6 @@
 package sidev.lib.number
 
+import sidev.lib.console.prine
 import sidev.lib.structure.data.value.Val
 import kotlin.math.absoluteValue
 
@@ -14,6 +15,34 @@ fun Number.isNotPositive(): Boolean = !isPositive()
 
 /** @return true jika `this.extension` merupakan angka dg tipe data yg memiliki angka di belakang koma. */
 fun Number.isDecimalType(): Boolean = this is Double || this is Float
+
+fun Number.toDecimalType(): Number =
+    try{ toFloat() }
+    catch (e: NumberFormatException){
+        try{ toDouble() }
+        catch (e: NumberFormatException){
+            prine("""Tidak dapat mengubah `this` ($this) menjadi tipe angka dg koma di belakangnya, return `this`.""")
+            this
+        }
+    }
+
+/*
+==== GAK BERHASIL =========
+/**
+ * Fungsi yg digunakan untuk melakukan operasi pada
+ */
+internal fun <T: Number, R: Number> T.decimalTypeOp(
+    failMsg: String = """Tidak dapat melakukan operasi numberOp() pada `this` ($this) """,
+    operation: (T) -> R
+): R = when(this){
+    is Float -> operation(this)
+    is Double -> operation(this)
+    else -> {
+        prine("Number.decimalTypeOp(): `this` bkn merupakan `Float` atau `Double`, return `this` ($this).")
+        this as R
+    }
+}
+ */
 
 
 /** Fungsi yg mengubah [String] menjadi [Number] apapun. */

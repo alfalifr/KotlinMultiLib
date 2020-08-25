@@ -133,21 +133,30 @@ Ignoring Function
  * Jika tidak ingin mengabaikan Exception, maka programmer dapat mengubah blok [catcha].
  * [ignoreError] true jika semua bentuk exception, baik itu [Exception] maupun [Error].
  *
- * @return true jika blok pada [trya] berhasil dieksekusi dan sebaliknya.
+ * @return [T] jika [trya] berhasil dieksekusi, [T?] jika terjadi error pada [trya] dan [catcha] dijalankan.
  */
-fun trya(
+fun <T> trya(
     ignoreError: Boolean= true,
-    catcha: (Throwable) -> Unit = { prine("TRY_CATCH -> Throwable: ${it::class.simpleName} diabaikan!!!") },
-    trya:() -> Unit
-): Boolean{
-    return try{ trya()
-        true
-    } catch (e: Throwable){
+    catcha: (Throwable) -> T? = { prine("TRY_CATCH -> Throwable: ${it::class.simpleName} diabaikan!!!"); null },
+    trya:() -> T
+): T? {
+    return try{ trya() }
+    catch (e: Throwable){
         if(ignoreError || e is Exception) catcha(e)
         else throw e
-        false
     }
 }
+
+/**
+ * Bentuk native dari [trya]. [catcha] memiliki satu parameter berupa [Any] karena pada Js, Kotlin Throwable bisa
+ * saja bkn merupakan tipe error dari bawaan Js.
+ */
+expect fun <T> nativeTrya(
+    ignoreError: Boolean= true,
+    catcha: (nativeThrowable: Any) -> T? = { prine("TRY_CATCH -> Throwable: ${it::class.simpleName} diabaikan!!!"); null },
+    trya:() -> T
+): T?
+
 /**
  * Fungsi sederhana untuk menjalankan sebuah blok [trya] dan mengabaikan Exception yang terjadi.
  * Jika tidak ingin mengabaikan Exception, maka programmer dapat mengubah blok [catcha].
@@ -155,19 +164,17 @@ fun trya(
  *
  * Bentuk lebih [trya] dg typed-throwable
  *
- * @return true jika blok pada [trya] berhasil dieksekusi dan sebaliknya.
+ * @return [T] jika [trya] berhasil dieksekusi, [T?] jika terjadi error pada [trya] dan [catcha] dijalankan.
  */
-inline fun <reified T: Throwable> tryCatch(
+inline fun <reified T: Throwable, R> tryCatch(
     ignoreError: Boolean= true,
-    catcha: (T) -> Unit = { prine("TRY_CATCH -> Throwable: ${it::class.simpleName} diabaikan!!!") },
-    trya:() -> Unit
-): Boolean{
-    return try{ trya()
-        true
-    } catch (e: Throwable){
+    catcha: (T) -> R? = { prine("TRY_CATCH -> Throwable: ${it::class.simpleName} diabaikan!!!"); null },
+    trya:() -> R
+): R? {
+    return try{ trya() }
+    catch (e: Throwable){
         if((ignoreError || e is Exception) && e is T) catcha(e)
         else throw e
-        false
     }
 }
 

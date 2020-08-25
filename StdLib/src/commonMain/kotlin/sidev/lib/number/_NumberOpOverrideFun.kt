@@ -1,5 +1,6 @@
 package sidev.lib.number
 
+import sidev.lib.console.prine
 import sidev.lib.reflex.clazz
 import sidev.lib.exception.UndefinedDeclarationExc
 import kotlin.math.pow
@@ -87,34 +88,6 @@ operator fun Number.inc(): Number= this +1
 operator fun Number.dec(): Number= this -1
 operator fun Number.unaryPlus(): Number= this
 operator fun Number.unaryMinus(): Number= this * -1
-
-
-/** Fungsi ini msh bergantung pada Java. */
-infix fun Number.pow(other: Number): Number{
-    val initVal= try{ toFloat() }
-    catch (e: NumberFormatException){
-        try{ toDouble() }
-        catch (e: NumberFormatException){ return this }
-    }
-    val usedOther= try{ other.toFloat() }
-    catch (e: NumberFormatException){
-        try{ other.toDouble() }
-        catch (e: NumberFormatException){ return this }
-    }
-    return when(initVal){
-        is Float -> when(usedOther){
-            is Float -> initVal.pow(usedOther)
-            is Double -> initVal.toDouble().pow(usedOther)
-            else -> this
-        }
-        is Double -> when(usedOther){
-            is Float -> initVal.pow(usedOther.toDouble())
-            is Double -> initVal.pow(usedOther)
-            else -> this
-        }
-        else -> this
-    }
-}
 
 
 

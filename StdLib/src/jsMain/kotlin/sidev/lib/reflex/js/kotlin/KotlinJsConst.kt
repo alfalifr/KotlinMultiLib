@@ -8,7 +8,7 @@ object KotlinJsConst{
     const val FUNCTION_DEFAULT_PARAMETER_PATTERN_REGEX = "if\\s*\\([a-z0-9]+\\s*={2,3}\\s*void\\s*[(0)]+\\)\\s*(?<param>[a-z0-9]+)\\s*=\\s*(?<val>[.'a-z0-9]+.*);"
     const val FUNCTION_DEFAULT_PARAMETER_PATTERN_REGEX_CHECK = "if\\s*\\([a-z0-9]+\\s*={2,3}\\s*void\\s*[(0)]+\\)"
     const val FUNCTION_DEFAULT_PARAMETER_PATTERN_REGEX_ASSIGNMENT = "(?<param>[a-z0-9]+)\\s*=\\s*(?<val>[.'a-z0-9]+.+);"
-    const val FUNCTION_INNER_NAME_PATTERN = "(?<innerfun>[a-zA-Z0-9\$_]+)_[a-zA-Z0-9\$_]{6}\\\$"
+    const val FUNCTION_INNER_NAME_PATTERN = "(?<innerfun>[a-zA-Z0-9\$_]+)_[a-zA-Z0-9\$_]{4,6}\\\$"
     const val PROPERTY_LATEINIT_PATTERN = "(?:(?<lateprop>[a-zA-Z0-9\$_]+)_[a-zA-Z0-9\$_]{6}\\\$_0)"
     const val PROPERTY_LAZY_DELEGATE_PATTERN = "(?<classname>${JsReflexConst.IDENTIFIER_NAME_PATTERN})\\$(?<propname>${JsReflexConst.IDENTIFIER_NAME_PATTERN})\\\$lambda"
     const val PROPERTY_PRIVATE_PATTERN = "(?:(?<privprop>[a-zA-Z0-9\$_]+)_0)"

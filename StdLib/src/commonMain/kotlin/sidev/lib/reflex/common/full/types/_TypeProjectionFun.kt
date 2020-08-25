@@ -61,6 +61,7 @@ fun SiTypeParameter.getClassProjectionIn(owner: Any): SiTypeProjection {
                 prop.returnType.arguments.findIndexed { it.value.type?.classifier == this }.notNull {
                     val returnTypeParam= (prop.returnType.classifier as SiClass<*>).typeParameters[it.index] //Langsung di-cast jadi [SiClass] karena jelas yg punya typeParam hanya kelas, bkn typeParam lain.
                     return returnTypeParam.getClassProjectionIn(valueProjection)
+                        .let{ SiTypeProjection(variance, it.type) }
                 }
             }
         }

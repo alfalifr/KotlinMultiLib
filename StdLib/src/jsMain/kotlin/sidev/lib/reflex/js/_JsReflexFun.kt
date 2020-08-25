@@ -53,6 +53,7 @@ fun getPropertyDescriptors(obj: Any): Json = (eval("Object.getOwnPropertyDescrip
  * @return `true` jika [value] berhasil di-assign, `false` jika sebaliknya.
  */
 fun setProperty(owner: Any, propName: String, value: Any?): Boolean{
+//    prine("setProperty() propName= ${str(propName)} value= ${str(value)} type= ${jsTypeOf(value)}")
     val propDesc= getPropertyDescriptors(owner)
     if(propName in propDesc.keys){
         try {
@@ -65,11 +66,18 @@ fun setProperty(owner: Any, propName: String, value: Any?): Boolean{
 }
 
 val Any.prototype: Any
-    get()= if(isFunction) this.asDynamic().prototype
+    get()= (if(isFunction) this.asDynamic().prototype
     else try{ asDynamic().__proto__ }
     catch (e: Throwable){
         throw IllegalStateException("objek: \"${str(this)}\" tidak punya prototype.")
-    }
+            //Walaupun Object.prototype == null, tetap tidak return Object.prototype agar sesuai konteks
+            // bahwa instance dg kelas Object tidak punya superclass.
+    }) //as Any dikomen agar tidak terjadi ClassCastException
+
+/**
+ * Mengambil immediate superclass, tidak disertai interface jika pada sudut pandang Kotlin.
+ */
+fun jsSuperclass(any: Any): Any? = try{ any.asDynamic().__proto__ } catch (e: Throwable){ null }
 
 /**
  * Untuk mengambil constructor pada objek Js.

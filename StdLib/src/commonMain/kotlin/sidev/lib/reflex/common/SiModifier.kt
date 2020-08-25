@@ -11,17 +11,17 @@ enum class SiModifier(val id: Int) {
     ;
 
     companion object{
-        fun hasModifier(unit: SiReflex, modifier: SiModifier): Boolean = (unit.descriptor.modifier and modifier.id) != 0
-        fun setModifier(unit: SiReflex, modifier: SiModifier){
+        fun hasModifier(unit: SiDescriptorContainer, modifier: SiModifier): Boolean = (unit.descriptor.modifier and modifier.id) != 0
+        fun setModifier(unit: SiDescriptorContainer, modifier: SiModifier){
             (unit.descriptor as SiDescriptorImpl).modifier = unit.descriptor.modifier or modifier.id
         }
-        fun isAbstract(unit: SiReflex): Boolean = hasModifier(unit, ABSTRACT)
-        fun isMutable(unit: SiReflex): Boolean = hasModifier(unit, MUTABLE)
-        fun isOpen(unit: SiReflex): Boolean = hasModifier(unit, OPEN)
-        fun isOverride(unit: SiReflex): Boolean = hasModifier(unit, OVERRIDE)
-        fun isDynamic(unit: SiReflex): Boolean = hasModifier(unit, DYNAMIC)
-        fun isOptional(unit: SiReflex): Boolean = hasModifier(unit, OPTIONAL)
-        fun isVararg(unit: SiReflex): Boolean = hasModifier(unit, VARARG)
+        fun isAbstract(unit: SiDescriptorContainer): Boolean = hasModifier(unit, ABSTRACT)
+        fun isMutable(unit: SiDescriptorContainer): Boolean = hasModifier(unit, MUTABLE)
+        fun isOpen(unit: SiDescriptorContainer): Boolean = hasModifier(unit, OPEN)
+        fun isOverride(unit: SiDescriptorContainer): Boolean = hasModifier(unit, OVERRIDE)
+        fun isDynamic(unit: SiDescriptorContainer): Boolean = hasModifier(unit, DYNAMIC)
+        fun isOptional(unit: SiDescriptorContainer): Boolean = hasModifier(unit, OPTIONAL)
+        fun isVararg(unit: SiDescriptorContainer): Boolean = hasModifier(unit, VARARG)
     }
 }
 

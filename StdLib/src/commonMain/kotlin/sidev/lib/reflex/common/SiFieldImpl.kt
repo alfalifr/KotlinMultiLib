@@ -1,7 +1,7 @@
 package sidev.lib.reflex.common
 
 
-internal abstract class SiFieldImpl<in R, out T>(private val getBlock: (R) -> T): SiReflexImpl(), SiField<R, T>{
+internal abstract class SiFieldImpl<in R, out T>(private val getBlock: (R) -> T): SiDescriptorContainerImpl(), SiField<R, T>{
     override fun get(receiver: R): T = getBlock(receiver)
 }
 

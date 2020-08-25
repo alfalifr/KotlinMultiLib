@@ -23,7 +23,8 @@ val Any.isFunction: Boolean
     get()= jsTypeOf(this) == JsPrimitiveType.FUNCTION.jsName
 
 val Any.isObject: Boolean
-    get()= jsTypeOf(this) == JsPrimitiveType.OBJECT.jsName
+    get()= this != null //Karena pada Js, null juga termasuk `object`
+            && jsTypeOf(this) == JsPrimitiveType.OBJECT.jsName
 /*
 val Any?.isNull: Boolean
     get()= this == null

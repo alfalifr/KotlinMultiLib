@@ -1,16 +1,8 @@
 package sidev.lib.reflex.common.full
 
-import sidev.lib.collection.iterator.NestedIteratorImpl
-import sidev.lib.collection.iterator.SkippableIteratorImpl
-import sidev.lib.collection.lazy_list.asCached
-import sidev.lib.collection.string
-import sidev.lib.console.prine
-import sidev.lib.exception.NoSuchMemberExc
 import sidev.lib.property.UNINITIALIZED_VALUE
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.si
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
@@ -37,8 +29,11 @@ val SiType.isPrimitive: Boolean
 val SiClass<*>.isArray: Boolean
     get()= isObjectArray || isPrimitiveArray
 
+val SiClass<*>.isCollection: Boolean
+    get()= isSubclassOf(Collection::class.si)
+
 val Any.isReflexUnit: Boolean
-    get()= this is SiReflex || this is SiDescriptor
+    get()= this is SiReflexImpl || this is SiDescriptor
             || isNativeReflexUnit
 
 val Any.isUninitializedValue: Boolean

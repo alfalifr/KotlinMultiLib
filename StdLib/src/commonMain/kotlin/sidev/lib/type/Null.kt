@@ -1,5 +1,10 @@
 package sidev.lib.type
 
+import sidev.lib.console.prine
+import sidev.lib.platform.Platform
+import sidev.lib.platform.platform
+import sidev.lib.platform.putInternalObjectOnGlobal
+import sidev.lib.platform.setGlobalObject
 import sidev.lib.reflex.common.core.createType
 import sidev.lib.reflex.common.native.si
 
@@ -8,6 +13,12 @@ import sidev.lib.reflex.common.native.si
  * Tipe ini digunakan pada proses [Any.inferredType] untuk menunjukan inferredType dari null.
  */
 object Null{
-    val clazz = this::class.si
-    val type = clazz.createType(nullable = true)
+    init{
+        prine("init Null")
+        //TODO <23 Agustus 2020> => Tiba-tiba `this::class.si` menyebabkan `this Null` jadi unreachable dari kode.
+        if(platform == Platform.JS)
+            putInternalObjectOnGlobal(this)
+    }
+    val clazz by lazy { this::class.si }
+    val type by lazy { clazz.createType(nullable = true) }
 }

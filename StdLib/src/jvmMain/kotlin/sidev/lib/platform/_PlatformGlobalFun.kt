@@ -19,3 +19,14 @@ actual fun setGlobalObject(name: String, value: Any, forceReplace: Boolean): Boo
     ReplaceWith("null")
 )
 actual fun getGlobalObject(name: String): Any? = null
+
+@Deprecated(
+    "putInternalObjectOnGlobal() pada jvm pada langsung dideklarasikan pada Static Object"
+)
+internal actual fun putInternalObjectOnGlobal(obj: Any) {}
+
+@Deprecated(
+    "putInternalObjectOnGlobal() pada jvm pada langsung dideklarasikan pada Static Object",
+    ReplaceWith("throw IllegalArgumentException(\"Fungsi getInternalObject() tidak tersedia di JVM.\")")
+)
+internal actual fun getInternalObject(name: String): Any = throw IllegalArgumentException("Fungsi getInternalObject() tidak tersedia di JVM.")

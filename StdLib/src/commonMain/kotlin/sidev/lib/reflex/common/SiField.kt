@@ -7,7 +7,7 @@ package sidev.lib.reflex.common
  * agar lebih aman. Penggunaan [SiField] dilakukan untuk
  * kepentingan refleksi yg mendesak.
  */
-interface SiField<in R, out T>: SiReflex{
+interface SiField<in R, out T>: SiDescriptorContainer{
     val name: String
     val type: SiType
     fun get(receiver: R): T

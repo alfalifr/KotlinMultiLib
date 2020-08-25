@@ -33,7 +33,7 @@ interface SiClass<T: Any>: SiClassifier {
     val isAbstract: Boolean
 }
 
-internal abstract class SiClassImpl<T: Any>: SiReflexImpl(), SiClass<T>{
+internal abstract class SiClassImpl<T: Any>: SiDescriptorContainerImpl(), SiClass<T>{
     abstract override var members: Collection<SiCallable<*>>
     abstract override var constructors: List<SiFunction<T>>
 //    abstract override var typeParameters: List<SiTypeParameter>

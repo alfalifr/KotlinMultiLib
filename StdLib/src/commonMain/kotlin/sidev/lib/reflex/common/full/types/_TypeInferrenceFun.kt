@@ -10,11 +10,11 @@ import sidev.lib.console.prine
 import sidev.lib.console.prinr
 import sidev.lib.reflex.common.SiType
 import sidev.lib.reflex.common.SiTypeProjection
+import sidev.lib.reflex.common.core.SiReflexConst
 import sidev.lib.reflex.common.core.createType
 import sidev.lib.reflex.common.native.si
 import sidev.lib.type.Null
 import kotlin.reflect.KType
-import kotlin.reflect.KTypeProjection
 
 
 /**
@@ -35,7 +35,7 @@ fun <T> inferElementType(array: Array<T>): SiType = getCommonType(
 val Any?.inferredType: InferredType
     get(){
         if(this == null)
-            return Null.type.asInferredType()
+            return SiReflexConst.nullType.asInferredType() //Pake SiReflexConst.nullType agar lebih aman saat di Js.
 
         val typeParams= this::class.si.typeParameters
 

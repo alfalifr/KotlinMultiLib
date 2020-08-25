@@ -1,5 +1,7 @@
 package sidev.lib.platform
 
+import sidev.lib.reflex.common.core.SiReflexConst
+
 /**
  * Menaruh objek dg nama [name] dg nilai [value] pada global.
  * @return -> `true` jika berhasil menempatkan [name] pada global,
@@ -11,3 +13,6 @@ expect fun setGlobalObject(name: String, value: Any, forceReplace: Boolean = fal
  * @return `null` jika tidak ada objek global dg nama [name].
  */
 expect fun getGlobalObject(name: String): Any?
+
+internal expect fun putInternalObjectOnGlobal(obj: Any)
+internal expect fun getInternalObject(name: String): Any

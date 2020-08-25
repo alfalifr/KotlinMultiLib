@@ -16,7 +16,7 @@ import sidev.lib.reflex.common.native.si
 //import sidev.lib.reflex.type.inferElementType
 import kotlin.reflect.full.*
 
-class ClsGen<T, R>(val isi: T, val list: List<R>)
+class ClsGen<T, R>(val isi: T, var list: List<R>)
 
 class AE<out E, S: AE<out E, S, F>, F: S> where S: CharSequence
 
@@ -161,6 +161,34 @@ class ClsS{
 fun ada(z: ClsS){
     z.isi= 2
 }
+
+open class Food
+open class FastFood: Food()
+open class Burger: FastFood()
+
+open class Producer<out T: Food>{
+    open fun produce(): T? = null
+}
+open class Consumer<in T: Food>{
+    open fun consume(ins: T) {}
+}
+
+open class FoodStore: Producer<Food>()
+open class FastFoodStore: Producer<FastFood>()
+open class BurgerStore: Producer<Burger>()
+
+open class Everyone: Consumer<Food>()
+open class ModernPipel: Consumer<FastFood>()
+open class American: Consumer<Burger>()
+
+
+internal enum class En(val a: Int, val pos: Int){
+    A(2, 10),
+    B(2, 3),
+    C(3, 5);
+    val b= 12
+}
+
 
 internal class NoConstr private constructor()
 

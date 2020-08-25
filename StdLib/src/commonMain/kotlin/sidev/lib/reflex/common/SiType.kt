@@ -3,7 +3,7 @@ package sidev.lib.reflex.common
 import kotlin.reflect.KClass
 
 //TODO <12 Agustus 2020> => untuk sementara sama dg [KType}
-interface SiType : SiReflex /*, KType -> agar dapat dijalankan di Js.*/{
+interface SiType : SiDescriptorContainer /*, KType -> agar dapat dijalankan di Js.*/{
     /**
      * The declaration of the classifier used in this type.
      * For example, in the type `List<String>` the classifier would be the [KClass] instance for [List].
@@ -44,6 +44,6 @@ interface SiType : SiReflex /*, KType -> agar dapat dijalankan di Js.*/{
     val isMarkedNullable: Boolean
 }
 
-internal abstract class SiTypeImpl: SiReflexImpl(), SiType{
+internal abstract class SiTypeImpl: SiDescriptorContainerImpl(), SiType{
     abstract override var arguments: List<SiTypeProjection>
 }

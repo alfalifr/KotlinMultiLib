@@ -8,4 +8,4 @@ import kotlin.reflect.KClassifier
  *   - [SiTypeParameter]
  *   - [JsCallable]
  */
-interface SiClassifier : SiReflex, KClassifier
+interface SiClassifier : SiDescriptorContainer, KClassifier

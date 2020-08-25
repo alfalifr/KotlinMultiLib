@@ -1,5 +1,10 @@
 package sidev.lib.collection
 
+/** Mengambil bbrp elemen dari `this.extension` List dari [range.first] (inclusive) hingga [range.last] (exclusive). */
+operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, range.last)
+
+/** Mengambil bbrp elemen dari `this.extension` Array dari [range.first] (inclusive) hingga [range.last] (exclusive). */
+operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range)
 
 /** Sama seperti [first] sekaligus mengahpus element pertama */
 fun <T> MutableList<T>.takeFirst(): T = if(isEmpty()) throw NoSuchElementException("List is Empty") else removeAt(0)

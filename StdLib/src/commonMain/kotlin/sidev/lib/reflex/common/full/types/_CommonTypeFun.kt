@@ -4,18 +4,15 @@ import sidev.lib.check.contentEquals
 import sidev.lib.collection.lazy_list.flattenToNested
 import sidev.lib.collection.leveledIterator
 import sidev.lib.collection.sequence.withLevel
-import sidev.lib.collection.string
 import sidev.lib.collection.toArrayOf
-import sidev.lib.console.prine
 import sidev.lib.universal.`val`.SuppressLiteral
 import sidev.lib.type.Null
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.KTypeProjection
 import sidev.lib.collection.intersect
+import sidev.lib.console.prine
 import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.common.SiType
 import sidev.lib.reflex.common.SiTypeProjection
+import sidev.lib.reflex.common.core.SiReflexConst
 import sidev.lib.reflex.common.core.createType
 import sidev.lib.reflex.common.full.classesTree
 import sidev.lib.reflex.common.native.si
@@ -23,15 +20,18 @@ import sidev.lib.reflex.common.native.si
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun getCommonClass(vararg classes: SiClass<*>): SiClass<*> {
+//    prine("getCommonClass() classes= $classes")
     if(classes.isEmpty())
         throw NoSuchElementException("""Tidak bisa mendapatkan common-class dari list "classes" kosong.""")
-    val usedClasses= classes.asSequence().filter { it != Null.clazz }.toList() //Kelas Null tidak dihitung karena hanya sbg representasi pada operasi [getCommonType].
+    val usedClasses= classes.asSequence().filter { it != SiReflexConst.nullClass }.toList() //Kelas Null tidak dihitung karena hanya sbg representasi pada operasi [getCommonType].
+        // Pake SiReflexConst.nullClass agar lebih aman saat di Js.
     val superClassList= usedClasses.first().classesTree.withLevel().toMutableList().distinct()
         .sortedBy { it.level }.map { it.value } as MutableCollection<SiClass<*>>
 
     for(i in 1 until usedClasses.size)
         superClassList intersect usedClasses[i].classesTree.toMutableList()
-    return superClassList.first()
+    return if(superClassList.isNotEmpty()) superClassList.first()
+    else Any::class.si
 }
 fun getCommonClass(vararg any: Any): SiClass<*> = getCommonClass(*any.toArrayOf { it::class.si })
 
@@ -42,7 +42,7 @@ fun getCommonType(vararg types: SiType): SiType {
 
     val isMarkedNullable= types.find { it.isMarkedNullable }?.isMarkedNullable ?: false
 
-    val usedTypes= types.asSequence().filter { it.classifier != Null.clazz }.toList()
+    val usedTypes= types.asSequence().filter { it != SiReflexConst.nullType }.toList()
     val classesArray= types.mapNotNull { it.classifier as? SiClass<*> }.toTypedArray()
     val commonClass= getCommonClass(*classesArray)
 

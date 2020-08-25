@@ -4,7 +4,7 @@ import sidev.lib.reflex.common.core.ReflexFactory
 import sidev.lib.reflex.common.core.ReflexTemplate
 
 
-interface SiParameter: SiReflex {
+interface SiParameter: SiDescriptorContainer {
     val index: Int
     val name: String?
     val type: SiType
@@ -28,7 +28,7 @@ interface SiParameter: SiReflex {
     }
 }
 
-internal abstract class SiParamterImpl: SiReflexImpl(), SiParameter{
+internal abstract class SiParamterImpl: SiDescriptorContainerImpl(), SiParameter{
 //    abstract override var type: SiType
 }
 

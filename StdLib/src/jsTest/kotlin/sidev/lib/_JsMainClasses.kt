@@ -5,6 +5,8 @@ package sidev.lib
 import sidev.lib.console.prin
 
 
+class ClsGen<T, R>(val isi: T, var list: List<R>)
+
 internal annotation class Ano
 internal annotation class Anotasi<T: Number, O>(val a: Int= 1) //: Ano()
 
@@ -103,4 +105,33 @@ internal open class AC(val poinConstr: Poin= Poin(y= 14)): Z, Y, X, AB() { //, A
 
 class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az") TODO temporary*/ var z: Int= 10){
     /*@Rename("aa_aa_diPoin") TODO temporary */ private var aa_diPoin= AA_()
+}
+
+
+
+open class Food
+open class FastFood: Food()
+open class Burger: FastFood()
+
+open class Producer<out T: Food>{
+    open fun produce(): T? = null
+}
+open class Consumer<in T: Food>{
+    open fun consume(ins: T) {}
+}
+
+open class FoodStore: Producer<Food>()
+open class FastFoodStore: Producer<FastFood>()
+open class BurgerStore: Producer<Burger>()
+
+open class Everyone: Consumer<Food>()
+open class ModernPipel: Consumer<FastFood>()
+open class American: Consumer<Burger>()
+
+
+internal enum class En(val a: Int, val pos: Int){
+    A(2, 10),
+    B(2, 3),
+    C(3, 5);
+    val b= 12
 }

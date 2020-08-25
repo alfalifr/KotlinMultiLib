@@ -33,6 +33,7 @@ internal actual object ReflexFactoryHelper{
 //            val pendingUnresolvedUpperBound= ArrayList<ArrayList<KType>>() //Upper bound yg blum di-resolved milik type param yg msh pending.
             val pendingUpperBoundIndex= ArrayList<ArrayList<Int>>() //Index dari [pendingUnresolvedUpperBound] pada satu type param yg index-nya ditunjuk oleh [pendingUpperBoundTypeParamIndex].
 
+//            prine("getTypeParameter() native= $native")
 
             native.typeParameters.forEachIndexed { i, typeParam ->
                 val siUpperBounds= ArrayList<SiType>()

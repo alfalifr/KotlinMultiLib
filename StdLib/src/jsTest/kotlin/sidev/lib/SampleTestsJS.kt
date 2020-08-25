@@ -1,17 +1,24 @@
 package sidev.lib
 
+import sidev.lib.check.nativeTrya2
+import sidev.lib.collection.sequence.toTypedArray
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.log
 import sidev.lib.console.prin
-import sidev.lib.console.prine
-import sidev.lib.platform.globalRef
+import sidev.lib.number.*
 import sidev.lib.platform.setGlobalObject
 import sidev.lib.reflex.common.SiClass
+import sidev.lib.reflex.common.core.createType
 import sidev.lib.reflex.common.full.*
+import sidev.lib.reflex.common.full.types.*
 import sidev.lib.reflex.common.native.jsClass
 import sidev.lib.reflex.common.native.si
 import sidev.lib.reflex.common.native.siClass
 import sidev.lib.reflex.js.*
+import sidev.lib.type.Null
+import sidev.lib.`val`.RoundingMode
+import kotlin.math.exp
+import kotlin.math.pow
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -214,6 +221,15 @@ class SampleTestsJS {
     }
 
     @Test
+    fun paramTest(){
+        val firstParam= Poin::class.si.constructors.first().parameters.first()
+        prin("\n=================\n")
+        for((i, prop) in Poin::class.si.declaredMemberProperties.withIndex()){
+            prin("i= $i prop= $prop isInConstr= ${firstParam.isPropertyLike(prop)}")
+        }
+    }
+
+    @Test
     fun cloneTest(){
         val ac= AC(Poin(y = 199))
         val ac2= ac.clone()
@@ -224,6 +240,8 @@ class SampleTestsJS {
         prin("ac.acStr1= ${ac.acStr1} ac2.acStr1= ${ac2.acStr1}")
         prin("ac.acStr2= ${ac.acStr2} ac2.acStr2= ${ac2.acStr2}")
         prin("ac.poin.x= ${ac.poin.x} ac2.poin.x= ${ac2.poin.x}")
+        prin("ac.poinConstr.x= ${ac.poinConstr.x} ac2.poinConstr.x= ${ac2.poinConstr.x}")
+        prin("ac.poinConstr.y= ${ac.poinConstr.y} ac2.poinConstr.y= ${ac2.poinConstr.y}")
         prin("ac.ab_abs= ${ac.ab_abs} ac2.ab_abs= ${ac2.ab_abs}")
         prin("ac.dDariAA.d= ${ac.dDariAA.d} ac2.dDariAA.d= ${ac2.dDariAA.d} ")
         ac.poin.x= 12
@@ -234,6 +252,8 @@ class SampleTestsJS {
         prin("ac.acStr1= ${ac.acStr1} ac2.acStr1= ${ac2.acStr1}")
         prin("ac.acStr2= ${ac.acStr2} ac2.acStr2= ${ac2.acStr2}")
         prin("ac.poin.x= ${ac.poin.x} ac2.poin.x= ${ac2.poin.x}")
+        prin("ac.poinConstr.x= ${ac.poinConstr.x} ac2.poinConstr.x= ${ac2.poinConstr.x}")
+        prin("ac.poinConstr.y= ${ac.poinConstr.y} ac2.poinConstr.y= ${ac2.poinConstr.y}")
         prin("ac.ab_abs= ${ac.ab_abs} ac2.ab_abs= ${ac2.ab_abs}")
         prin("ac.dDariAA.d= ${ac.dDariAA.d} ac2.dDariAA.d= ${ac2.dDariAA.d} ")
         prin("\n============= ac.implementedPropertyValuesTree =============\n")
@@ -250,6 +270,31 @@ class SampleTestsJS {
  */
             println("i= $i prop= $prop")
         }
+
+        val ac3= AC()
+        val ac4= AC()
+        val list1= listOf(ac3, ac4)
+        val list2= list1.clone()
+
+
+        prin("ac3::class.si= ${ac3::class.si} ac3::class.js= ${ac3::class.js}")
+
+        prin("list2::class.si= ${list2::class.si}")
+        prin("list2::class.si.isCopySafe= ${list2::class.si.isCopySafe}")
+        prin("list2::class.si.isCollection= ${list2::class.si.isCollection}")
+        prin("\"afsa\"::class.si.isCopySafe= ${"afsa"::class.si.isCopySafe}")
+
+        prin("\n============= List Clone ===============\n")
+        list1[0].poin.x= 16
+        list1[1].poin.y= 32
+        list1[0].poinConstr.y= 36
+        list1[1].poinConstr.x= 76
+        prin("list1[0].poinConstr.y= ${list1[0].poinConstr.y} list1[1].poinConstr.y= ${list1[1].poinConstr.y}")
+        prin("list1[0].poinConstr.x= ${list1[0].poinConstr.x} list1[1].poinConstr.x= ${list1[1].poinConstr.x}")
+        prin("list1[0].poin.x= ${list1[0].poin.x} list1[1].poin.x= ${list1[1].poin.x}")
+        prin("list1[0].poin.y= ${list1[0].poin.y} list1[1].poin.y= ${list1[1].poin.y}")
+
+        1f.pow(1)
     }
 
     @Test
@@ -272,5 +317,214 @@ class SampleTestsJS {
         prin("array2::class.si= ${array2::class.si}")
         prin("array::class.si.descriptor.native= ${array::class.si.descriptor.native}")
 //        prin("array::class.si.descriptor.native= ${(array::class.si.descriptor.native as JsClassImpl_<*>).fun}")
+    }
+
+    @Test
+    fun reflexTypeTest(){
+        prin("Null::class= ${Null::class}")
+//        prin("SiReflexConst.nullType= ${SiReflexConst.nullType}")
+
+        prin("ArrayList::class.si= ${ArrayList::class.si}")
+        ArrayList::class.si.classesTree
+
+        prin("\n========== ArrayList::class.si.classesTree ===========\n")
+        for((i, cls) in ArrayList::class.si.classesTree.withLevel().sortedBy { it.level }.withIndex()){
+            prin("i= $i cls= $cls")
+        }
+
+        val a= ::nativeTrya2
+        val b= eval("nativeTrya2")
+        prin("a= $a b= $b")
+        val singletonList= listOf("bla")
+        val array5= arrayOf("bli")
+        log(singletonList)
+        log(array5)
+        prin("singletonList::class.si.isCollection= ${singletonList::class.si.isCollection}")
+        prin("array5::class.si.isCollection= ${array5::class.si.isCollection}")
+
+        val array1= arrayOf(1,3,4,5,6)
+        val intArray1= intArrayOf(1,3,4,5,6)
+        val array2= arrayOf(1,3,4,5,6, 's', "ada")
+        val array3= arrayOf(1,3,4,5,6, 2.3, 4f, 2L)
+        val array4= arrayOf(1,3,4,5,6, 's', "ada", null)
+
+        val commonClass1= getCommonClass(*array1)
+        val commonClass2= getCommonClass(*array2)
+        val commonClass3= getCommonClass(*array3)
+
+        prin("commonClass1= $commonClass1")
+        prin("commonClass2= $commonClass2")
+        prin("commonClass3= $commonClass3")
+
+        val inferreType1= array1.inferredType
+        val inferreType2= array2.inferredType
+        val inferreType3= array3.inferredType
+        val inferreType4= array4.inferredType
+
+        val is2SubtypeOf4= inferreType1.isSubTypeOf(inferreType3)
+
+        prin("inferreType1= $inferreType1")
+        prin("inferreType2= $inferreType2")
+        prin("inferreType3= $inferreType3")
+        prin("inferreType4= $inferreType4")
+        prin("is2SubtypeOf4= $is2SubtypeOf4")
+///*
+        val clsGen= ClsGen(10.9.asNumber(), listOf(arrayOf("sf")))
+        val clsGen2= clsGen.clone()
+        clsGen.list= listOf(arrayOf("pa"))
+        val clsInferredType= clsGen.inferredType
+
+        prin("clsGen= $clsGen hash= ${clsGen.hashCode()} list= ${clsGen.list} first= ${clsGen.list.firstOrNull()?.firstOrNull()} clsInferredType= $clsInferredType")
+        prin("clsGen2= $clsGen2 hash= ${clsGen2.hashCode()} list= ${clsGen2.list} first= ${clsGen2.list.firstOrNull()?.firstOrNull()}")
+// */
+
+        val listSingle= listOf(9) //java.util.Collections.singletonList(9)
+        prin("\n=============== listSingle.implementedPropertyValuesTree ===============\n")
+        for((i, prop) in listSingle.implementedPropertyValuesTree.withIndex()){
+            prin("i= $i prop= $prop returnType.class= ${prop.first.returnType.classifier}")
+        }
+
+        prin("\n=============== Number::class.si.classesTree ===============\n")
+        for((i, cls) in Number::class.si.classesTree.withIndex()){
+            prin("i= $i cls= $cls")
+        }
+    }
+
+    @Test
+    fun typeAssignableTest(){
+//        prin("Null::class= ${Null::class}")
+//        prin("Null::class.si= ${Null::class.si}")
+//        prin("Null::class= ${Null::class}")
+
+        val everyone= Everyone()
+        val american= American()
+
+        val foodStore= FoodStore()
+        val burgerStore= BurgerStore()
+
+        val amer2: Consumer<Burger> = everyone
+        val foodStr2: Producer<Food> = burgerStore
+//        val burgStr2: Producer<Burger> = foodStore
+
+        val consBurger= Consumer::class.si.createType(listOf(Burger::class.si.createType().simpleTypeProjection))
+        val prodFood= Producer::class.si.createType(listOf(Food::class.si.createType().simpleTypeProjection))
+        val prodBurger= Producer::class.si.createType(listOf(Burger::class.si.createType().simpleTypeProjection))
+
+        val everyType= everyone::class.si.createType()
+        val burgStrType= burgerStore::class.si.createType()
+        val foodStrType= foodStore::class.si.createType()
+
+        val isConsAssignable= consBurger.isAssignableFrom(everyType)
+        val isProdAssignable= prodFood.isAssignableFrom(burgStrType)
+        val isProdAssignable2= prodBurger.isAssignableFrom(foodStrType)
+
+        prin("consBurger= $consBurger prodFood= $prodFood")
+        prin("everyType= $everyType burgStrType= $burgStrType")
+        prin("isConsAssignable= $isConsAssignable isProdAssignable= $isProdAssignable isProdAssignable2= $isProdAssignable2")
+    }
+
+    @Test
+    fun enumTest(){
+        prin("Enum::class.si= ${Enum::class.si}")
+        prin("Comparable::class.si= ${Comparable::class.si}")
+//        prin("Enum::class.si.typeParameters.first().upperBounds ${Enum::class.si.typeParameters.first().upperBounds}")
+//        prin("Enum::class.si.typeParameters.first() ${Enum::class.si.typeParameters.first()}")
+        prin("En::class.si= ${En::class.si}")
+        prin("En::class.si.classesTree= ${En::class.si.classesTree}")
+        prin("En.A::class.si= ${En.A::class.si}")
+
+        prin("\n============= En::class.si.classesTree =============\n")
+        for((i, cls) in En::class.si.classesTree.withIndex()){
+            prin("i= $i cls= $cls")
+        }
+
+        prin("\n============= String::class.si.classesTree =============\n")
+        for((i, cls) in String::class.si.classesTree.withIndex()){
+            prin("i= $i cls= $cls")
+        }
+
+        prin("En::class.si.isCopySafe= ${En::class.si.isCopySafe}")
+        prin("En.A::class.si.isCopySafe= ${En.A::class.si.isCopySafe}")
+        prin("\"aaf\"::class.si.isCopySafe= ${"aaf"::class.si.isCopySafe}")
+    }
+
+    @Test
+    fun inheritenceTest(){
+        prin("true.isBoolean= ${true.isBoolean}")
+        log(Any::class.js.toString())
+        log(Any::class.js.prototype.properties.toTypedArray())
+        log(Any::class.js.prototype.prototype)
+        prin("=== Any::class.js::class.js =====")
+        log(Any::class.js::class.js::class.js.toString())
+        log(Any::class.js.prototype.prototype.isFunction)
+        log(Any::class.js.prototype.prototype.isObject)
+//        log(Any::class.js.prototype.prototype.properties.toTypedArray())
+/*
+        log(AC::class.js.prototype.prototype.prototype.prototype.prototype.prototype.prototype.properties.toList().toTypedArray())
+        log(AC::class.js.prototype.prototype.prototype.prototype.prototype.prototype.prototype.prototype.isFunction)
+        log(AC::class.js.prototype.prototype.prototype.prototype.prototype.prototype.prototype.prototype.prototype)
+        log(AC::class.js.prototype.prototype.prototype.prototype.prototype.prototype.prototype.prototype.prototype.prototype)
+        log(AC::class.js.prototype.prototype.prototype.prototype.isFunction)
+ */
+        prin("AC::class.js.asDynamic().__proto__ ${AC::class.js.asDynamic().__proto__}")
+        prin("AC::class.js.asDynamic().__proto__.__proto__ ${AC::class.js.asDynamic().__proto__.__proto__}")
+
+        prin("\n============== AC::class.si.classesTree ================\n")
+        for((i, cls) in AC::class.si.classesTree.withIndex()){
+            prin("i= $i cls= $cls")
+        }
+
+        prin("=== AC::class.js ====")
+        log(AC::class.js)
+    }
+
+
+    @Test
+    fun mathTest(){
+        val int= 2.3 as Number
+        val int2= (2 as Number / int)
+        prin("int= $int2")
+
+//        prin(ipow(2, 3))
+//        prin(ipow(2, -2))
+        prin("2.pow(-2)= ${2 pow -2}")
+        prin("125 root 3= ${125 root 3}")
+        prin("81 root 4= ${81 root 4}")
+        prin("81 root 2= ${81 root 2}")
+        prin("81.sqrt()= ${81.sqrt()}")
+        prin("exp(2.0)= ${exp(2.0)}")
+//        prin(ipow(3, 4))
+//        prin(ipow(5, 5))
+        kotlin.math.log(2f, 3f)
+        prin("10 log 1000= ${10 log 1000}")
+        prin("3 log 81= ${3 log 81}")
+
+        //TODO <25 Agustus 2020> => operasi digit pada platform Js blum berjalan sesuai.
+        // Terutama fungsi [getNumberAtDigit()] saat param `digitPlace` sama dg minus (-).
+        prin("223.1352= ${223.1352}")
+        prin("223.1352.round()= ${223.1352.round()}")
+        prin("223.1352.round(-1)= ${223.1352.round(-1)}")
+        prin("223.1352.round(-2)= ${223.1352.round(-2)}")
+
+        prin("\n================== Round =====================\n")
+        prin("-223.1352.round(-2, RoundingMode.UP)= ${(-223.1352).round(-2, RoundingMode.UP)}")
+        prin("223.1352.round(-2, RoundingMode.UP)= ${(223.1352).round(-2, RoundingMode.UP)}")
+        prin("-223.1352.round(-2, RoundingMode.CEIL)= ${(-223.1352).round(-2, RoundingMode.CEIL)}")
+        prin("223.1352.round(-2, RoundingMode.CEIL)= ${(223.1352).round(-2, RoundingMode.CEIL)}")
+        prin("-223.1352.round(-2, RoundingMode.DOWN)= ${(-223.1352).round(-2, RoundingMode.DOWN)}")
+        prin("223.1352.round(-2, RoundingMode.DOWN)= ${(223.1352).round(-2, RoundingMode.DOWN)}")
+        prin("-223.1352.round(-2, RoundingMode.FLOOR)= ${(-223.1352).round(-2, RoundingMode.FLOOR)}")
+        prin("223.1352.round(-2, RoundingMode.FLOOR)= ${(223.1352).round(-2, RoundingMode.FLOOR)}")
+        prin("223.1352.round(-2, RoundingMode.HALF_UP)= ${(223.1352).round(-2, RoundingMode.HALF_UP)}")
+        prin("223.1352.round(-2, RoundingMode.HALF_DOWN)= ${(223.1352).round(-2, RoundingMode.HALF_DOWN)}")
+
+        prin("223.1352[-2]= ${223.1352[-2]}")
+        prin("223.1352[1]= ${223.1352[1]}")
+        prin("221343.1352[3]= ${221343.1352[3]}")
+        prin("221343.4352[-2]= ${221343.4352[-2]}")
+        prin("43.43[-1]= ${43.43[-1]}")
+        //TODO <25 Agustus 2020> => Ada keanehan saat di-run. Hasilnya `2.2134343520000002E8`, jadi 2,....
+        // Kemungkinan bug di Kotlin/Js.
+        prin("221343.4352 * 1000= ${221343.4352 * 1000}")
     }
 }

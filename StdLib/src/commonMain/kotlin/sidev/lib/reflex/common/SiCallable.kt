@@ -1,14 +1,11 @@
 package sidev.lib.reflex.common
 
-import sidev.lib.check.notNullTo
 import sidev.lib.console.prine
-import sidev.lib.number.or
 import sidev.lib.reflex.common.full.kotlin
 import sidev.lib.reflex.defaultPrimitiveValue
-import sidev.lib.structure.data.value.Val
 
 
-interface SiCallable<out R>: SiReflex {
+interface SiCallable<out R>: SiDescriptorContainer {
     val name: String
     val returnType: SiType
     val parameters: List<SiParameter>
@@ -22,11 +19,11 @@ interface SiCallable<out R>: SiReflex {
 
 
 internal abstract class SiCallableImpl<out R>
-    : SiReflexImpl(), SiCallable<R> {
+    : SiDescriptorContainerImpl(), SiCallable<R> {
     protected abstract val callBlock: (args: Array<out Any?>) -> R
 
     //Format fungsi default (fungsi dg param opsional) di Kotlin:
-    // <nama>(Object receiver, <type> arg0, <type> arg1, ... , int mask, Object <gak tau ini untuk apa>)
+    // <nama>(Object arg0 <biasanya instance receiver>, <type> arg1, <type> arg2, ... , int mask, Object <gak tau ini untuk apa, mungkin marker>)
     // param mask digunakan untuk menunjukan param mana yg perlu diisi dg nilai default.
     /** Digunakan untuk memanggil fungsi yg memiliki param dg nilai default. */
     protected abstract val defaultCallBlock: ((args: Array<out Any?>) -> R)?
@@ -56,9 +53,11 @@ internal abstract class SiCallableImpl<out R>
             when{
                 param in params -> passedArgs.add(args[param])
                 param.isOptional -> {
-                    val defaultValue= defaultPrimitiveValue((param.type.classifier as? SiClass<*>)?.kotlin ?: Any::class)
+                    val defaultValue= param.defaultValue
+                        ?: defaultPrimitiveValue((param.type.classifier as? SiClass<*>)?.kotlin ?: Any::class)
                     passedArgs.add(defaultValue)
-                    prine("callBy opsional param= $param callable= $this defaultVal= $defaultValue")
+
+                    prine("""callBy(): param= "$param" nilai default= $defaultValue""")
 
                     mask= mask or (1 shl (i % Int.SIZE_BITS))
                     isAnyOptional= true
@@ -75,9 +74,10 @@ internal abstract class SiCallableImpl<out R>
 
         passedArgs.addAll(masks)
 
-        //Hanya sbg tambahan, krg tau gunanya.
+        //Hanya sbg param tambahan di akhir, krg tau gunanya.
+        // Mungkin marker, misalkan DefaultConstructorMarker dan Object pada fungsi biasa.
         passedArgs.add(null)
-        prine("callBy default passedArgs.size= ${passedArgs.size}")
+
         return defaultCallBlock!!(passedArgs.toTypedArray())
     }
 /*

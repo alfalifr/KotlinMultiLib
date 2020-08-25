@@ -11,7 +11,7 @@ data class SiTypeProjection(
      * The type specified in the projection, or `null` if this is a star projection.
      */
     val type: SiType?
-){
+): SiReflex by SiReflexImpl() {
     companion object{
         val STAR = SiTypeProjection(null, null)
     }
