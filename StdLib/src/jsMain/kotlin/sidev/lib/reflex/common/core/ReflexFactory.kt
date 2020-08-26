@@ -10,7 +10,7 @@ internal actual val SiNativeWrapper.nativeInnerName: String? get()= when(val nat
 }
 internal actual val SiNativeWrapper.nativeFullName: String? get()= when(val native= implementation){
     is JsCallable<*> -> native.name
-    else -> jsName(native)
+    else -> jsName(native) ?: "<halo-bro-do>"
 }
 //TODO <16 Agustus 2020> => untuk smtr sama dg [nativeFullName].
 internal actual val SiNativeWrapper.nativeSimpleName: String? get()= nativeFullName

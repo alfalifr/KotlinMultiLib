@@ -1,8 +1,13 @@
 package sidev.lib.reflex.common.full
 
+import sidev.lib.check.notNullTo
+import sidev.lib.collection.iterator.NestedIteratorSimple
+import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
+import sidev.lib.collection.iterator.skip
 import sidev.lib.property.UNINITIALIZED_VALUE
 import sidev.lib.reflex.common.*
 import sidev.lib.reflex.common.native.si
+import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
@@ -16,10 +21,15 @@ internal expect val Any.isNativeDelegate: Boolean
 internal expect val SiClass<*>.isNativeInterface: Boolean
 
 expect val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T>
+expect val SiClass<*>.sealedSubclasses: Sequence<SiClass<*>>
+expect val SiClass<*>.isAnonymous: Boolean
 
 
 val <T: Any> SiClass<T>.kotlin: KClass<T>
     get()= descriptor.native as KClass<T>
+
+val SiClass<*>.isSealed: Boolean
+    get()= SiModifier.isSealed(this)
 
 
 val SiType.isPrimitive: Boolean
@@ -59,8 +69,8 @@ val SiType.isInterface: Boolean
  * oleh variabel lokal dan kelas yg di-extend bkn merupakan kelas abstract.
  */
 val SiClass<*>.isShallowAnonymous: Boolean
-    get()= qualifiedName == null && supertypes.size == 1
-            && !(supertypes.first().classifier as SiClass<*>).isAbstract
+    get()= isAnonymous && supertypes.size == 1
+            && superclass?.isAbstract == false
             && isAllMembersImplemented
 
 /**
@@ -71,7 +81,7 @@ val SiClass<*>.isShallowAnonymous: Boolean
  */
 val SiClass<*>.isShallowAbstract: Boolean
     get()= isAbstract && supertypes.size == 1
-            && !(supertypes.first().classifier as SiClass<*>).isAbstract
+            && superclass?.isAbstract == false
             && isAllMembersImplemented
 
 val SiClass<*>.isAllMembersImplemented: Boolean
@@ -115,3 +125,67 @@ fun SiClass<*>.isExclusivelySuperclassOf(derived: SiClass<*>): Boolean
 fun SiClass<*>.isExclusivelySubclassOf(base: SiClass<*>): Boolean
         = this != base && isSubclassOf(base)
 
+
+val SiClass<*>.sealedSubclassesTree: NestedSequence<SiClass<*>>
+    get()= object : NestedSequence<SiClass<*>> {
+        override fun iterator(): NestedIteratorSimple<SiClass<*>>
+                = object: NestedIteratorSimpleImpl<SiClass<*>>(this@sealedSubclassesTree){
+            override fun getOutputIterator(nowInput: SiClass<*>): Iterator<SiClass<*>>?
+                    = nowInput.sealedSubclasses.iterator()
+        }
+    }
+
+
+
+/**
+ * Digunakan untuk mengambil nama qualified dari turunan sealed class.
+ * Qualified name yg diambil dg pola berikut <Super>...<Class> dg super merupakan superclass.
+ * Bagian paling depan dari qualified name adalah nama class dg kata kunci sealed yg paling dekat
+ * dg this [KClass] tempat fungsi ini dipanggil.
+ *
+ * Fungsi ini msh bergantung pada Java Reflection.
+ *
+ * [isQualifiedName] -true jika nama yg diambil adalah nama lengkap dimulai dari sealed super class
+ *                    hingga kelas ini yg dipidahkan oleh titik (.).
+ *                   -false jika nama yg diambil hanyalah nama kelas ini.
+ * @return -null jika kelas ini gak punya [KClass.simpleName]
+ *         -[KClass.simpleName] jika ternyata kelas ini gak punya sealed super class.
+ */
+fun SiClass<*>.getSealedClassName(isQualifiedName: Boolean= true): String?{
+//    Log.e("getSealedClassName", ".getSealedClassName() MAULAI")
+    return this.simpleName.notNullTo { thisName ->
+        var thisNameRes= thisName
+        if(isQualifiedName){
+//            Log.e("getSealedClassName", ".getSealedClassName() QUALIFIED MAULAI")
+            var superName= ""
+            var isSealedSuperFound= false
+            for(clazz in classesTree.skip { it.isInterface }){ //this.supertypes(false)
+//                val clazz= (supertype.classifier as? KClass<*>)
+//                if(clazz == Any::class) continue
+                superName= clazz.simpleName!! +"." +superName
+                if(clazz.isSealed){
+                    isSealedSuperFound= true
+                    break
+                }
+            }
+/*
+            this.iterateSuperClass_k { clazz ->
+                try{
+                    superName= clazz.simpleName!! +"." +superName
+                    if(clazz.isSealed){
+                        isSealedSuperFound= true
+                        return@iterateSuperClass_k
+                    }
+                }
+                catch (e: KotlinNullPointerException){ return@iterateSuperClass_k }
+            }
+ */
+//            Log.e("getSealedClassName", ".getSealedClassName() QUALIFIED SELESAI")
+            if(isSealedSuperFound)
+                thisNameRes= superName +thisNameRes
+        }
+//        println("getSealedClassName(): thisNameRes= $thisNameRes")
+//        Log.e("getSealedClassName", "thisNameRes= $thisNameRes")
+        thisNameRes
+    }
+}

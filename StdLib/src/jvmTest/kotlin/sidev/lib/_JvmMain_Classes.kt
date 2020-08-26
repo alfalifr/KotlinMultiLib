@@ -12,7 +12,11 @@ import sidev.lib.console.prine
 import sidev.lib.reflex.*
 import sidev.lib.reflex.jvm.*
 import sidev.lib.collection.lazy_list.plus
+import sidev.lib.collection.string
+import sidev.lib.reflex.common.full.*
+import sidev.lib.reflex.common.full.types.inferElementType
 import sidev.lib.reflex.common.native.si
+import sidev.lib.reflex.copySimilarProperty
 //import sidev.lib.reflex.type.inferElementType
 import kotlin.reflect.full.*
 
@@ -192,10 +196,10 @@ internal enum class En(val a: Int, val pos: Int){
 
 internal class NoConstr private constructor()
 
-/*
+///*
 @Suppress("UNREACHABLE_CODE")
 fun main(args: Array<String>){
-    aadad()
+//    aadad()
     println("=================AC::class.memberProperties===========")
     for((i, member) in AC::class.memberProperties.withIndex()){
         println("i= $i member= $member")
@@ -251,18 +255,18 @@ fun main(args: Array<String>){
         println("i= $i prop name= $prop ") //val= ${try{ prop.forcedGet(acObj as AC)}}
 
 //    AC::class.declaredMemberPropertiesTree.withLevel()
-    println("\n============= BATAS AC Kotlin.classesTree ==============\n")
-    for((i, leveledClass) in AC::class.classesTree.withLevel().withIndex()){
+    println("\n============= BATAS AC Kotlin.si.classesTree ==============\n")
+    for((i, leveledClass) in AC::class.si.classesTree.withLevel().withIndex()){
         prin("i= $i level= ${leveledClass.level} class= ${leveledClass.value}")
     }
 
-    println("\n============= BATAS AC Kotlin.classesTree ==============\n")
-    for((i, clazz) in AC::class.classesTree.withIndex()){
+    println("\n============= BATAS AC Kotlin.si.classesTree ==============\n")
+    for((i, clazz) in AC::class.si.classesTree.withIndex()){
         prin("i= $i class= $clazz")
     }
 
-    println("\n============= BATAS AC Kotlin.declaredMemberPropertiesTree ==============\n")
-    for((i, leveledProp) in AC::class.declaredMemberPropertiesTree.withLevel().withIndex()){
+    println("\n============= BATAS AC Kotlin.si.declaredMemberPropertiesTree ==============\n")
+    for((i, leveledProp) in AC::class.si.declaredMemberPropertiesTree.withLevel().withIndex()){
         prin("i= $i level= ${leveledProp.level} prop= ${leveledProp.value}")
     }
 
@@ -308,22 +312,24 @@ fun main(args: Array<String>){
     prin("NoConstr::class.constructors.size = ${NoConstr::class.constructors.size}")
 
     println("\n============= BATAS memberProperties ==============\n")
-    val ac= AC(Poin(y=10))
+    val ac= AC<BlaBla2>(Poin(y=10))
     for((i, prop) in ac::class.memberProperties.withIndex()){
         prin("i= $i prop= $prop")
     }
+/*
     println("\n============= BATAS implementedAccesiblePropertiesValueMapTree ==============\n")
     for((i, prop) in ac.implementedAccesiblePropertiesValueMapTree.withIndex()){
         prin("i= $i prop= $prop")
     }
+ */
 
     println("\n============= BATAS implementedPropertiesValueMapTree ==============\n")
-    for((i, prop) in ac.implementedPropertiesValueMapTree.withIndex()){
+    for((i, prop) in ac.implementedPropertyValuesTree.withIndex()){
         prin("i= $i prop= $prop")
     }
 ///*
-    println("\n============= BATAS nestedImplementedPropertiesValueMapTree ==============\n")
-    for((i, prop) in ac.nestedImplementedPropertiesValueMapTree.withIndex()){
+    println("\n============= BATAS implementedNestedPropertyValuesTree ==============\n")
+    for((i, prop) in ac.implementedNestedPropertyValuesTree.withIndex()){
         prin("i= $i prop= $prop")
     }
 // */
@@ -337,7 +343,7 @@ fun main(args: Array<String>){
     }
 
     val poin= Poin(y= 11)
-    ac.callAnnotatedFunctionWithParamContainer(FunAnot::class, poin){ it.a == 2 }
+//    ac.callAnnotatedFunctionWithParamContainer(FunAnot::class, poin){ it.a == 2 }
 //    val aaaaa= Anotasi<Int, String>(1)
 
     val ano1= AC::class.findAnnotation<Anotasi<Int, *>>()
@@ -444,8 +450,8 @@ fun main(args: Array<String>){
     val acObj= AC()
     println("AAD data= ${new<AAD>()}")
 */
-    println("\n=============BATAS nestedPropertiesTree ==============\n")
-    for((i, prop) in AC::class.nestedMemberProperties.withIndex())
+    println("\n=============BATAS nestedDeclaredMemberPropertiesTree ==============\n")
+    for((i, prop) in AC::class.si.nestedDeclaredMemberPropertiesTree.withIndex())
         println("i= $i prop name= $prop ") //val= ${try{ prop.forcedGet(acObj as AC)}}
 
 /*
@@ -501,21 +507,26 @@ fun main(args: Array<String>){
     for((i, pairOfProp) in AC(Poin(1,2)).nestedImplementedPropertiesValueMapTree.withIndex())
         println("i= $i prop= ${pairOfProp.first} value= ${pairOfProp.second}") //val= ${try{ prop.forcedGet(acObj as AC)}}
 // */
-    val oldAc= object: AC(Poin(2,3)){
+    val oldAc= object: AC<BlaBla2>(Poin(2,3)){
 
     }
-    prin("oldAc::class.isAllMembersImplemented = ${oldAc::class.isAllMembersImplemented}")
-    for((i, abst) in (oldAc::class.declaredMembersTree - oldAc::class.implementedMembersTree).withIndex()){
+    prin("oldAc::class.isAllMembersImplemented = ${oldAc::class.si.isAllMembersImplemented}")
+    prin("oldAc::class.isShallowAnonymous = ${oldAc::class.si.isShallowAnonymous}")
+    prin("oldAc::class.si.qualifiedName= ${oldAc::class.si.qualifiedName}")
+    prin("oldAc::class.si.superclass= ${oldAc::class.si.superclass}")
+/*
+    for((i, abst) in (oldAc::class.si.declaredMembersTree - oldAc::class.implementedMembersTree).withIndex()){
         prin("i= $i abst= $abst")
     }
-    val oldAcSim= AC(Poin(y=12))
+ */
+    val oldAcSim= AC<BlaBla2>(Poin(y=12))
 
 //    var newAc= //oldAc.clone(true)
     oldAc.poin.x= 100
 
     prine("oldAc.array[1]= ${oldAc.array[1]}")
-    prine("Int::class.isPrimitive= ${Int::class.isPrimitive}")
-    prine("Int::class.leastRequiredParamConstructor= ${Int::class.leastRequiredParamConstructor}")
+    prine("Int::class.isPrimitive= ${Int::class.si.isPrimitive}")
+    prine("Int::class.leastRequiredParamConstructor= ${Int::class.si.leastRequiredParamConstructor}")
     prine("IntArray::class= ${IntArray::class}")
 
     val arr= arrayOf(0, 1, 3)
@@ -533,7 +544,7 @@ fun main(args: Array<String>){
         prin("i= $i constr= $constr")
     }
 
-    val newAc= oldAc.clone<AC>(true)
+    val newAc= oldAc.clone<AC<BlaBla2>>(true)
 /*
     { clazz, param ->
 //        prine("Poin clazz= $clazz simpleName= ${clazz.simpleName} param= $param nmae= ${param.name} kind= ${param.kind}")
@@ -596,7 +607,7 @@ fun main(args: Array<String>){
 
 
     println("\n============= BATAS sealedSubclasses ==============\n")
-    for((i, sub) in AA::class.sealedSubclassesTree.withIndex()){
+    for((i, sub) in AA::class.si.sealedSubclassesTree.withIndex()){
         println("i= $i sub sealed= $sub")
     }
 // * /
@@ -605,15 +616,17 @@ fun main(args: Array<String>){
     val strSeq= sequenceOf("Aku", "Mau", "Makan")
     val strSeq2= sequenceOf("Kamu" , "Dan", "Dia")
     val lazySeq= CachedSequence<String>()
-    lazySeq + "Halo" + "Bro"
+    lazySeq += "Halo"
+    lazySeq += "Bro"
     lazySeq + strSeq + strSeq2
 ///*
     val containsAku= "Aku" in lazySeq //.contains("Aku")
     val containsKamu= "Kamu" in lazySeq //.contains("Kamu")
+    val containsDiaJelek= "Dia Jelek" in lazySeq //.contains("Kamu")
     val indexMau= lazySeq.indexOf("Mau")
     val indexKamu= lazySeq.indexOf("Kamu")
     val ke4= lazySeq[4]
-    prin("indexMau= $indexMau ke4= $ke4 containsAku= $containsAku containsKamu= $containsKamu indexKamu= $indexKamu")
+    prin("indexMau= $indexMau ke4= $ke4 containsAku= $containsAku containsKamu= $containsKamu containsDiaJelek= $containsDiaJelek indexKamu= $indexKamu")
 // * /
 
     println("\n============= BATAS CachedSequence.iterator() ==============\n")
@@ -665,17 +678,18 @@ fun main(args: Array<String>){
         prin("i= $i pair data= $data")
     }
 
-    println("\n============= BATAS Enum.implementedPropertiesValueMapTree ==============\n")
-    for((i, data) in En.A.implementedPropertiesValueMapTree.withIndex()){
+    println("\n============= BATAS Enum.implementedPropertyValuesTree ==============\n")
+    for((i, data) in En.A.implementedPropertyValuesTree.withIndex()){
         prin("i= $i pair data= $data")
     }
     prin("En.A.b= ${En.A.b} En.B.b= ${En.B.b}")
-
+/*
     println("\n============= BATAS Enum.contrustorsTree ==============\n")
     enumValues<En>()
     for(data in En.A::class.contructorsTree){
         prin("pair data= $data")
     }
+*/
 
     println("\n============= BATAS Enum.declaredMemberProperties ==============\n")
     for(prop in En::class.declaredMemberProperties)
@@ -747,17 +761,19 @@ fun main(args: Array<String>){
     prin("oldArrAc.poin.x= ${oldArrAc.poin.x} newArrAc.poin.x= ${newArrAc.poin.x}")
     for(prop in array.implementedPropertiesValueMap)
         println("Array prop= $prop")
+
+ */
 }
 
 
-
+/*
 internal enum class En(val a: Int, val pos: Int){
     A(2, 10),
     B(2, 3),
     C(3, 5);
     val b= 12
 }
-
+ */
 
 internal suspend fun aga(): Int{
     return 1
@@ -781,4 +797,4 @@ fun <T> Sequence<T>.cut(other: Sequence<T>): Sequence<T>{
     }
 }
 
- */
+// */

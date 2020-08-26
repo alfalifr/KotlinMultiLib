@@ -140,7 +140,7 @@ object ReflexDescriptor {
         var str= desc.type.description
         str += when(val owner= desc.owner){
             is SiKClassifier -> " ${owner.nativeFullName}"
-            is SiClass<*> -> " ${owner.qualifiedName}${owner.typeParameters.getSiTypeParamDescStr(false)}"
+            is SiClass<*> -> " ${owner.qualifiedName ?: desc.innerName}${owner.typeParameters.getSiTypeParamDescStr(false)}"
             is SiCallable<*> -> {
                 val hostString= if(owner.name == SI_CALLABLE_CONSTRUCTOR_NAME) ""
                 else desc.host.asNotNullTo { clazz: SiClass<*> ->

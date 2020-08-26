@@ -9,8 +9,8 @@ import sidev.lib.reflex.js.kotlin.KotlinJsFunction
 import kotlin.js.Json
 import kotlin.js.json
 
-
-internal fun jsPureFunction(func: Any): dynamic = when(func){
+//TODO uncomment
+/*internal*/ fun jsPureFunction(func: Any): dynamic = when(func){
     is KotlinJsFunction -> func.func
     is JsCallable<*> -> try { jsPureFunction((func as JsCallableImpl<*>).func) } //Recursive karena bisa jadi func-nya juga merupakan callable lainnya.
         catch (e: Throwable){ throw ImplementationExc(implementedClass = JsCallable::class) }

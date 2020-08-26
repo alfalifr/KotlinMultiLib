@@ -27,7 +27,7 @@ internal val KType.si: SiType get()= ReflexFactory.createType(
                 typeParam.upperBounds.findIndexed { it.value.classifier == classifier }
                     ?.let { (it.value.classifier as KClass<*>).si.typeParameters[it.index] }
                     ?.let { it.createType() }
-            }
+            } ?: typeProjection.type?.si
         else typeProjection.type?.si
         SiTypeProjection(typeProjection.variance?.si, siType)
     }, isMarkedNullable

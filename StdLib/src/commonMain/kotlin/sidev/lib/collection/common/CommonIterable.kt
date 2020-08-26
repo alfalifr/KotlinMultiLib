@@ -1,7 +1,5 @@
-package sidev.lib.universal.structure.collection.common
-/*
+package sidev.lib.collection.common
 
-TODO temporary
 import sidev.lib.universal.`val`.SuppressLiteral
 
 /**
@@ -12,15 +10,15 @@ interface CommonIterable<out T>: Iterable<T>, Sequence<T>, ArrayIterable<T> {
     override fun iterator(): Iterator<T>
 }
 
-internal class CommonIterableImpl_Iterable<out T>(private val iterable: Iterable<T>): CommonIterable<T>{
+internal class CommonIterableImpl_Iterable<out T>(private val iterable: Iterable<T>): CommonIterable<T> {
     override fun iterator(): Iterator<T> = iterable.iterator()
 }
-internal class CommonIterableImpl_Sequence<out T>(private val sequence: Sequence<T>): CommonIterable<T>{
+internal class CommonIterableImpl_Sequence<out T>(private val sequence: Sequence<T>): CommonIterable<T> {
     override fun iterator(): Iterator<T> = sequence.iterator()
 }
 
 fun <T> commonIterableOf(vararg element: T): CommonIterable<T>
-    = object : CommonIterable<T>{
+    = object : CommonIterable<T> {
         override fun iterator(): Iterator<T> = element.iterator()
     }
 
@@ -67,5 +65,3 @@ operator fun <V> CommonIterable<V>.plus(other: CommonIterable<V>): CommonIterabl
         = ((this as Iterable<V>) + (other as Iterable<V>)).toCommonIterable()
 
 fun <V> CommonIterable<V>.asSequence(): Sequence<V> = this
-
- */

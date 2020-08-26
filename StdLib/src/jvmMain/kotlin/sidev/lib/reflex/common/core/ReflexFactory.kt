@@ -13,7 +13,7 @@ internal actual val SiNativeWrapper.nativeInnerName: String?
     get()= (getNativeClass(implementation) as KClass<*>).java.name
 
 internal actual val SiNativeWrapper.nativeFullName: String? get()= when(val native= implementation){
-    is KClass<*> -> native.qualifiedName ?: native.java.name
+    is KClass<*> -> native.qualifiedName //?: native.java.name
     is KCallable<*> -> native.name
     is KParameter -> native.name
     is KTypeParameter -> native.name

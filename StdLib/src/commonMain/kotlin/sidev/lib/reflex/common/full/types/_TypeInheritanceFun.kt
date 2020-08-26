@@ -115,7 +115,7 @@ fun SiType.isSubTypeOf(base: SiType): Boolean{
         catch (e: Exception){ break }
         isTypeArgSubtype= isTypeArgSubtype && (otherTypeArg != null && typeArg.type?.isSubTypeOf(otherTypeArg) ?: true)
     }
-    prine("SiType.isSubTypeOf this= $this base= $base isClassifierSubtype= $isClassifierSubtype isTypeArgSubtype= $isTypeArgSubtype")
+//    prine("SiType.isSubTypeOf this= $this base= $base isClassifierSubtype= $isClassifierSubtype isTypeArgSubtype= $isTypeArgSubtype")
     return isClassifierSubtype && isTypeArgSubtype
 }
 fun SiType.isSuperTypeOf(derived: SiType): Boolean = derived.isSubTypeOf(this)

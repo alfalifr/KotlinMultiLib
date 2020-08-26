@@ -7,6 +7,7 @@ import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.InnerReflex
 import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.common.SiFunction
+import sidev.lib.reflex.common.native.si
 import sidev.lib.reflex.jvm.InnerReflexJvm
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Type
@@ -75,3 +76,9 @@ actual val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T> get() = when(va
     }
     else -> throw ReflexComponentExc(currentReflexedUnit = this::class, detMsg = "Kelas native: \"$this\" bkn kelas.")
 }
+
+actual val SiClass<*>.sealedSubclasses: Sequence<SiClass<*>>
+    get()= (descriptor.native as KClass<*>).sealedSubclasses.asSequence().map { it.si }
+
+
+actual val SiClass<*>.isAnonymous: Boolean get()= (descriptor.native as KClass<*>).qualifiedName == null

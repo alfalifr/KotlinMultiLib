@@ -4,7 +4,7 @@ import sidev.lib.collection.iterator.withKeyIndexed
 import sidev.lib.number.isNegative
 
 /**
- * Turunan [ArrayList] yg sumber datanya berasal dari sequence sehingga
+ * Mirip dg[ArrayList], [CachedSequence] memiliki sumber data yg berasal dari sequence sehingga
  * data yg disimpan tidak besar di awal dan sesuai kebutuhan.
  */
 open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T> by arrayList,
@@ -28,7 +28,7 @@ open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T
      */
     private var requestedGetIndex: Int= -1
 
-    override fun getExisting(key: Int): T? = if(key in indices) arrayList.get(key) else null
+    override fun getExisting(key: Int): T? = if(key in indices) arrayList[key] else null
     override fun getExistingKey(value: T): Int?{
         val index= arrayList.indexOf(value)
         return if(index >= 0) index else null

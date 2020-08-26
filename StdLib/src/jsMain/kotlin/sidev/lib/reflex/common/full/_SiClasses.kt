@@ -28,3 +28,8 @@ internal actual val Any.isNativeDelegate: Boolean get()= false
 internal actual val SiClass<*>.isNativeInterface: Boolean get()= isAbstract && !isInstantiable
 
 actual val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T> get() = constructors.first()
+
+//TODO <26 Agustus 2020> => Karena Kotlin/Js blum support refleksi, dan agak gak mungkin kalo ngambil langsung dari kode.
+actual val SiClass<*>.sealedSubclasses: Sequence<SiClass<*>> get()= emptySequence()
+
+actual val SiClass<*>.isAnonymous: Boolean get()= (descriptor.native as JsClass_<*>).name.endsWith(JsReflexConst.ANONYMOUS_CLASS_NAME_SUFFIX)

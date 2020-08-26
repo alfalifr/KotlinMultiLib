@@ -3,6 +3,10 @@ package sidev.lib.collection.lazy_list
 import sidev.lib.collection.toMutableMapEntry
 
 
+/**
+ * Mirip dg [HashMap], [LazyHashMap] memiliki sumber data yg berasal dari sequence sehingga
+ * data yg disimpan tidak besar di awal dan sesuai kebutuhan.
+ */
 open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
     : MutableMap<K, V> by hashMap, MutableCachedLazyList_Internal<K, V>, MutableIterable<MutableMap.MutableEntry<K, V>> {
     constructor(): this(HashMap())

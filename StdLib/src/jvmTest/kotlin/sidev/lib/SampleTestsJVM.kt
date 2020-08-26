@@ -9,6 +9,8 @@ import sidev.lib.reflex.common.full.*
 import sidev.lib.reflex.common.full.types.*
 import sidev.lib.reflex.common.native.si
 import sidev.lib.`val`.RoundingMode
+import sidev.lib.collection.common.arrayWrapperOf
+import sidev.lib.collection.common.getValue
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.test.Test
@@ -47,7 +49,7 @@ class SampleTestsJVM {
         val inferreType3= array3.inferredType
         val inferreType4= array4.inferredType
 
-        val is2SubtypeOf4= inferreType1.isSubTypeOf(inferreType3)
+        val is2SubtypeOf4= inferreType2.isSubTypeOf(inferreType4)
 
         prin("inferreType1= $inferreType1")
         prin("inferreType2= $inferreType2")
@@ -232,5 +234,14 @@ class SampleTestsJVM {
         if (exp == 0) return 1
         val temp = ipow(base, (exp / 2))
         return if (exp % 2 == 0) temp * temp else base * temp * temp
+    }
+
+    @Test
+    fun commonListTest(){
+        val arrayWrap= arrayWrapperOf(1,3,5,6.778,"hkj")
+        val array by arrayWrap
+        array.forEach {
+            prin("array foreeach it= $it")
+        }
     }
 }

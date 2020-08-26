@@ -1,12 +1,13 @@
-package sidev.lib.universal.structure.collection.common
-/*
+package sidev.lib.collection.common
+
 import sidev.lib.collection.sort
 import sidev.lib.collection.string
-import sidev.lib.reflex.forcedGet
-import sidev.lib.reflex.inner.memberProperties
+import sidev.lib.reflex.common.SiProperty1
+import sidev.lib.reflex.common.full.declaredMemberProperties
+import sidev.lib.reflex.common.full.forceGet
+import sidev.lib.reflex.common.native.si
 import sidev.lib.universal.`val`.SuppressLiteral
 import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty1
 
 
 val CommonList<*, *>.indices: IntRange
@@ -120,8 +121,8 @@ fun <K, V> CommonMutableList<K, V>.asMutableMap(): MutableMap<K, V> = when(this)
 /** Fungsi delegasi untuk [Array]. */
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 inline operator fun <reified T> ArrayWrapper<T>.getValue(owner: Any?, prop: KProperty<*>): Array<T> = when(this){
-    is ArrayWrapperImpl -> (this::class.memberProperties.find { it.name == "array" }!! as KProperty1<ArrayWrapper<T>, Any?>)
-        .forcedGet(this)!! as Array<T>
+    is ArrayWrapperImpl -> (this::class.si.declaredMemberProperties.find { it.name == "array" }!! as SiProperty1<ArrayWrapper<T>, Any?>)
+        .forceGet(this)!! as Array<T> //Pake Reflex karena kode ini inline smtr ArrayWrapperImpl merupakan internal.
     else -> Array(size){ this[it] }
 }
 /** Extension delegate function ini dibuat dg alasan karena [CommonMutableList] tidak meng-extend [MutableMap]. */
@@ -276,7 +277,3 @@ fun <K, V> CommonMutableList<K, V>.remove(key: K, element: V): Boolean{
         } else false
     } else false
 }
-
-
-
- */

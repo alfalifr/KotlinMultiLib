@@ -312,7 +312,7 @@ object ReflexFactory{
         modifier: Int= 0
     ): SiClass<T> = object : SiClassImpl<T>() {
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
-        override val qualifiedName: String? = nativeCounterpart.qualifiedNativeName
+        override val qualifiedName: String? = nativeCounterpart.nativeFullName //nativeCounterpart.qualifiedNativeName
         override val simpleName: String? = nativeCounterpart.nativeSimpleName //ReflexFactoryHelper.getSimpleName(nativeCounterpart, qualifiedName)
         override var members: Collection<SiCallable<*>> = members
         override var constructors: List<SiFunction<T>> = constructors

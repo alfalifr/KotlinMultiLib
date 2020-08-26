@@ -1,7 +1,5 @@
-package sidev.lib.universal.structure.collection.common
-/*
+package sidev.lib.collection.common
 
-TODO temporary
 import sidev.lib.universal.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
 import sidev.lib.collection.newUniqueValueIn
@@ -69,8 +67,6 @@ interface CommonMutableList<K, V>: CommonList<K, V>, MutableList<V>, Map<K, V>, 
  */
     /** @return nilai sebelumnya pada [key], `null` jika belum ada nilai pada [key] sebelumnya. */
     fun removeKey(key: K): V?
-    //TODO <5 Agustus 2020> => Untuk sementara di-disable karena menyebabkan error internal dari Kotlin code-generator.
-    //  Sbg gantinya, ada di extension.
 
     /**
      * Menghapus semua entri pada `this` dg pasangan key [K] dan value [V] yg sesuai.
@@ -327,7 +323,8 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
     }
 /*
 //    @RequiresApi(Build.VERSION_CODES.N)
-    //TODO <5 Agustus 2020> => Sama kyk yg di atas.
+    //TODO <5 Agustus 2020> => Untuk sementara di-disable karena menyebabkan error internal dari Kotlin code-generator.
+    //  Sbg gantinya, ada di extension.
     override fun remove(key: K, element: V): Boolean {
 //    map.remove(key, element)
         return if (key in map.keys) {
@@ -394,6 +391,3 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<V> = map.values.toMutableList().subList(fromIndex, toIndex)
 }
-
-
- */

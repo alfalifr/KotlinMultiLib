@@ -19,13 +19,11 @@ fun getParam(func: dynamic): List<JsParameter>{
  */
 /** Mengambil property `name`. Jika tidak ada, mengambil tipe dari object `this`. */
 fun jsName(any: dynamic): String =
-    try{ (any as Any).kotlinMetadata.simpleName } //1. Coba dulu apakah dia kotlinFun
+    try{ (any as Any).kotlinMetadata.simpleName!! } //1. Coba dulu apakah dia kotlinFun
     catch (e: Throwable){
 //        prine("jsName catch 1 any= ${str(any)}")
         try{ eval("any.name") as String } //2. Coba apakah punya property .name
-        catch (e: Throwable){
-//            prine("jsName catch 2 any= ${str(any)}")
-            any::class.js.name } //3. Paksa namanya dg cari di ::class.js
+        catch (e: Throwable){ any::class.js.name } //3. Paksa namanya dg cari di ::class.js
     }
 
 fun jsNativeName(any: dynamic): String =
@@ -65,9 +63,10 @@ fun setProperty(owner: Any, propName: String, value: Any?): Boolean{
     return true
 }
 
+//TODO <26 Agustus 2020> => Ubah returntype jadi Any? agar lebih type-safe
 val Any.prototype: Any
-    get()= (if(isFunction) this.asDynamic().prototype
-    else try{ asDynamic().__proto__ }
+    get()= (if(isFunction) asDynamic().prototype
+    else try{ asDynamic().__proto__!! }
     catch (e: Throwable){
         throw IllegalStateException("objek: \"${str(this)}\" tidak punya prototype.")
             //Walaupun Object.prototype == null, tetap tidak return Object.prototype agar sesuai konteks

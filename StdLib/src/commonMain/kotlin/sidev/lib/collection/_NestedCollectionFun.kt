@@ -93,7 +93,7 @@ val <T> Array<Array<T>>.totalSize: Int
         return size
     }
 
-/** Size paling kecil dari bbrp [Collection] yg disimpan dalam `this.extension`. */
+/** Membuat [Iterator] dari fungsi [getAtAllLevelAt] */
 val <T> List<List<T>>.leveledIterator: Iterator<List<T>>
     get()= object: Iterator<List<T>>{
         val size= minSize
@@ -101,7 +101,7 @@ val <T> List<List<T>>.leveledIterator: Iterator<List<T>>
         override fun hasNext(): Boolean = index < size
         override fun next(): List<T> = getAtAllLevelAt(index++)
     }
-/** Size paling kecil dari bbrp [Collection] yg disimpan dalam `this.extension`. */
+/** Membuat [Iterator] dari fungsi [getAtAllLevelAt] */
 inline val <reified T> Array<Array<T>>.leveledIterator: Iterator<Array<T>>
     get()= object: Iterator<Array<T>>{
         val size= minSize

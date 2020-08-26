@@ -5,9 +5,10 @@ enum class SiModifier(val id: Int) {
     MUTABLE(4), //Untuk kasus field, khususnya pada Java dg flag `final`.
     OVERRIDE(8),
     ABSTRACT(16),
-    DYNAMIC(32),
-    OPTIONAL(64),
-    VARARG(128),
+    SEALED(32),
+    DYNAMIC(64),
+    OPTIONAL(128),
+    VARARG(256),
     ;
 
     companion object{
@@ -16,6 +17,7 @@ enum class SiModifier(val id: Int) {
             (unit.descriptor as SiDescriptorImpl).modifier = unit.descriptor.modifier or modifier.id
         }
         fun isAbstract(unit: SiDescriptorContainer): Boolean = hasModifier(unit, ABSTRACT)
+        fun isSealed(unit: SiDescriptorContainer): Boolean = hasModifier(unit, SEALED)
         fun isMutable(unit: SiDescriptorContainer): Boolean = hasModifier(unit, MUTABLE)
         fun isOpen(unit: SiDescriptorContainer): Boolean = hasModifier(unit, OPEN)
         fun isOverride(unit: SiDescriptorContainer): Boolean = hasModifier(unit, OVERRIDE)

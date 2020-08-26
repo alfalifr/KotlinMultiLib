@@ -4,10 +4,10 @@ import sidev.lib.check.contentEquals
 import sidev.lib.collection.lazy_list.flattenToNested
 import sidev.lib.collection.leveledIterator
 import sidev.lib.collection.sequence.withLevel
-import sidev.lib.collection.toArrayOf
+import sidev.lib.collection.toArrayOfNotNul
 import sidev.lib.universal.`val`.SuppressLiteral
-import sidev.lib.type.Null
 import sidev.lib.collection.intersect
+import sidev.lib.collection.string
 import sidev.lib.console.prine
 import sidev.lib.reflex.common.SiClass
 import sidev.lib.reflex.common.SiType
@@ -33,7 +33,7 @@ fun getCommonClass(vararg classes: SiClass<*>): SiClass<*> {
     return if(superClassList.isNotEmpty()) superClassList.first()
     else Any::class.si
 }
-fun getCommonClass(vararg any: Any): SiClass<*> = getCommonClass(*any.toArrayOf { it::class.si })
+fun getCommonClass(vararg any: Any): SiClass<*> = getCommonClass(*any.toArrayOfNotNul { it::class.si })
 
 fun getCommonType(vararg types: SiType): SiType {
 //    prine("==types= ${types.string}")
@@ -67,11 +67,11 @@ fun getCommonType(vararg types: SiType): SiType {
         else{
             for(typeArgs in foundTypeArgs.leveledIterator){
                 if(typeArgs.isEmpty()) continue
-                commonTypeArgs += getCommonType(*typeArgs.toArrayOf { it.type }).simpleTypeProjection
+                commonTypeArgs += getCommonType(*typeArgs.toArrayOfNotNul { it.type }).simpleTypeProjection
             }
         }
     }
     return commonClass.createType(commonTypeArgs, isMarkedNullable)
 }
-fun getCommonType(vararg any: Any?): SiType = getCommonType(*any.toArrayOf { it.inferredType.type })
+fun getCommonType(vararg any: Any?): SiType = getCommonType(*any.toArrayOfNotNul { it.inferredType.type })
 

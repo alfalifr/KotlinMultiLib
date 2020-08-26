@@ -1,16 +1,4 @@
 package sidev.lib.collection.common
-/*
-TODO temporary
-import sidev.lib.universal.structure.collection.common.*
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Boolean
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Byte
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Char
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Double
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Float
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Int
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Long
-import sidev.lib.universal.structure.collection.common.MutableArrayWrapperImpl_Short
 
 
 fun <T> Array<T>.asWrapped(): MutableArrayWrapper<T> =
@@ -73,5 +61,3 @@ fun <T> mutableArrayWrapperOf(vararg element: T): MutableArrayWrapper<T>
     override fun iterator(): Iterator<T> = array.iterator()
 //    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
 }
-
- */

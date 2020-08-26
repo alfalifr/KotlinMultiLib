@@ -19,6 +19,7 @@ fun getDeclaredFunction(any: Any): List<JsCallable<*>>{
     return any.prototype.properties.filter { it.second?.isFunction == true }
         .map { prop ->
             var funName= jsName(jsPureFunction(prop.second!!))
+//            prine("getDeclaredFun() prop= $prop funName= $funName")
             var func= prop.second!!
             if(funName.isBlank())
                 JsReflexConst.FUNCTION_PATTERN.toRegex().findAll(func.toString())
@@ -47,6 +48,8 @@ fun getDeclaredFunction(any: Any): List<JsCallable<*>>{
 
                         //TODO <24 Agustus 2020> => setProperty(any.prototype, prop.first, func) dapat merubah fungsi yg semula gak terjadi ReferenceError jadi ada.
                         //  Mungkin karena deklarasi fungsi di luar package.
+                        //TODO <25 Agustus 2020> => Udah bisa, solusinya yaitu buat fungsi wrapper dg isinya adalah fungsi yg lama.
+                        //  Hapus segera todo
                         setProperty(any.prototype, prop.first, func)
                     }
             object : JsCallableImpl<Any?>(func){

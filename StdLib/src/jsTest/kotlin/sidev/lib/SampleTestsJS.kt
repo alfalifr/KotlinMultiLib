@@ -17,6 +17,10 @@ import sidev.lib.reflex.common.native.siClass
 import sidev.lib.reflex.js.*
 import sidev.lib.type.Null
 import sidev.lib.`val`.RoundingMode
+import sidev.lib.collection.lazy_list.CachedSequence
+import sidev.lib.collection.lazy_list.LazyHashMap
+import sidev.lib.collection.lazy_list.plus
+import sidev.lib.console.prine
 import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.test.Test
@@ -299,6 +303,73 @@ class SampleTestsJS {
 
     @Test
     fun cob(){
+        val anonAc= object : AC(){
+            fun adaKuy(a: Int){
+                prine("Halo kuy anonAc a= $a")
+            }
+        }
+        val anonAc2= anonAc.clone()
+        prin("anonAc.poinConstr.x= ${anonAc.poinConstr.x} anonAc2.poinConstr.x= ${anonAc2.poinConstr.x}")
+        prin("anonAc.poinConstr.y= ${anonAc.poinConstr.y} anonAc2.poinConstr.y= ${anonAc2.poinConstr.y}")
+        anonAc.poinConstr.x= 54
+        prin("anonAc.poinConstr.x= ${anonAc.poinConstr.x} anonAc2.poinConstr.x= ${anonAc2.poinConstr.x}")
+        prin("anonAc.poinConstr.y= ${anonAc.poinConstr.y} anonAc2.poinConstr.y= ${anonAc2.poinConstr.y}")
+
+        prin("\n================ anonAc::class.si.members =================\n")
+        for((i, member) in anonAc::class.si.members.withIndex()){
+            prin("i= $i member= $member")
+        }
+        prin("\n================ anonAc::class.si.declaredMemberFunctionsTree =================\n")
+        for((i, func) in anonAc::class.si.declaredMemberFunctionsTree.withIndex()){
+            prin("i= $i func= $func")
+        }
+        prin("\n================ anonAc::class.si.classesTree =================\n")
+        for((i, cls) in anonAc::class.si.classesTree.withIndex()){
+            prin("i= $i cls= $cls")
+        }
+/*
+        prin("\n================ anonAc::class.si.declaredMemberFunctions =================\n")
+        for((i, member) in anonAc::class.si.declaredMemberFunctions.withIndex()){
+            prin("i= $i member= $member")
+        }
+        prin("\n================ anonAc::class.si.declaredMemberFunctionsTree =================\n")
+        for((i, member) in anonAc::class.si.declaredMemberFunctionsTree.withIndex()){
+            prin("i= $i member= $member")
+        }
+ */
+
+//        val anonAc= AC()
+        log(anonAc::class)
+        prin("anonAc::class= ${anonAc::class}")
+        log(anonAc::class.js)
+        log(AC::class.js)
+        prin("anonAc::class.js= ${anonAc::class.js}")
+        prin("anonAc::class.js.name= ${anonAc::class.js.name}")
+        log(anonAc::class)
+        log(anonAc::class.si)
+        prin("anonAc::class.si= ${anonAc::class.si}")
+        prin("jsPureFunction(anonAc::class.si) =")
+        log(jsPureFunction(anonAc::class.si))
+        log(jsPureFunction(anonAc::class.si).unsafeCast<Any>().prototype)
+        log(anonAc::class.si.asDynamic().__proto__)
+        log(AC::class.si.prototype)
+        log(AC::class.si)
+        prin("AC::class.si.isObject= ${(AC::class.si as Any).isObject}")
+        prin("AC::class.si.isFunction= ${AC::class.si.isFunction}")
+        prin("jsTypeOf(AC::class.si)= ${jsTypeOf(AC::class.si)}")
+        log(anonAc::class.si.prototype::class)
+        log(anonAc::class.si.prototype)
+        prin("anonAc::class.si= ${anonAc::class.si}")
+        prin("anonAc::class.si= ${anonAc::class.si}")
+        prin("anonAc::class.si.isFunction= ${anonAc::class.si.isFunction}")
+        prin("anonAc::class.si.prototype= ${anonAc::class.si.prototype}")
+        prin("anonAc::class.si.isShallowAnonymous= ${anonAc::class.si.isShallowAnonymous}")
+
+        log(AB::class)
+        prin("AB::class= ${AB::class}")
+        log(AB::class.js)
+        prin("AB::class.js= ${AB::class.js}")
+
         val array= arrayOf(1, 3, 2, 4)
         val array1= arrayOf(1, 4)
         val array2= arrayOf("aad", 4, null)
@@ -526,5 +597,45 @@ class SampleTestsJS {
         //TODO <25 Agustus 2020> => Ada keanehan saat di-run. Hasilnya `2.2134343520000002E8`, jadi 2,....
         // Kemungkinan bug di Kotlin/Js.
         prin("221343.4352 * 1000= ${221343.4352 * 1000}")
+    }
+
+    @Test
+    fun lazyListTest(){
+        println("\n============= BATAS CachedSequence ==============\n")
+        val strSeq= sequenceOf("Aku", "Mau", "Makan")
+        val strSeq2= sequenceOf("Kamu" , "Dan", "Dia")
+        val lazySeq= CachedSequence<String>()
+        lazySeq += "Halo"
+        lazySeq += "Bro"
+        lazySeq + strSeq + strSeq2
+///*
+        val containsAku= "Aku" in lazySeq //.contains("Aku")
+        val containsKamu= "Kamu" in lazySeq //.contains("Kamu")
+        val containsDiaJelek= "Dia Jelek" in lazySeq //.contains("Kamu")
+        val indexMau= lazySeq.indexOf("Mau")
+        val indexKamu= lazySeq.indexOf("Kamu")
+        val ke4= lazySeq[4]
+        prin("indexMau= $indexMau ke4= $ke4 containsAku= $containsAku containsKamu= $containsKamu containsDiaJelek= $containsDiaJelek indexKamu= $indexKamu")
+// * /
+
+        println("\n============= BATAS CachedSequence.iterator() ==============\n")
+        for((i, data) in lazySeq.withIndex()){
+            prin("i= $i data= $data")
+        }
+
+        println("\n============= BATAS LazyHashMap ==============\n")
+
+        val pairSeq= sequenceOf("Aku" to 3, "Dia" to 10, "Kamu" to 1)
+        val pairSeq2= sequenceOf("Makan" to 2, "Belajar" to 5, "Tidur" to 0)
+        val lazyMap= LazyHashMap<String, Int>()
+        lazyMap["Mau"]= 7
+        lazyMap["Iya"]= 6
+
+        lazyMap + pairSeq + pairSeq2
+
+        println("\n============= BATAS LazyHashMap.iterator() ==============\n")
+        for((i, data) in lazyMap.withIndex()){
+            prin("i= $i data= $data")
+        }
     }
 }

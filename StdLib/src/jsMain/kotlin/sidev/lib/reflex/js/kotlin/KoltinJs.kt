@@ -6,7 +6,7 @@ import sidev.lib.reflex.js.isFunction
 
 
 //<14 Agustus 2020>
-data class KotlinJsMetadata(val kind: String, val simpleName: String, val interfaces: List<dynamic>, val kClass: dynamic)
+data class KotlinJsMetadata(val kind: String, val simpleName: String?, val interfaces: List<dynamic>, val kClass: dynamic)
 
 /**
  * Representasi fungsi Js berdasarkan konfigurasi Koltin.

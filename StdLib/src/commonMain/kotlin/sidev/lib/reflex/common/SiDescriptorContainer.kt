@@ -1,5 +1,8 @@
 package sidev.lib.reflex.common
 
+import sidev.lib.console.prine
+import sidev.lib.console.str
+
 
 /**
  * Turunan [SiReflex] yg punya [SiDescriptor].
@@ -9,7 +12,11 @@ interface SiDescriptorContainer: SiReflex{
 }
 
 internal abstract class SiDescriptorContainerImpl: SiReflexImpl(), SiDescriptorContainer{
-    override fun toString(): String = try{ descriptor.toString() } catch (e: Exception){ """descriptor milik "${this::class}" belum siap.""" }
+    override fun toString(): String = try{
+//        prine("SiDescriptorContainerImpl toString() str= ${str(descriptor)} this class= ${this::class}")
+//        prine("SiDescriptorContainerImpl toString() ${if(this is SiClass<*>) qualifiedName else "something else"} desc= ${str(descriptor)}")
+        descriptor.toString() }
+    catch (e: Throwable){ """descriptor milik "${this::class}" belum siap.""" }
     override fun equals(other: Any?): Boolean {
 //        val thisHash= hashCode()
 //        val otherHash= other.hashCode()
