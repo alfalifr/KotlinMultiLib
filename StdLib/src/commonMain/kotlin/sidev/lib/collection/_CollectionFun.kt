@@ -1,5 +1,13 @@
 package sidev.lib.collection
 
+
+fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
+    return arrayListOf<T>().apply {
+        for(i in 0 until size)
+            add(init(i))
+    }
+}
+
 /** Mengambil bbrp elemen dari `this.extension` List dari [range.first] (inclusive) hingga [range.last] (exclusive). */
 operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, range.last)
 

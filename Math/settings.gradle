@@ -1,4 +1,0 @@
-rootProject.name = 'Math'
-
-
-enableFeaturePreview('GRADLE_METADATA')

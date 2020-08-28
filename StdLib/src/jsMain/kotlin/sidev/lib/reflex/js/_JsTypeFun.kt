@@ -3,8 +3,8 @@ package sidev.lib.reflex.js
 import sidev.lib.check.notNullTo
 import sidev.lib.platform.getGlobalObject
 import sidev.lib.property.reevaluateLazy
-import sidev.lib.reflex.common.core.SiReflexConst
-import sidev.lib.reflex.common.native.jsClass
+import sidev.lib.reflex.core.SiReflexConst
+import sidev.lib.reflex.native.jsClass
 
 //fun ada(){ js("class;") }
 

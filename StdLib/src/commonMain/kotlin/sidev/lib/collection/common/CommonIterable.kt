@@ -1,6 +1,6 @@
 package sidev.lib.collection.common
 
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
 
 /**
  * Struktur data yg menunjukan semua jenis tipe yg dapat di-iterasi dalam Kotlin, kecuali [Array].

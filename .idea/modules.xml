@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.commonMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.commonMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.commonTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.commonTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.jsMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.jsMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.jsTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.jsTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.jvmMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.jvmMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.jvmTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.jvmTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.mingwMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.mingwMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Math.mingwTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Math.mingwTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.commonMain.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.commonMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.commonTest.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.commonTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.jsMain.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.jsMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.jsTest.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.jsTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.jvmMain.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.jvmMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.jvmTest.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.jvmTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.mingwMain.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.mingwMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/StdLib.mingwTest.iml" filepath="$PROJECT_DIR$/.idea/modules/StdLib.mingwTest.iml" />
+    </modules>
+  </component>
+</project>

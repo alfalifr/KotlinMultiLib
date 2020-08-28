@@ -1,0 +1,6 @@
+rootProject.name = 'Math'
+
+
+enableFeaturePreview('GRADLE_METADATA')
+
+//project(":StdLib").projectDir = new File("../StdLib")

@@ -1,7 +1,7 @@
 package sidev.lib.property
 
 import sidev.lib.structure.data.value.Val
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 

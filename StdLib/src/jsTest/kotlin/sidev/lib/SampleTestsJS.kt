@@ -1,28 +1,7 @@
 package sidev.lib
 
-import sidev.lib.check.nativeTrya2
-import sidev.lib.collection.sequence.toTypedArray
-import sidev.lib.collection.sequence.withLevel
-import sidev.lib.console.log
 import sidev.lib.console.prin
-import sidev.lib.number.*
-import sidev.lib.platform.setGlobalObject
-import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.core.createType
-import sidev.lib.reflex.common.full.*
-import sidev.lib.reflex.common.full.types.*
-import sidev.lib.reflex.common.native.jsClass
-import sidev.lib.reflex.common.native.si
-import sidev.lib.reflex.common.native.siClass
-import sidev.lib.reflex.js.*
-import sidev.lib.type.Null
-import sidev.lib.`val`.RoundingMode
-import sidev.lib.collection.lazy_list.CachedSequence
-import sidev.lib.collection.lazy_list.LazyHashMap
-import sidev.lib.collection.lazy_list.plus
-import sidev.lib.console.prine
-import kotlin.math.exp
-import kotlin.math.pow
+import sidev.lib.reflex.native.si
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -32,6 +11,15 @@ class SampleTestsJS {
         assertTrue("JS" in hello())
     }
 
+    @Test
+    fun pkgTest(){
+        prin("pkgTest()")
+        prin("AC::class.si= ${AC::class.si}")
+        for((i, member) in AC::class.si.members.withIndex()){
+            prin("i= $i member= $member")
+        }
+    }
+/*
     @Test
     fun reflex(){
         println("Test halo")
@@ -638,4 +626,7 @@ class SampleTestsJS {
             prin("i= $i data= $data")
         }
     }
+ */
+
+ */
 }

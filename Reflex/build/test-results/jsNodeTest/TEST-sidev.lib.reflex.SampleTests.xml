@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sidev.lib.reflex.SampleTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-08-28T20:18:40" hostname="DESKTOP-4R4F81" time="0.02">
+  <properties/>
+  <testcase name="commonListTest2" classname="sidev.lib.reflex.SampleTests" time="0.02"/>
+  <system-out><![CDATA[
+============= BATAS CachedSequence ==============
+
+?[0m indexMau= 3 ke4= Makan containsAku= true containsKamu= true containsDiaJelek= false indexKamu= 5 ?[0m
+
+============= BATAS CachedSequence.iterator() ==============
+
+?[0m i= 0 data= Halo ?[0m
+?[0m i= 1 data= Bro ?[0m
+?[0m i= 2 data= Aku ?[0m
+?[0m i= 3 data= Mau ?[0m
+?[0m i= 4 data= Makan ?[0m
+?[0m i= 5 data= Kamu ?[0m
+?[0m i= 6 data= Dan ?[0m
+?[0m i= 7 data= Dia ?[0m
+
+============= BATAS LazyHashMap ==============
+
+
+============= BATAS LazyHashMap.iterator() ==============
+
+?[0m i= 0 data= Aku=3 ?[0m
+?[0m i= 1 data= Dia=10 ?[0m
+?[0m i= 2 data= Iya=6 ?[0m
+?[0m i= 3 data= Mau=7 ?[0m
+?[0m i= 4 data= Kamu=1 ?[0m
+?[0m i= 5 data= Makan=2 ?[0m
+?[0m i= 6 data= Tidur=0 ?[0m
+?[0m i= 7 data= Belajar=5 ?[0m
+?[0m valueMau= 7 valueIya= 6 valueKamu= 1 contains5= true contains0= true contains4= false valueTidur= 0 ?[0m
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

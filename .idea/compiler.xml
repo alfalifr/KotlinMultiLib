@@ -2,15 +2,43 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="12">
-      <module name="KotlinMultiLib.jvmMain~1" target="1.6" />
-      <module name="KotlinMultiLib.jvmTest~1" target="1.6" />
+      <module name="KotlinMultiLib.jvmMain" target="1.6" />
+      <module name="KotlinMultiLib.jvmMain~2" target="1.6" />
+      <module name="KotlinMultiLib.jvmTest" target="1.6" />
+      <module name="KotlinMultiLib.jvmTest~2" target="1.6" />
+      <module name="KotlinMultiLib.KotlinMultiLib-StdLib.jvmMain" target="1.6" />
+      <module name="KotlinMultiLib.KotlinMultiLib-StdLib.jvmTest" target="1.6" />
+      <module name="KotlinMultiLib.Math.jvmMain" target="1.6" />
+      <module name="KotlinMultiLib.Math.jvmMain~1" target="1.6" />
+      <module name="KotlinMultiLib.Math.jvmTest" target="1.6" />
+      <module name="KotlinMultiLib.Math.jvmTest~1" target="1.6" />
+      <module name="KotlinMultiLib.Reflex.jvmMain" target="1.6" />
+      <module name="KotlinMultiLib.Reflex.jvmMain~1" target="1.6" />
+      <module name="KotlinMultiLib.Reflex.jvmTest" target="1.6" />
+      <module name="KotlinMultiLib.Reflex.jvmTest~1" target="1.6" />
+      <module name="KotlinMultiLib.StdLib.jvmMain" target="1.6" />
+      <module name="KotlinMultiLib.StdLib.jvmMain~1" target="1.6" />
+      <module name="KotlinMultiLib.StdLib.jvmTest" target="1.6" />
+      <module name="KotlinMultiLib.StdLib.jvmTest~1" target="1.6" />
       <module name="Math.jvmMain" target="1.6" />
+      <module name="Math.jvmMain~1" target="1.6" />
       <module name="Math.jvmTest" target="1.6" />
+      <module name="Math.jvmTest~1" target="1.6" />
       <module name="Reflex.jvmMain" target="1.6" />
       <module name="Reflex.jvmMain~1" target="1.6" />
       <module name="Reflex.jvmTest" target="1.6" />
       <module name="Reflex.jvmTest~1" target="1.6" />
+      <module name="SidevLib.jvmMain" target="1.6" />
+      <module name="SidevLib.jvmTest" target="1.6" />
+      <module name="SidevLib.SidevLib-Math.jvmMain" target="1.6" />
+      <module name="SidevLib.SidevLib-Math.jvmTest" target="1.6" />
+      <module name="SidevLib.SidevLib-Reflex.jvmMain" target="1.6" />
+      <module name="SidevLib.SidevLib-Reflex.jvmTest" target="1.6" />
+      <module name="SidevLib.SidevLib-StdLib.jvmMain" target="1.6" />
+      <module name="SidevLib.SidevLib-StdLib.jvmTest" target="1.6" />
+      <module name="StdLib.jvmMain" target="1.6" />
       <module name="StdLib.jvmMain~1" target="1.6" />
+      <module name="StdLib.jvmTest" target="1.6" />
       <module name="StdLib.jvmTest~1" target="1.6" />
     </bytecodeTargetLevel>
   </component>

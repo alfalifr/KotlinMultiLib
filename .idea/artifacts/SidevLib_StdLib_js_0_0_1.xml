@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SidevLib-StdLib-js-0.0.1">
+    <output-path>D:\Data\Pemrograman\Java\Kotlin\Library\SidevLib\StdLib\build\libs</output-path>
+    <root id="archive" name="SidevLib-StdLib-js-0.0.1.jar" />
+  </artifact>
+</component>

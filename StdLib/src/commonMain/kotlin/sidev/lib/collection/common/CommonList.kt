@@ -1,6 +1,6 @@
 package sidev.lib.collection.common
 
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
 import sidev.lib.collection.newUniqueValueIn
 import sidev.lib.collection.removeValue

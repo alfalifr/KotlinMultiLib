@@ -2,15 +2,9 @@ package sidev.lib.collection
 ///*
 import sidev.lib.console.prine
 import sidev.lib.number.isZero
-import sidev.lib.number.plus
-import sidev.lib.reflex.clazz
-import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.SiParameter
-import sidev.lib.reflex.common.full.clone
-import sidev.lib.reflex.common.full.isInstantiable
-import sidev.lib.reflex.common.full.isReflexUnit
-import sidev.lib.reflex.common.native.si
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.number.inc
+import sidev.lib.reflex.nativeSimpleNew
 
 /*
 ===============
@@ -128,30 +122,30 @@ toString
 
 val Map<*, *>.string: String
     get(){
-        return if(!this::class.si.isInstantiable){
-            var res= "{"
-            for(e in entries)
-                res += "${e.key}=${e.value}, "
-            res= res.removeSuffix(", ")
-            res += "}"
-            res
-        }
-        else toString()
+//        return if(!this::class.si.isInstantiable){
+        var res= "{"
+        for(e in entries)
+            res += "${e.key}=${e.value}, "
+        res= res.removeSuffix(", ")
+        res += "}"
+        return res
+//        }
+//        else toString()
     }
 val Map<*, *>.namedString: String
     get()= "${this::class.simpleName}$string"
 
 val Collection<*>.string: String
     get(){
-        return if(!this::class.si.isInstantiable){
-            var res= "["
-            for(e in this)
-                res += "$e, "
-            res= res.removeSuffix(", ")
-            res += "]"
-            res
-        }
-        else toString()
+//        return if(!this::class.si.isInstantiable){
+        var res= "["
+        for(e in this)
+            res += "$e, "
+        res= res.removeSuffix(", ")
+        res += "]"
+        return res
+//        }
+//        else toString()
     }
 
 val Collection<*>.namedString: String
@@ -224,7 +218,10 @@ New Unique Value Creation
 =============================
  */
 @Suppress(SuppressLiteral.UNCHECKED_CAST, SuppressLiteral.IMPLICIT_CAST_TO_ANY)
-fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): T? {
+fun <T> newUniqueValueIn(
+    inCollection: Collection<T?>,
+    default: T?= null //, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null
+): T? {
     var newVal= inCollection.lastOrNull()
     if(newVal == null){
         prine("inCollection kosong, nilai default: \"$default\" dikembalikan.")
@@ -232,9 +229,11 @@ fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constr
     }
     while(newVal != null && newVal in inCollection){
         newVal= when(newVal){
-            is Number -> newVal + 1
+            is Number -> newVal.inc()
             is String -> "$newVal:@"
+            is Char -> newVal.inc()
             else -> {
+/*
                 if(!newVal.clazz.si.isReflexUnit)
                     try{ (newVal as Any).clone(constructorParamValFunc = constructorParamValFunc)!! }
                     catch (e: Exception){
@@ -242,6 +241,10 @@ fun <T> newUniqueValueIn(inCollection: Collection<T?>, default: T?= null, constr
                         return default
                     }
                 else return default
+ */
+                //<28 Agustus 2020> => Untuk alasan dependency, fungsi clone pada fungsi ini ditiadakan.
+                return if(default != null) nativeSimpleNew((default as Any)::class, default) as? T
+                else null
             }
         } as? T
     }

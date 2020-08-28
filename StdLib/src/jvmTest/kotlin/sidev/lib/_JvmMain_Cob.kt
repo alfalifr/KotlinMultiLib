@@ -1,13 +1,14 @@
 package sidev.lib
-
+/*
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.property.MutableLazy
 import sidev.lib.property.mutableLazy
-import sidev.lib.reflex.common.full.declaredFieldsTree
-import sidev.lib.reflex.common.full.forceGet
-import sidev.lib.reflex.common.full.fieldValuesTree
-import sidev.lib.reflex.common.native.si
+import sidev.lib.reflex.full.declaredFieldsTree
+import sidev.lib.reflex.full.forceGet
+import sidev.lib.reflex.full.fieldValuesTree
+import sidev.lib.reflex.comp.native.si
+import sidev.lib.reflex.native.si
 
 object OP
 
@@ -97,3 +98,5 @@ class AO(val b: Int= 10){
         return "AO b= $b"
     }
 }
+
+ */

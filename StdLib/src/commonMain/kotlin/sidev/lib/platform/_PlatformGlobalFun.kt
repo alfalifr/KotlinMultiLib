@@ -1,7 +1,5 @@
 package sidev.lib.platform
 
-import sidev.lib.reflex.common.core.SiReflexConst
-
 /**
  * Menaruh objek dg nama [name] dg nilai [value] pada global.
  * @return -> `true` jika berhasil menempatkan [name] pada global,

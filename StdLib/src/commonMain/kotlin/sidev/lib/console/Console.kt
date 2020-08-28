@@ -1,6 +1,6 @@
 package sidev.lib.console
 
-import sidev.lib.universal.`val`.StringLiteral
+import sidev.lib.`val`.StringLiteral
 
 object IoConfig{
     const val PRINT= true

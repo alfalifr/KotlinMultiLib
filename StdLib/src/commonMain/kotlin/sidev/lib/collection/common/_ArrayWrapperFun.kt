@@ -1,39 +1,42 @@
 package sidev.lib.collection.common
 
 
+fun <T> ArrayWrapper<T>.toArray(): Array<T>
+        = (this as ArrayWrapperImpl<T>).array.copyOf() //.let { it.copyOf() }
+
 fun <T> Array<T>.asWrapped(): MutableArrayWrapper<T> =
-    MutableArrayWrapperImpl(this)
+    MutableArrayWrapperImpl(copyOf())
 fun IntArray.asWrapped(): MutableArrayWrapper<Int> =
     MutableArrayWrapperImpl_Int(
-        this
+        copyOf()
     )
 fun LongArray.asWrapped(): MutableArrayWrapper<Long> =
     MutableArrayWrapperImpl_Long(
-        this
+        copyOf()
     )
 fun ShortArray.asWrapped(): MutableArrayWrapper<Short> =
     MutableArrayWrapperImpl_Short(
-        this
+        copyOf()
     )
 fun FloatArray.asWrapped(): MutableArrayWrapper<Float> =
     MutableArrayWrapperImpl_Float(
-        this
+        copyOf()
     )
 fun DoubleArray.asWrapped(): MutableArrayWrapper<Double> =
     MutableArrayWrapperImpl_Double(
-        this
+        copyOf()
     )
 fun ByteArray.asWrapped(): MutableArrayWrapper<Byte> =
     MutableArrayWrapperImpl_Byte(
-        this
+        copyOf()
     )
 fun BooleanArray.asWrapped(): MutableArrayWrapper<Boolean> =
     MutableArrayWrapperImpl_Boolean(
-        this
+        copyOf()
     )
 fun CharArray.asWrapped(): MutableArrayWrapper<Char> =
     MutableArrayWrapperImpl_Char(
-        this
+        copyOf()
     )
 
 

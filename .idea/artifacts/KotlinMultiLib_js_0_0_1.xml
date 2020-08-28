@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="KotlinMultiLib-js-0.0.1">
-    <output-path>D:\Data\Pemrograman\Java\Kotlin\Library\KotlinMultiLib\build\libs</output-path>
+    <output-path>D:\Data\Pemrograman\Java\Kotlin\Library\SidevLib\build\libs</output-path>
     <root id="archive" name="KotlinMultiLib-js-0.0.1.jar" />
   </artifact>
 </component>

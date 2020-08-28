@@ -1,4 +1,4 @@
-package sidev.lib.universal.`val`
+package sidev.lib.`val`
 
 object StringLiteral {
     const val ANSI_RESET = "\u001B[0m"

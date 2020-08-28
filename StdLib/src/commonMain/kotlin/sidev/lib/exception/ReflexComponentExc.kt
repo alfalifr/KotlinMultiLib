@@ -1,6 +1,6 @@
 package sidev.lib.exception
 
-import sidev.lib.reflex.common.SiDescriptorContainer
+import sidev.lib.reflex.SiDescriptorContainer
 import kotlin.reflect.KClass
 
 open class ReflexComponentExc(

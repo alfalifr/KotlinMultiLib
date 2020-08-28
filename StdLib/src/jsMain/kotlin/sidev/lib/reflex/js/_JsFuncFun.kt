@@ -1,7 +1,5 @@
 package sidev.lib.reflex.js
 
-import sidev.lib.check.nativeTrya
-import sidev.lib.console.prine
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 
 /**

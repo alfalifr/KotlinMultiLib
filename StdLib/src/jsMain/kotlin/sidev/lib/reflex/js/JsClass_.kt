@@ -1,13 +1,20 @@
 package sidev.lib.reflex.js
 
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
 
 /**
  * Wrapper [JsClass] agar dapat dilakukan pengecekan `is` pada runtime Kotlin.
  */
-interface JsClass_<T: Any> : JsCallable<T>
+interface JsClass_<T: Any> : JsCallable<T>{
+    val isArray: Boolean
+}
 
-internal class JsClassImpl_<T: Any>(func: Any): JsCallableImpl<T>(func), JsClass_<T>
+internal class JsClassImpl_<T: Any>(func: Any): JsCallableImpl<T>(func), JsClass_<T>{
+    override val isArray: Boolean by lazy {
+        @Suppress(SuppressLiteral.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE)
+        (func as? JsClass<*>)?.kotlin == Array::class
+    }
+}
 /*
 {
     @Suppress(SuppressLiteral.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE)

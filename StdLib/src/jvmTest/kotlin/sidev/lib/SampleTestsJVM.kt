@@ -4,10 +4,12 @@ package sidev.lib
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.number.*
-import sidev.lib.reflex.common.core.createType
-import sidev.lib.reflex.common.full.*
-import sidev.lib.reflex.common.full.types.*
-import sidev.lib.reflex.common.native.si
+/*
+import sidev.lib.reflex.core.createType
+import sidev.lib.reflex.full.*
+import sidev.lib.reflex.full.types.*
+import sidev.lib.reflex.comp.native.si
+ */
 import sidev.lib.`val`.RoundingMode
 import sidev.lib.collection.common.arrayWrapperOf
 import sidev.lib.collection.common.getValue
@@ -22,7 +24,7 @@ class SampleTestsJVM {
     fun testHello() {
         assertTrue("JVM" in hello())
     }
-
+/*
     @Test
     fun reflexTypeTest(){
         val singletonList= listOf("bla")
@@ -244,4 +246,5 @@ class SampleTestsJVM {
             prin("array foreeach it= $it")
         }
     }
+ */
 }

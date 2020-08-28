@@ -1,5 +1,5 @@
 package sidev.lib
-
+/*
 //import sidev.lib.annotation.AnnotatedFunctionClass
 //import sidev.lib.annotation.Rename
 import sidev.lib.console.prin
@@ -135,3 +135,6 @@ internal enum class En(val a: Int, val pos: Int){
     C(3, 5);
     val b= 12
 }
+
+
+ */

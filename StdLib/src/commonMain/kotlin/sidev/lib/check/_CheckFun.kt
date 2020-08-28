@@ -2,7 +2,6 @@ package sidev.lib.check
 
 import sidev.lib.console.prine
 import kotlin.Exception
-import kotlin.reflect.KTypeParameter
 
 /**
  * Cara aman untuk mendapatkan  nilai dari `lateinit var` dari `this.extension` [I].

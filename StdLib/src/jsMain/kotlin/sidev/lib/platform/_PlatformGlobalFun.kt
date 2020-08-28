@@ -1,7 +1,7 @@
 package sidev.lib.platform
 
 import sidev.lib.console.prine
-import sidev.lib.reflex.common.core.SiReflexConst
+import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.js.asJson
 import kotlin.js.Json
 import kotlin.js.json

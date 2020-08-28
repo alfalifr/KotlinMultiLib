@@ -4,9 +4,8 @@ import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.platform.putInternalObjectOnGlobal
-import sidev.lib.platform.setGlobalObject
-import sidev.lib.reflex.common.core.createType
-import sidev.lib.reflex.common.native.si
+import sidev.lib.reflex.core.createType
+import sidev.lib.reflex.native.si
 
 /**
  * Tipe data yg digunakan untuk menunjukan tipe null.
@@ -14,7 +13,7 @@ import sidev.lib.reflex.common.native.si
  */
 object Null{
     init{
-        prine("init Null")
+//        prine("init Null")
         //TODO <23 Agustus 2020> => Tiba-tiba `this::class.si` menyebabkan `this Null` jadi unreachable dari kode.
         if(platform == Platform.JS)
             putInternalObjectOnGlobal(this)

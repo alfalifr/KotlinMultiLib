@@ -2,8 +2,7 @@ package sidev.lib.reflex.js
 
 import sidev.lib.check.notNullTo
 import sidev.lib.exception.ImplementationExc
-import sidev.lib.exception.ReflexComponentExc
-import sidev.lib.reflex.common.SiClass
+import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.fullName
 import sidev.lib.reflex.js.kotlin.KotlinJsFunction
 import kotlin.js.Json

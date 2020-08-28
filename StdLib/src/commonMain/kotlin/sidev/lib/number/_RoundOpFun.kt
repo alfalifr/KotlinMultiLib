@@ -1,7 +1,7 @@
 package sidev.lib.number
 
 import sidev.lib.`val`.RoundingMode
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
 
 
 infix fun Int.roundClosest(range: IntRange): Int{

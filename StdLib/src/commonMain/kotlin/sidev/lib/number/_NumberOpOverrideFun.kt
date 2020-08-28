@@ -1,9 +1,8 @@
 package sidev.lib.number
 
-import sidev.lib.console.prine
+//import sidev.lib.reflex.clazz
 import sidev.lib.reflex.clazz
 import sidev.lib.exception.UndefinedDeclarationExc
-import kotlin.math.pow
 
 
 /*

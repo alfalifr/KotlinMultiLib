@@ -2,11 +2,7 @@ package sidev.lib.collection.common
 
 import sidev.lib.collection.sort
 import sidev.lib.collection.string
-import sidev.lib.reflex.common.SiProperty1
-import sidev.lib.reflex.common.full.declaredMemberProperties
-import sidev.lib.reflex.common.full.forceGet
-import sidev.lib.reflex.common.native.si
-import sidev.lib.universal.`val`.SuppressLiteral
+import sidev.lib.`val`.SuppressLiteral
 import kotlin.reflect.KProperty
 
 
@@ -121,10 +117,15 @@ fun <K, V> CommonMutableList<K, V>.asMutableMap(): MutableMap<K, V> = when(this)
 /** Fungsi delegasi untuk [Array]. */
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 inline operator fun <reified T> ArrayWrapper<T>.getValue(owner: Any?, prop: KProperty<*>): Array<T> = when(this){
-    is ArrayWrapperImpl -> (this::class.si.declaredMemberProperties.find { it.name == "array" }!! as SiProperty1<ArrayWrapper<T>, Any?>)
+    is ArrayWrapperImpl -> toArray()
+/*
+        <28 Agustus 2020> => Refleksi tidak jadi dipake karena berat untuk operasi yg simpel.
+        (this::class.si.declaredMemberProperties.find { it.name == "array" }!! as SiProperty1<ArrayWrapper<T>, Any?>)
         .forceGet(this)!! as Array<T> //Pake Reflex karena kode ini inline smtr ArrayWrapperImpl merupakan internal.
+ */
     else -> Array(size){ this[it] }
 }
+
 /** Extension delegate function ini dibuat dg alasan karena [CommonMutableList] tidak meng-extend [MutableMap]. */
 operator fun <K, V> CommonMutableList<K, V>.getValue(owner: Any?, property: KProperty<*>): MutableMap<K, V>{
     return when(this){

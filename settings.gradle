@@ -1,4 +1,13 @@
-rootProject.name = 'KotlinMultiLib'
+rootProject.name = 'SidevLib'
 
 
 enableFeaturePreview('GRADLE_METADATA')
+
+include(":SidevLib-StdLib")
+project(":SidevLib-StdLib").projectDir= new File("/StdLib")
+
+include(":SidevLib-Math")
+project(":SidevLib-Math").projectDir= new File("/Math")
+
+include(":SidevLib-Reflex")
+project(":SidevLib-Reflex").projectDir= new File("/Reflex")

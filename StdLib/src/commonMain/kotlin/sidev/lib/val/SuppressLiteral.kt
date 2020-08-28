@@ -1,4 +1,4 @@
-package sidev.lib.universal.`val`
+package sidev.lib.`val`
 
 object SuppressLiteral {
     const val UNCHECKED_CAST= "UNCHECKED_CAST"

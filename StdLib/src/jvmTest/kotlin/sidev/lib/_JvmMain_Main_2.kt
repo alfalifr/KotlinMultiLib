@@ -1,12 +1,12 @@
 package sidev.lib
-
+/*
 import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.prin
-import sidev.lib.reflex.common.SiClass
-import sidev.lib.reflex.common.SiProperty1
-import sidev.lib.reflex.common.full.*
-import sidev.lib.reflex.common.native.si
+import sidev.lib.reflex.comp.SiClass
+import sidev.lib.reflex.comp.SiProperty1
+import sidev.lib.reflex.full.*
+import sidev.lib.reflex.comp.native.si
 import sidev.lib.universal.structure.collection.iterator.NestedIterator
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.reflect.KProperty
@@ -190,3 +190,5 @@ fun main(){
         prin("i= $i prop= $prop")
     }
 }
+
+ */
