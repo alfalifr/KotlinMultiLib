@@ -6,17 +6,86 @@ import sidev.lib.console.prine
 import sidev.lib.exception.ClassCastExc
 import sidev.lib.exception.NonInstantiableTypeExc
 import sidev.lib.reflex.*
-//import sidev.lib.reflex.comp.native.isDynamicEnabled
 import sidev.lib.reflex.native.si
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.reflex.native.SiNativeParameter
 import sidev.lib.reflex.native.isDynamicEnabled
+import kotlin.reflect.KClass
 
 
 /*
 ==========================
-New Instance
+New Instance - Native
 ==========================
  */
+
+/**
+ * Fungsi ini melakukan clone sama sprti fungsi [clone], namun dilakukan dg menggunakan refleksi native
+ * sehingga tidak me-load dulu komponen [SiReflex].
+ *
+ * <29 Agustus 2020> => Fungsi ini melakukan clone sederhana sehingga tidak mengecek apakah kelas dari `this.extension` [T]
+ *   merupakan shallowAnonymous tidak, mengingat properti [isShallowAnonymous] hanya dimiliki oleh [SiClass].
+ *   Kemungkinan ke depannya akan disediakan properti [isShallowAnonymous] untuk native dg receiver adalah [KClass].
+ */
+expect fun <T: Any> T.nativeClone(isDeepClone: Boolean= true, constructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): T
+expect fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?= null): T?
+
+/** Kode implementasi sama dg [arrayClone], namun menggunakan [nativeClone] sbg fungsi clone. */
+fun <T: Any> T.nativeArrayClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): T{
+    if(!this::class.isArray) throw ClassCastExc(fromClass = this::class, toClass = Array::class, msg = "Instance yg di-arrayClone() bkn array")
+
+    val res: Any = if(this::class.si.isObjectArray)
+        (this as Array<*>).nativeDeepClone(isElementDeepClone, elementConstructorParamValFunc)
+    else when(this){
+        is IntArray -> sliceArray(indices)
+        is LongArray -> sliceArray(indices)
+        is FloatArray -> sliceArray(indices)
+        is DoubleArray -> sliceArray(indices)
+        is CharArray -> sliceArray(indices)
+        is ShortArray -> sliceArray(indices)
+        is BooleanArray -> sliceArray(indices)
+        is ByteArray -> sliceArray(indices)
+        else -> this
+    }
+    return res as T
+}
+
+/** Kode implementasi sama dg [deepClone], namun menggunakan [nativeClone] sbg fungsi clone. */
+fun <T> Array<T>.nativeDeepClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): Array<T>{
+    val newArray= sliceArray(indices) //this.nativeArrayClone() //.clone()
+    for((i, e) in this.withIndex()){
+        if(e != null)
+            newArray[i]= try{ (e as Any).nativeClone(isElementDeepClone, elementConstructorParamValFunc) }
+            catch (e: NonInstantiableTypeExc){ e } as T
+    }
+    return newArray
+}
+
+/** Kode implementasi sama dg [deepClone], namun menggunakan [nativeClone] sbg fungsi clone. */
+fun <T> Collection<T>.nativeDeepClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): Collection<T>{
+    val newColl= mutableListOf<T>()
+
+    for(e in this)
+        newColl.add(
+            (if(e != null)
+                try{ (e as Any).nativeClone(isElementDeepClone, elementConstructorParamValFunc) }
+                catch (e: NonInstantiableTypeExc){ e }
+            else null) as T //Jika `this.extension` merupakan collection of nullables.
+        )
+
+    return when(this){
+        is MutableCollection<*> -> newColl
+        else -> newColl.toList()
+    }
+}
+
+
+/*
+==========================
+New Instance - Common
+==========================
+ */
+
 /**
  * Fungsi yg memiliki fungsi sama dg [clone], namun lebih runtime-safety karena tipe data
  * yg di-clone dg tipe data tujuan berbeda. Hal tersebut berguna saat `this.extension`
@@ -66,10 +135,15 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
             msg = "Tipe data tidak punya konstruktor dan bkn merupakan shallow-anonymous.")
     }
 
+    val constructorPropertyList= mutableListOf<SiField<T, *>>()
+            //Digunakan untuk menampung Pair dari valueMapTree yg property-nya ada di konstruktor,
+            // sehingga saat di loop for di bawah property yg sama tidak disalin karena
+            // udah di-clone di fungsi [newInsConstrParamValFunc].
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->
         if(constr.parameters.find { it == param } != null){
             valueMapTree.find { valueMap -> param.isPropertyLike(valueMap.first.property) }
                 .notNullTo {
+                    constructorPropertyList.add(it.first) //Agar loop for di bawah gak usah menyalin lagi property yg udah di-clone di konstruktor.
                     if(!isDeepClone) it.second
                     else it.second?.clone(true, constructorParamValFunc)
                 }
@@ -100,26 +174,27 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
                 msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     }
 
-    for(valueMap in valueMapTree){
+
+    for((field, value) in valueMapTree.filter { it.first !in constructorPropertyList }){
 //        prine("clone() valMap= $valueMap")
-        val field= valueMap.first
 /*
         val continueCopy= field is SiMutableProperty1<*, *>
                 || (constr.parameters.isNotEmpty() //Jika property ada di primary constr walaupun val, maka copy aja.
                 && { constr.parameters.find { it.isPropertyLike(field.descriptor.host as SiProperty<*>) } != null }())
  */
 //        if(continueCopy){ //Karena semua field, baik yg final maupun tidak harus di-copy value-nya.
-        @Suppress(SuppressLiteral.UNCHECKED_CAST)
-        val value= valueMap.second
+//        @Suppress(SuppressLiteral.UNCHECKED_CAST)
         if(value?.isUninitializedValue == true) continue
         field.asNotNull { mutableField: SiMutableField<T, Any?> ->
 //                prine(" masukkkk... clone() prop= $prop value= $value value.clazz.isPrimitive= ${value?.clazz?.isPrimitive} bool=${!isDeepClone || value == null || (value.clazz.isPrimitive && constr.parameters.find { it.isPropertyLike(mutableField, true) } == null)}")
             if(!isDeepClone || value == null || value.clazz.si.isCopySafe || value.isReflexUnit){
-                if(constr.parameters.find { it.isPropertyLike((mutableField as SiField<*, *>).property, true) } == null)
+//                if(constr.parameters.find { it.isPropertyLike((mutableField as SiField<*, *>).property, true) } == null)
+                //<29 Agustus 2020> => filter kondisi if di atas tidak diperlukan karena udah dilakukan filter di awal saat di for.
                 //Jika ternyata [mutableField] terletak di konstruktor dan sudah di-instansiasi,
                 // itu artinya programmer sudah memberikan definisi nilainya sendiri saat intansiasi,
                 // maka jangan salin nilai lama [mutableField] ke objek yg baru di-intansiasi.
-                    mutableField.forceSet(newInstance, value) //value.withType(mutableField.returnType)
+                //<29 Agustus 2020> => Klarifikasi ttg filter if di atas.
+                mutableField.forceSet(newInstance, value) //value.withType(mutableField.returnType)
 //                        mutableField.forcedSetTyped(newInstance, value.withType(mutableField.returnType))
             } else{
 //                    mutableField.forcedSetTyped<T, Any?>(newInstance, value.clone(true, constructorParamValFunc).withType(mutableField.returnType))
@@ -133,6 +208,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
         prine("Kelas yg di-clone: \"${this::class}\" merupakan shallow-anonymous, newInstance yg di-return adalah superclass: \"${newInstance::class}\".")
     return newInstance
 }
+
 
 
 /**
@@ -321,8 +397,10 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
         } else{
             if(type.isMarkedNullable)
                 defParamVal[param]= null
-            else if(!param.isOptional) //Harusnya bisa langsung else, tapi biar readable aja.
+            else if(!param.isOptional){ //Harusnya bisa langsung else, tapi biar readable aja.
+                prine("""Kelas: "$clazz" tidak dapat di-instantiate karena tidak tersedianya argumen untuk param: "$param".""")
                 return null //Karena class udah gak bisa di-instantiate.
+            }
         }
     }
 /*

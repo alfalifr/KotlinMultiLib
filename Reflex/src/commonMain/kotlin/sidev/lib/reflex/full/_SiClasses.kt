@@ -51,7 +51,7 @@ val Any.isReflexUnit: Boolean
             || isNativeReflexUnit
 
 val Any.isUninitializedValue: Boolean
-    get()= this::class == UNINITIALIZED_VALUE::class
+    get()= this == UNINITIALIZED_VALUE //this::class == UNINITIALIZED_VALUE::class
 
 val Any.isDelegate: Boolean get()= when(this){
 //    is Lazy<*> -> true //Gak semua Lazy adalah delegate. Hal teresebut dikarenakan Lazy gak punya fungsi getValue() sbg instance member.

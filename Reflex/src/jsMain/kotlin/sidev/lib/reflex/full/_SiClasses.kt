@@ -4,6 +4,7 @@ import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.js.*
 import sidev.lib.`val`.SuppressLiteral
+import kotlin.reflect.KClass
 
 actual val SiClass<*>.isPrimitive: Boolean get() = when((descriptor.native!! as JsClass_<*>).name){
     JsPrimitiveType.STRING.jsConstructorName -> true

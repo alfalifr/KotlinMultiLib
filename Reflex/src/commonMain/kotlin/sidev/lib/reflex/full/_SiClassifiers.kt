@@ -1,7 +1,11 @@
 package sidev.lib.reflex.full
 
 import sidev.lib.check.asNotNullTo
+import sidev.lib.check.notNullTo
+import sidev.lib.collection.iterator.iterator
+import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.emptyNestedSequence
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiType
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
@@ -22,15 +26,40 @@ val SiClass<*>.superclass: SiClass<*>?
 val SiClass<*>.superclasses: Sequence<SiClass<*>>
     get()= supertypes.asSequence().filter { it.classifier is SiClass<*> }.map { it.classifier as SiClass<*> }
 
+/**
+ * Mengambil semua kelas yg masuk dalam pohon keturunan dari kelas `this.extension`, termasuk yg berupa kelas maupun interface.
+ * Properti ini juga menyertakan `this.extension` dalam sequence.
+ */
 val SiClass<*>.classesTree: NestedSequence<SiClass<*>>
     get()= nestedSequenceSimple(this){ it.superclasses.iterator() }
 
+/**
+ * Mirip dg [classesTree], namun hanya superclass yg bkn brp interface.
+ * Khusus untuk `this.extension`, walaupun merupakan anonymous class yg berasal dari instansisasi interface,
+ * tetap masuk dalam sequence.
+ */
+val SiClass<*>.extendingClassesTree: NestedSequence<SiClass<*>>
+    get()= nestedSequenceSimple(this){ it.superclass.notNullTo { iteratorSimple(it) } }
+
+/** Mirip dg [classesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 val SiClass<*>.superclassesTree: NestedSequence<SiClass<*>>
     get()= nestedSequenceSimple(superclasses.iterator()){ input: SiClass<*> -> input.superclasses.iterator() }
 
+/** Mirip dg [extendingClassesTree], namun tidak menyertakan `this.extension` dalam sequence. */
+val SiClass<*>.extendingSuperclassesTree: NestedSequence<SiClass<*>>
+    get()= superclass.notNullTo { supr ->
+        nestedSequenceSimple(supr){ input: SiClass<*> -> input.superclasses.iterator() }
+    } ?: emptyNestedSequence()
+
+
+/**
+ * Mengambil semua tipe yg masuk dalam pohon keturunan dari tipe `this.extension`, termasuk yg berupa kelas maupun interface.
+ * Properti ini juga menyertakan `this.extension` dalam sequence.
+ */
 val SiType.typesTree: NestedSequence<SiType>
     get()= nestedSequenceSimple(this){ it.classifier.asNotNullTo { cls: SiClass<*> -> cls.supertypes.iterator() } }
 
+/** Mirip dg [typesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 val SiClass<*>.supertypesTree: NestedSequence<SiType>
     get()= nestedSequenceSimple<SiType>(supertypes.iterator()){ it.classifier.asNotNullTo { cls: SiClass<*> -> cls.supertypes.iterator() } }
 

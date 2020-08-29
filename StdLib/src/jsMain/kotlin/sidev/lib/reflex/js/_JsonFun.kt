@@ -1,6 +1,9 @@
 package sidev.lib.reflex.js
 
 import sidev.lib.exception.TypeExc
+import sidev.lib.reflex.native.getNativeMutableProperties
+import sidev.lib.reflex.native.getNativeProperties
+import sidev.lib.reflex.native.jsClass
 import kotlin.js.Json
 import kotlin.js.json
 import kotlin.reflect.*
@@ -65,6 +68,16 @@ val Any.properties: Sequence<Pair<String, Any?>> get(){
             }
     }
 }
+
+val <T: Any> T.typedProperties: Sequence<Pair<JsProperty<T, Any?>, Any?>>
+    get(){
+        val props= properties.toList()
+        return getNativeMutableProperties(jsClass).map { prop ->
+            prop as JsProperty<T, Any?>
+            val value= props.find { it.first == prop.innerName }?.second
+            Pair(prop, value)
+        }
+    }
 
 val Json.keys: Array<String>
     get(){

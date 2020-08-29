@@ -7,6 +7,7 @@ import sidev.lib.reflex.fullName
 import sidev.lib.reflex.js.kotlin.KotlinJsFunction
 import kotlin.js.Json
 import kotlin.js.json
+import kotlin.reflect.KClass
 
 //TODO uncomment
 /*internal*/ fun jsPureFunction(func: Any): dynamic = when(func){
@@ -14,6 +15,7 @@ import kotlin.js.json
     is JsCallable<*> -> try { jsPureFunction((func as JsCallableImpl<*>).func) } //Recursive karena bisa jadi func-nya juga merupakan callable lainnya.
         catch (e: Throwable){ throw ImplementationExc(implementedClass = JsCallable::class) }
     is SiClass<*> -> jsPureFunction(func.descriptor.native!!) //Recursive karena native-nya berupa [JsClass_].
+    is KClass<*> -> func.js
     else -> {
         if(!func.isFunction)
             throw IllegalArgumentException("""Objek: "${str(func)}" bkn fungsi.""")

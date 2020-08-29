@@ -40,15 +40,15 @@ import sidev.lib.reflex.native.getReturnType
 import sidev.lib.reflex.native.getVisibility
 
 
-internal expect val SiNativeWrapper.nativeInnerName: String?
-internal expect val SiNativeWrapper.nativeFullName: String?
-internal expect val SiNativeWrapper.nativeSimpleName: String?
+internal expect val SiNative.nativeInnerName: String?
+internal expect val SiNative.nativeFullName: String?
+internal expect val SiNative.nativeSimpleName: String?
 
-private val SiNativeWrapper.qualifiedNativeName: String
+private val SiNative.qualifiedNativeName: String
     get()= nativeFullName ?: NativeReflexConst.TEMPLATE_NATIVE_NAME
 
 
-internal fun createNativeWrapper(native: Any): SiNativeWrapper = object : SiNativeWrapper {
+internal fun createNativeWrapper(native: Any): SiNative = object : SiNative {
     override val implementation: Any = native
 }
 
@@ -66,7 +66,7 @@ val SiClass<*>.startProjectedType: SiType
 
 object ReflexFactory{
     fun createType(
-        nativeCounterpart: SiNativeWrapper?,
+        nativeCounterpart: SiNative?,
         classifier: SiClassifier?,
         arguments: List<SiTypeProjection> = emptyList(),
         nullable: Boolean = false,
@@ -83,7 +83,7 @@ object ReflexFactory{
      * Sama dg [createType] namun tidak melakukan pengecekan jml type argument untuk kepentingan refleksi internal.
      */
     internal fun _createType(
-        nativeCounterpart: SiNativeWrapper?,
+        nativeCounterpart: SiNative?,
         classifier: SiClassifier?,
         arguments: List<SiTypeProjection> = emptyList(),
         nullable: Boolean = false,
@@ -99,7 +99,7 @@ object ReflexFactory{
 
 
     fun createParameter(
-        nativeCounterpart: SiNativeWrapper?, //Untuk mengakomodasi parameter setter dan getter.
+        nativeCounterpart: SiNative?, //Untuk mengakomodasi parameter setter dan getter.
         hostCallable: SiCallable<*>?,
         index: Int, type: SiType,
         name: String?= null,
@@ -118,7 +118,7 @@ object ReflexFactory{
     }
 
     internal fun createParameterLazyly(
-        nativeCounterpart: SiNativeWrapper?, //Untuk mengakomodasi parameter setter dan getter.
+        nativeCounterpart: SiNative?, //Untuk mengakomodasi parameter setter dan getter.
         hostCallable: SiCallable<*>?,
         index: Int, //type: SiType,
         name: String?= null,
@@ -143,7 +143,7 @@ object ReflexFactory{
 
 
     fun createTypeParameter(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?,
         upperBounds: List<SiType>, variance: SiVariance,
         modifier: Int= 0
@@ -155,7 +155,7 @@ object ReflexFactory{
     }
 
     fun <R> createCallable(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
         returnType: SiType = ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
@@ -179,7 +179,7 @@ object ReflexFactory{
     }
 
     internal fun <R> createCallableLazyly(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
 //        returnType: SiType= ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
@@ -208,7 +208,7 @@ object ReflexFactory{
 
 
     fun <R> createFunction(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
         returnType: SiType = ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
@@ -228,7 +228,7 @@ object ReflexFactory{
     }
 
     internal fun <R> createFunctionLazyly(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
 //        returnType: SiType= ReflexTemplate.typeAnyNullable,
         parameters: List<SiParameter> = emptyList(),
@@ -249,7 +249,7 @@ object ReflexFactory{
 
 
     fun <T, R> createProperty1(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
         type: SiType = ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
@@ -263,7 +263,7 @@ object ReflexFactory{
     }
 
     internal fun <T, R> createProperty1Lazyly(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
 //        type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
@@ -282,7 +282,7 @@ object ReflexFactory{
 
 
     fun <T, R> createMutableProperty1(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
         type: SiType = ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
@@ -297,7 +297,7 @@ object ReflexFactory{
 
 
     internal fun <T, R> createMutableProperty1Lazyly(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer?= null,
 //        type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
@@ -333,7 +333,7 @@ object ReflexFactory{
 
 
     fun <T: Any> createClass(
-        nativeCounterpart: SiNativeWrapper,
+        nativeCounterpart: SiNative,
         host: SiDescriptorContainer? = null,
         constructors: List<SiFunction<T>> = emptyList(),
         members: Collection<SiCallable<*>> = emptyList(),
@@ -357,7 +357,7 @@ object ReflexFactory{
     }
 ///*
     fun <R, T>createField(
-    nativeCounterpart: SiNativeWrapper?,
+    nativeCounterpart: SiNative?,
     host: SiDescriptorContainer?= null,
     name: String,
     type: SiType,
@@ -378,7 +378,7 @@ object ReflexFactory{
     }
 
     fun <R, T>createMutableField(
-        nativeCounterpart: SiNativeWrapper?,
+        nativeCounterpart: SiNative?,
         host: SiDescriptorContainer?= null,
         name: String,
         type: SiType,
@@ -411,7 +411,7 @@ object ReflexFactory{
      * bbrp akses `set` dibatasi.
      */
     internal fun <R, T>_createField(
-        nativeCounterpart: SiNativeWrapper?,
+        nativeCounterpart: SiNative?,
         host: SiDescriptorContainer?= null,
         name: String,
         type: SiType,

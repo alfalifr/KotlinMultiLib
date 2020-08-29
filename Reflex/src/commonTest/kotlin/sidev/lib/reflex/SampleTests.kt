@@ -5,6 +5,7 @@ import sidev.lib.collection.common.arrayWrapperOf
 import sidev.lib.collection.common.getValue
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
+import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.number.*
@@ -136,6 +137,65 @@ class SampleTests {
     }
 
     @Test
+    fun nativeCloneTest(){
+        val ac= AC<BlaBla2>(Poin(y = 199))
+        val ac2= ac.nativeClone()
+//        js("class;a")
+
+        prin("\n============= Clone =============\n")
+        prin("ac.acStr3= ${ac.acStr3} ac2.acStr3= ${ac2.acStr3}")
+        prin("ac.acStr1= ${ac.acStr1} ac2.acStr1= ${ac2.acStr1}")
+        prin("ac.acStr2= ${ac.acStr2} ac2.acStr2= ${ac2.acStr2}")
+        prin("ac.poin.x= ${ac.poin.x} ac2.poin.x= ${ac2.poin.x}")
+        prin("ac.ab_abs= ${ac.ab_abs} ac2.ab_abs= ${ac2.ab_abs}")
+        prin("ac.dDariAA.d= ${ac.dDariAA.d} ac2.dDariAA.d= ${ac2.dDariAA.d} ")
+        ac.poin.x= 12
+        ac.dDariAA.d= 19
+        ac.acStr1= "bbb1"
+        ac2.acStr2= "bbb2"
+        prin("ac.acStr3= ${ac.acStr3} ac2.acStr3= ${ac2.acStr3}")
+        prin("ac.acStr1= ${ac.acStr1} ac2.acStr1= ${ac2.acStr1}")
+        prin("ac.acStr2= ${ac.acStr2} ac2.acStr2= ${ac2.acStr2}")
+        prin("ac.poin.x= ${ac.poin.x} ac2.poin.x= ${ac2.poin.x}")
+        prin("ac.ab_abs= ${ac.ab_abs} ac2.ab_abs= ${ac2.ab_abs}")
+        prin("ac.dDariAA.d= ${ac.dDariAA.d} ac2.dDariAA.d= ${ac2.dDariAA.d} ")
+        prin("\n============= ac.implementedPropertyValuesTree =============\n")
+
+        for((i, prop) in ac.implementedPropertyValuesTree.withIndex()){
+/*
+            if(prop.first.name == "aLazy"){
+                prine("prop.first.name == \"aLazy\"")
+                val lazyDelName= jsName(prop.second!!)
+                prin("lazyDelName= $lazyDelName")
+                log(prop.second!!)
+                log(prop.second.asDynamic().initializer_0.toString())
+            }
+ */
+            println("i= $i prop= $prop")
+        }
+
+        val ac3= AC<BlaBla2>()
+        val ac4= AC<BlaBla2>()
+        val list1= listOf(ac3, ac4)
+        val list2= list1.nativeClone()
+
+        prin("list2::class= ${list2::class}")
+        prin("list2::class.isCopySafe= ${list2::class.isCopySafe}")
+        prin("\"afsa\"::class.isCopySafe= ${"afsa"::class.si.isCopySafe}")
+        prin("list2::class.isCollection= ${list2::class.isCollection}")
+
+        prin("\n============= list2::class.classesTree ===============\n")
+        for((i, cls) in list2::class.classesTree.withLevel().withIndex())
+            prin("i= $i cls= $cls")
+
+        prin("\n============= List Clone ===============\n")
+        list1[0].poin.x= 16
+        list1[1].poin.y= 32
+        prin("list1[0].poin.x= ${list1[0].poin.x} list1[1].poin.x= ${list1[1].poin.x}")
+        prin("list1[0].poin.y= ${list1[0].poin.y} list1[1].poin.y= ${list1[1].poin.y}")
+    }
+
+    @Test
     fun typeAssignableTest(){
         val everyone= Everyone()
         val american= American()
@@ -189,6 +249,7 @@ class SampleTests {
         prin("\"aaf\"::class.si.isCopySafe= ${"aaf"::class.si.isCopySafe}")
         prin("AC::class.si.isCopySafe= ${AC::class.si.isCopySafe}")
     }
+
 
     @Test
     fun mathTest(){

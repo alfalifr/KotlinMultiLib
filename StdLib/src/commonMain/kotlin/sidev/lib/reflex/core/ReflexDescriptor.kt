@@ -20,7 +20,7 @@ import sidev.lib.reflex.SiTypeParameter
 import sidev.lib.reflex.SiTypeProjection
 import sidev.lib.reflex.SiVariance
 import sidev.lib.reflex.native.SiKClassifier
-import sidev.lib.reflex.native.SiNativeWrapper
+import sidev.lib.reflex.native.SiNative
 import sidev.lib.reflex.fullName
 import sidev.lib.reflex.getHashCode
 import sidev.lib.reflex.native.isDynamicEnabled
@@ -45,7 +45,7 @@ object ReflexDescriptor {
     const val SI_CALLABLE_SETTER_NAME= "<set-prop>"
 
     fun createDescriptor(
-        owner: SiDescriptorContainer, host: SiDescriptorContainer?, nativeCounterpart: SiNativeWrapper?, modifier: Int
+        owner: SiDescriptorContainer, host: SiDescriptorContainer?, nativeCounterpart: SiNative?, modifier: Int
     ): SiDescriptor = object : SiDescriptorImpl() {
         override val innerName: String? = nativeCounterpart?.nativeInnerName
         override val owner: SiDescriptorContainer = owner
@@ -252,7 +252,7 @@ object ReflexDescriptor {
 }
 
 fun SiDescriptorContainer.createDescriptor(
-    host: SiDescriptorContainer? = null, nativeCounterpart: SiNativeWrapper? = null, modifier: Int= 0
+    host: SiDescriptorContainer? = null, nativeCounterpart: SiNative? = null, modifier: Int= 0
 ): SiDescriptor = ReflexDescriptor.createDescriptor(this, host, nativeCounterpart, modifier)
 
 internal var SiDescriptorContainer.mutableHost: SiDescriptorContainer?
