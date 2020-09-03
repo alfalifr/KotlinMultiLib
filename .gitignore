@@ -1,0 +1,12 @@
+
+Reflex/build/test-results/jvmTest/binary/results.bin
+
+.idea/
+build/
+.gradle/
+Math/.gradle/
+Math/build/
+StdLib/.gradle/
+StdLib/build/
+Reflex/.gradle/
+Reflex/build/
