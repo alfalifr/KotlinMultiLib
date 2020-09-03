@@ -24,6 +24,7 @@ actual fun <T: Any> T.nativeClone(isDeepClone: Boolean, constructorParamValFunc:
     val constructorPropertyList= mutableListOf<Field>()
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->
         valueMapTree.find { (field, value) ->
+//            prine("nativeClone() clazz= $clazz field= $field value= $value")
             param.name == field.name && (
                     (value == null && param.type.java == Object::class.java)
                             || (value != null && param.type.java.isAssignableFrom(value::class.java))

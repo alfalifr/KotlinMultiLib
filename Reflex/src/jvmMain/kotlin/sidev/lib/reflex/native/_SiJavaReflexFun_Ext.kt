@@ -103,9 +103,10 @@ val Any.javaFieldValues: Sequence<Pair<Field, Any?>>
 val Any.javaFieldValuesTree: NestedSequence<Pair<Field, Any?>>
     get(){
         return nestedSequence(this::class.java.classesTree){ innerCls: Class<*> ->
-            innerCls.declaredFields //.iterator()//.asSequence()
+            innerCls.declaredFields.asSequence() //.iterator()//.asSequence()
                 .map {
-                    val vals= it.forceGet<Any?>(this)
+                    val vals= try { it.forceGet<Any?>(this) }
+                        catch (e: Exception){ null } //Jika ternyata ada bbrp field yg aksesnya dilarang.
                     Pair(it, vals)
                 }
                 .iterator()

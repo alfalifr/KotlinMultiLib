@@ -24,6 +24,11 @@ class SampleTestsJVM {
     fun testHello() {
         assertTrue("JVM" in hello())
     }
+
+    @Test
+    fun cobTest(){
+        listOf(1)::class.java.declaredFields.forEach(::println)
+    }
 /*
     @Test
     fun reflexTypeTest(){

@@ -2,13 +2,22 @@ package sidev.lib
 
 import sidev.lib.console.prin
 import sidev.lib.reflex.native.si
+import kotlin.js.Date
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.time.measureTime
 
 class SampleTestsJS {
     @Test
     fun testHello() {
         assertTrue("JS" in hello())
+    }
+
+    @Test
+    fun timeTest(){
+        prin(Date())
+        prin(Date().getTime())
+        prin(Date().getTime())
     }
 
     @Test

@@ -17,11 +17,31 @@ import kotlin.math.exp
 import kotlin.math.log
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class SampleTests {
     @Test
     fun testMe() {
         assertTrue(Sample().checkMe() > 0)
+    }
+
+    @ExperimentalTime
+    @Test
+    fun reflexTest(){
+        prin("reflexTest() Mulai ==== ")
+        val siCls: SiClass<AC<*>>
+        var timeTaken = measureTime { siCls = AC::class.si }
+        prin("siCls= $siCls")
+        prine("timeTaken = $timeTaken")
+
+        timeTaken = measureTime {
+            prin("\n============ AC::class.si.members ================\n")
+            for((i, member) in AC::class.si.members.withIndex()){
+                prin("i= $i member= $member")
+            }
+        }
+        prine("timeTaken = $timeTaken")
     }
 
     @Test
@@ -80,10 +100,14 @@ class SampleTests {
         }
     }
 
+    @ExperimentalTime
     @Test
     fun cloneTest(){
         val ac= AC<BlaBla2>(Poin(y = 199))
-        val ac2= ac.clone()
+        prin("cloneTest() Mulai ====")
+        val ac2: AC<BlaBla2>
+        var timeTaken = measureTime { ac2 = ac.clone() }
+        prine("timeTaken= $timeTaken")
 //        js("class;a")
 
         prin("\n============= Clone =============\n")
@@ -136,10 +160,14 @@ class SampleTests {
         prin("list1[0].poin.y= ${list1[0].poin.y} list1[1].poin.y= ${list1[1].poin.y}")
     }
 
+    @ExperimentalTime
     @Test
     fun nativeCloneTest(){
         val ac= AC<BlaBla2>(Poin(y = 199))
-        val ac2= ac.nativeClone()
+        prin("nativeCloneTest() Mulai ====")
+        val ac2: AC<BlaBla2>
+        var timeTaken = measureTime { ac2 = ac.nativeClone() }
+        prine("timeTaken= $timeTaken")
 //        js("class;a")
 
         prin("\n============= Clone =============\n")

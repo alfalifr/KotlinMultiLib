@@ -1,4 +1,14 @@
 package sidev.lib
+
+class ACD{
+    val a = 1
+    val b = 2
+    val c = "3A"
+    val d = '4'
+    val e = ACD2(10)
+}
+
+class ACD2(val a: Int)
 /*
 import sidev.lib.console.prin
 import sidev.lib.console.prine
