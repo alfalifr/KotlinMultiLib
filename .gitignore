@@ -1,6 +1,7 @@
 
 Reflex/build/test-results/jvmTest/binary/results.bin
 
+.backup/
 .idea/
 build/
 .gradle/
