@@ -38,7 +38,9 @@ open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T
     override fun isNextMatched(key: Int, addedNext: T): Boolean = key == requestedGetIndex //key in indices
 
     override fun addNext(key: Int, value: T): Boolean = add(value)
-    override fun addValueIterator(itr: Iterator<T>): Boolean = addIterator(itr.withKeyIndexed{ index, _ -> index })
+    override fun addValues(itr: Iterator<T>): Boolean = addIterator(itr.withKeyIndexed{ index, _ -> index })
+//    override fun addValues(seq: Sequence<T>): Boolean = addValues(seq.iterator())
+    //    override fun addLazily(sequence: Sequence<T>): Boolean = addValueIterator(sequence.iterator())
 
     //    /** @return -1 karena `key` dalam konteks ArrayList tidak penting. */
 //    override fun extractKeyFrom(addedNext: T): Int = -1

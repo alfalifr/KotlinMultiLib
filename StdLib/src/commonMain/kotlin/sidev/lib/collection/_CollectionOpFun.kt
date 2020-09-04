@@ -115,7 +115,7 @@ operator fun <C: MutableCollection<T>, T> C.plus(element: T): C{
     this.add(element)
     return this
 }
-operator fun <C: MutableCollection<T>, T> C.plus(collection: Collection<T>): C{
+operator fun <C: MutableCollection<T>, T> C.rangeTo(collection: Collection<T>): C{
     this.addAll(collection)
     return this
 }

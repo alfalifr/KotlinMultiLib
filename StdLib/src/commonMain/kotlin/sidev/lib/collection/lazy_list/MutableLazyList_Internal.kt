@@ -1,6 +1,7 @@
 package sidev.lib.collection.lazy_list
 
 import sidev.lib.collection.takeFirst
+import sidev.lib.exception.isUninitializedExc
 
 internal interface MutableLazyList_Internal<T>:
     MutableLazyList<T> {
@@ -9,7 +10,10 @@ internal interface MutableLazyList_Internal<T>:
 
     override fun iteratorHasNext(): Boolean {
         var hasNext= try{ builderIterator.hasNext() }
-        catch(e: UninitializedPropertyAccessException){ false }
+        catch(e: Exception){
+            if(e.isUninitializedExc) false
+            else throw e
+        }
 
         while(!hasNext && iteratorList.isNotEmpty()){
             builderIterator= iteratorList.takeFirst()

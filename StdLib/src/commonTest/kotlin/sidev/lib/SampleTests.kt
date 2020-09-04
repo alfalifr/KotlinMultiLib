@@ -4,10 +4,10 @@ import sidev.lib.`val`.RoundingMode
 import sidev.lib.collection.common.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
+import sidev.lib.collection.lazy_list.rangeTo
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.number.*
-import sidev.lib.reflex.native.si
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.test.Test
@@ -80,7 +80,7 @@ class SampleTests {
     }
 
     @Test
-    fun commonListTest1(){
+    fun commonListTest(){
         val arrayWrap= arrayWrapperOf(1,3,5,6.778,"hkj")
         val array by arrayWrap
 
@@ -111,15 +111,15 @@ class SampleTests {
     }
 
     @Test
-    fun commonListTest2(){
+    fun lazyListTest(){
         println("\n============= BATAS CachedSequence ==============\n")
         val strSeq= sequenceOf("Aku", "Mau", "Makan")
         val strSeq2= sequenceOf("Kamu" , "Dan", "Dia")
         val lazySeq= CachedSequence<String>()
         lazySeq += "Halo"
         lazySeq += "Bro"
-        lazySeq += strSeq
-        lazySeq += strSeq2
+        //lazySeq.addValues(strSeq)
+        lazySeq .. strSeq .. strSeq2
 ///*
         val containsAku= "Aku" in lazySeq //.contains("Aku")
         val containsKamu= "Kamu" in lazySeq //.contains("Kamu")
@@ -142,9 +142,7 @@ class SampleTests {
         val lazyMap= LazyHashMap<String, Int>()
         lazyMap["Mau"]= 7
         lazyMap["Iya"]= 6
-
-        lazyMap += pairSeq
-        lazyMap += pairSeq2
+        lazyMap .. pairSeq .. pairSeq2
 
         println("\n============= BATAS LazyHashMap.iterator() ==============\n")
         for((i, data) in lazyMap.withIndex()){
