@@ -65,6 +65,13 @@ interface CommonMutableList<K, V>: CommonList<K, V>, MutableList<V>, Map<K, V>, 
     /** Mengubah entry pada [index] dg [entry] yg baru. */
     fun set(index: Int, entry: Pair<K, V>): Boolean
  */
+    /**
+     * Mengubah value dg key [key] dg nilai [value].
+     * Jika blum ada nilai pada [key] sebelumnya, maka operasi akan menjadi penambahan.
+     * Jika sebelumnya ada nilai dg [key] dan [forceReplace] == `false`, maka nilai awal tidak akan diganti.
+     */
+    operator fun set(key: K, forceReplace: Boolean = true, value: V)
+
     /** @return nilai sebelumnya pada [key], `null` jika belum ada nilai pada [key] sebelumnya. */
     fun removeKey(key: K): V?
 
@@ -140,7 +147,7 @@ internal open class CommonMutableListImpl_List<V>(override val list: MutableList
     override val values: MutableCollection<V> get() = list
     override val entries: MutableSet<MutableMap.MutableEntry<Int, V>>
         get()= list.mapIndexed { i, v ->
-            prine("MutableSet entries i= $i v= $v")
+//            prine("MutableSet entries i= $i v= $v")
             MutableMapEntry(i, v)
 /*
             object : MutableMap.MutableEntry<Int, V>{
@@ -188,6 +195,10 @@ internal open class CommonMutableListImpl_List<V>(override val list: MutableList
     override fun retainAll(elements: Collection<V>): Boolean = list.retainAll(elements)
     override fun clear() = list.clear()
     override fun set(index: Int, element: V): V = list.set(index, element)
+    override fun set(key: Int, forceReplace: Boolean, value: V){
+        list[key] = value
+    }
+//    override fun set(key: Int, element: V){}// = list.set(index, element)
     override fun put(key: Int, value: V): V? = if(key in indices) set(key, value) else { add(value); null }
     override fun putAll(from: Map<out Int, V>) {
         for((key, value) in from)
@@ -287,6 +298,9 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
                 return entry.value
             }
         throw IndexOutOfBoundsException("Jumlah elemen hanya $size, namun index $index") //Harusnya scr prinsip gak akan pernah sampe sini.
+    }
+    override fun set(key: K, forceReplace: Boolean, value: V){
+        if(forceReplace || !map.containsKey(key)) map[key] = value
     }
 
     override fun remove(element: V): Boolean = map.removeValue(element)

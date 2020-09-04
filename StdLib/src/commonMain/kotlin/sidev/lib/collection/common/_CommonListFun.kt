@@ -278,3 +278,11 @@ fun <K, V> CommonMutableList<K, V>.remove(key: K, element: V): Boolean{
         } else false
     } else false
 }
+
+
+inline fun <K, V> CommonList<K, V>.forEachCommonEntry(action: (Map.Entry<K, V>) -> Unit){
+    for (element in entries) action(element)
+}
+inline fun <V> CommonList<*, V>.forEachCommon(action: (V) -> Unit){
+    for (element in this) action(element)
+}

@@ -1,8 +1,7 @@
 package sidev.lib
 
 import sidev.lib.`val`.RoundingMode
-import sidev.lib.collection.common.arrayWrapperOf
-import sidev.lib.collection.common.getValue
+import sidev.lib.collection.common.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.console.prin
@@ -84,9 +83,31 @@ class SampleTests {
     fun commonListTest1(){
         val arrayWrap= arrayWrapperOf(1,3,5,6.778,"hkj")
         val array by arrayWrap
+
+        prin("\n================ array.forEach ================\n")
         array.forEach {
             prin("array foreeach it= $it")
         }
+
+        val commonList = commonMutableListOf<String, Int>()
+        commonList.put("haha", 1)
+//        commonList["haha" to 1]
+        commonList["hihe"] = 2
+//        commonList.set("hoha", 3)
+        commonList["hoha"]
+
+        prin("\n================ commonList.forEachCommonEntry ================\n")
+        commonList.forEachCommonEntry { prin("commonList entry= $it") }
+
+        val commonIndexedList = commonIndexedMutableListOf<String>()
+        commonIndexedList += "as"
+        commonIndexedList += "asa"
+        commonIndexedList += "asap"
+        commonIndexedList[1] = "asf"
+//        commonIndexedList[4] = "asafr"
+
+        prin("\n================ commonIndexedList.forEachCommonEntry ================\n")
+        commonIndexedList.forEachCommonEntry { prin("commonIndexedList entry= $it") }
     }
 
     @Test
