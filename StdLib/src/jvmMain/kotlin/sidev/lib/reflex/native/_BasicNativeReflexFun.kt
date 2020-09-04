@@ -9,12 +9,11 @@ import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility
 import sidev.lib.reflex.inner.KotlinReflex
-import sidev.lib.reflex.jvm.JvmReflex
+import sidev.lib.reflex.jvm.JvmReflexConst
 import sidev.lib.structure.data.value.Val
 import java.lang.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 
 
@@ -36,7 +35,7 @@ internal actual fun getNativeProperties(nativeClass: Any): Sequence<Any>
 
 /** Tidak termasuk property yg immutable. */
 internal actual fun getNativeMutableProperties(nativeClass: Any): Sequence<Any> =
-    (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence().filter { it.isMutableProperty }
+    (getNativeClass(nativeClass) as KClass<*>).declaredMemberProperties.asSequence().filter { it.isNativeMutableProperty }
 //internal fun SiNativeClassifier.getNativeMutableProperties(): Sequence<Any> = implementation.getMutableProperties()
 
 
@@ -131,9 +130,9 @@ internal actual fun <T> getFuncDefaultCallBlock(nativeFuncHost: Any, nativeFunc:
         val slicedArgs= args.slice(1 until args.size).toTypedArray()
         (
             if(!isConstructor)
-                javaClass.methods.find { JvmReflex.isDefaultOfFun(it, nativeFunc as KCallable<*>) }!!.invoke(args.first(), *slicedArgs)
+                javaClass.methods.find { JvmReflexConst.isDefaultOfFun(it, nativeFunc as KCallable<*>) }!!.invoke(args.first(), *slicedArgs)
             else
-                javaClass.constructors.find { JvmReflex.isDefaultOfFun(it, nativeFunc as KCallable<*>) }!!.newInstance(*args)
+                javaClass.constructors.find { JvmReflexConst.isDefaultOfFun(it, nativeFunc as KCallable<*>) }!!.newInstance(*args)
         ) as T
     }
 }

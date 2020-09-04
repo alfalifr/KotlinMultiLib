@@ -13,6 +13,9 @@ import sidev.lib.reflex.native.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.reflect.KClass
 
+
+internal expect fun <T, V> SiProperty1<T, V>.handleNativeForceGet(receiver: T, exceptionFromCommon: Throwable): V
+
 /*
 val SiClass<*>.memberFunctions: Sequence<SiFunction<*>>
     get()= members.asSequence().filter { it is SiFunction<*> } as Sequence<SiFunction<*>>
@@ -139,8 +142,6 @@ fun <T, V> SiProperty1<T, V>.forceGet(receiver: T): V{
         handleNativeForceGet(receiver, e)
     }
 }
-
-expect fun <T, V> SiProperty1<T, V>.handleNativeForceGet(receiver: T, exceptionFromCommon: Throwable): V
 
 fun <T, V> SiMutableProperty1<T, V>.forceSet(receiver: T, value: V){
     val initAccessible= isAccessible

@@ -7,7 +7,7 @@ import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.inner.KotlinReflex
 import sidev.lib.reflex.native.si
-import sidev.lib.reflex.jvm.JvmReflex
+import sidev.lib.reflex.jvm.JvmReflexConst
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Type
 import kotlin.reflect.*
@@ -57,8 +57,8 @@ actual val Any.isNativeReflexUnit: Boolean get()= when(this){
 }
 
 internal actual val Any.isNativeDelegate: Boolean get(){
-    return this::class.java.methods.find { JvmReflex.isDelegateGetValueMethod(it, this::class.java) } != null
-            || this::class.java.methods.find { JvmReflex.isDelegateSetValueMethod(it, this::class.java) } != null
+    return this::class.java.methods.find { JvmReflexConst.isDelegateGetValueMethod(it, this::class.java) } != null
+            || this::class.java.methods.find { JvmReflexConst.isDelegateSetValueMethod(it, this::class.java) } != null
 }
 
 internal actual val SiClass<*>.isNativeInterface: Boolean get()= (when(val native= descriptor.native){

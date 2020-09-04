@@ -1,6 +1,7 @@
 package sidev.lib.check
 
 import sidev.lib.console.prine
+import sidev.lib.exception.isUninitializedExc
 import kotlin.Exception
 
 /**
@@ -13,7 +14,10 @@ import kotlin.Exception
  */
 inline fun <I, O> I.getLateinit(func: I.() -> O): O?{
     return try{ func() }
-    catch (e: UninitializedPropertyAccessException){ null }
+    catch (e: Exception){
+        if(e.isUninitializedExc) null
+        else throw e
+    }
 }
 
 

@@ -1,4 +1,4 @@
-package main
+package sidev.lib.math
 
 import kotlin.test.Test
 import kotlin.test.assertTrue

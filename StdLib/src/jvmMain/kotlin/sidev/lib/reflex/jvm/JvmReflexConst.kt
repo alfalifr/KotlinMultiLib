@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSubclassOf
 
-object JvmReflex{
+object JvmReflexConst{
     const val K_CLASS_BASE_NAME= "KClassImpl"
     const val K_FUNCTION_CONSTRUCTOR_NAME_PREFIX= "fun <init>"
     const val K_FUNCTION_CONSTRUCTOR_NAME= "<init>"

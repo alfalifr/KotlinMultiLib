@@ -1,5 +1,5 @@
 package sidev.lib
-
+/*
 import sidev.lib.console.prin
 
 //import sidev.lib.annotation.AnnotatedFunctionClass
@@ -788,3 +788,4 @@ fun <T> Sequence<T>.cut(other: Sequence<T>): Sequence<T>{
 }
 
 // */
+*/

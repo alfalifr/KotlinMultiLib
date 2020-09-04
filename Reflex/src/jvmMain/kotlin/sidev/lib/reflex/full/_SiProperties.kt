@@ -8,7 +8,7 @@ import java.lang.Error
 import java.lang.reflect.InvocationTargetException
 
 
-actual fun <T, V> SiProperty1<T, V>.handleNativeForceGet(receiver: T, exceptionFromCommon: Throwable): V = when(exceptionFromCommon){
+internal actual fun <T, V> SiProperty1<T, V>.handleNativeForceGet(receiver: T, exceptionFromCommon: Throwable): V = when(exceptionFromCommon){
     is InvocationTargetException -> when(exceptionFromCommon.cause){
         is UninitializedPropertyAccessException -> UNINITIALIZED_VALUE
         else -> throw exceptionFromCommon

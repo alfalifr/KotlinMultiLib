@@ -19,7 +19,7 @@ class SampleTestsJS {
         prin(Date().getTime())
         prin(Date().getTime())
     }
-
+/*
     @Test
     fun pkgTest(){
         prin("pkgTest()")
@@ -28,6 +28,7 @@ class SampleTestsJS {
             prin("i= $i member= $member")
         }
     }
+ */
 /*
     @Test
     fun reflex(){

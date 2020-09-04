@@ -1,5 +1,6 @@
 package sidev.lib.platform
 
+
 /**
  * Menaruh objek dg nama [name] dg nilai [value] pada global.
  * @return -> `true` jika berhasil menempatkan [name] pada global,

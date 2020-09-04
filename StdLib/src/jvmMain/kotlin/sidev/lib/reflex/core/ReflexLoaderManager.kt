@@ -9,10 +9,11 @@ import kotlin.reflect.KClass
 actual object ReflexLoaderManager{
     private const val MAX_ANONYMOUS_CLASS_AMOUNT = 10
     private val anonClsList = arrayOfNulls<SiClass<*>>(MAX_ANONYMOUS_CLASS_AMOUNT) //ArrayList<SiClass<*>>(MAX_ANONYMOUS_CLASS_AMOUNT)
-    private var anonClsIndex= 0
+    private var anonClsIndex= -1
     private val loadedClass: MutableMap<String, SiClass<*>> by lazy {
         mutableMapOf<String, SiClass<*>>()
     }
+
     /** Mengecek apakah [nativeClass] memiliki loaded [SiClass] yg di cache. */
     actual fun checkCachedClass(nativeClass: Any): Boolean{
         val javaName= (nativeClass as KClass<*>).java.name
@@ -37,7 +38,9 @@ actual object ReflexLoaderManager{
         clazz.qualifiedName.notNull {
             loadedClass[it]= clazz
         }.isNull {
-            anonClsList[anonClsIndex++]= clazz
+            anonClsIndex++
+            anonClsIndex %= MAX_ANONYMOUS_CLASS_AMOUNT
+            anonClsList[anonClsIndex]= clazz
         }
     }
 }
