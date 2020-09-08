@@ -1,4 +1,4 @@
-@file:JvmName("SiNativeReflexFunKtJvm")
+@file:JvmName("_SiNativeReflexFunJvm")
 
 package sidev.lib.reflex.native
 

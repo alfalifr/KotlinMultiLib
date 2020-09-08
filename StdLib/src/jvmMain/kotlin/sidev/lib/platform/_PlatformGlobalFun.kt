@@ -1,3 +1,4 @@
+@file:JvmName("_PlatformGlobalFunJvm")
 package sidev.lib.platform
 
 /**

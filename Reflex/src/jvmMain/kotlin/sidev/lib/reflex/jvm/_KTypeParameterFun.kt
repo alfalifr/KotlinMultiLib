@@ -1,3 +1,5 @@
+@file:JvmName("_KTypeParameterFunJvm")
+
 package sidev.lib.reflex.jvm
 
 import sidev.lib.collection.iterator.NestedIteratorImpl

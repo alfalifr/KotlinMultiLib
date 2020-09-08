@@ -1,4 +1,4 @@
-@file:JvmName("CharFunKtJvm")
+@file:JvmName("_CharFunJvm")
 package sidev.lib.text
 
 

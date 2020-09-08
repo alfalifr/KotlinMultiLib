@@ -1,4 +1,4 @@
-@file:JvmName("NativeTypeCheckFunKtJvm")
+@file:JvmName("_NativeTypeCheckFunJvm")
 
 package sidev.lib.reflex.native
 

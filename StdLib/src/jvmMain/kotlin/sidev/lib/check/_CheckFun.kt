@@ -1,4 +1,4 @@
-@file:JvmName("CheckFunKtJvm")
+@file:JvmName("_CheckFunJvm")
 
 package sidev.lib.check
 

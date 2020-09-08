@@ -1,3 +1,4 @@
+@file:JvmName("_SiJavaReflexFunJvm_Ext")
 package sidev.lib.reflex.native
 
 import sidev.lib.`val`.SuppressLiteral

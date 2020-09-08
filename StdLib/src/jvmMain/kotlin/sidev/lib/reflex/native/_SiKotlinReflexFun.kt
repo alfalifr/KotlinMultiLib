@@ -1,3 +1,4 @@
+@file:JvmName("_SiKotlinReflexFunJvm")
 package sidev.lib.reflex.native
 
 import sidev.lib.check.asNotNullTo

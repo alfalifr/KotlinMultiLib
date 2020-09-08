@@ -1,4 +1,4 @@
-@file:JvmName("KClassesKtJvm")
+@file:JvmName("_KClassFunJvm")
 
 package sidev.lib.reflex.full
 

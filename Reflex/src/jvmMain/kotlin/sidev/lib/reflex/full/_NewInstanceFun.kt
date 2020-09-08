@@ -1,4 +1,4 @@
-@file:JvmName("NewInstanceFunKtJvm")
+@file:JvmName("_NewInstanceFunJvm")
 
 package sidev.lib.reflex.full
 

@@ -1,3 +1,4 @@
+@file:JvmName("_NewInstanceFunJvm_Native")
 package sidev.lib.reflex
 
 import sidev.lib.console.prine

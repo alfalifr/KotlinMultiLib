@@ -1,3 +1,4 @@
+@file:JvmName("_SiJavaReflexFun")
 package sidev.lib.reflex.native
 
 import sidev.lib.reflex.SiVisibility

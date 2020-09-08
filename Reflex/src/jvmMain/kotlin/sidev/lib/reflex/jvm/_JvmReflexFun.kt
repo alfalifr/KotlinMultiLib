@@ -1,3 +1,4 @@
+@file:JvmName("_JvmReflexFun")
 package sidev.lib.reflex.jvm
 
 import sidev.lib.collection.iterator.NestedIteratorImpl

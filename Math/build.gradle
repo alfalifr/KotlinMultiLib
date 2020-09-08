@@ -4,8 +4,17 @@ plugins {
 repositories {
     mavenCentral()
 }
-group 'com.example'
-version '0.0.1'
+def GROUP_ID= 'sidev.lib.kotlin.multi'
+def ARTIFACT_ID= 'Math'
+def BINTRAY_REPOSITORY= 'SidevLib'
+def BINTRAY_ORGINIZATION= ""
+def ISSUE_URL= ""
+def SITE_URL= ""
+def VCS_URL= "https://github.com/alfalifr/SidevLibKt/tree/master/Math"
+def LIBRARY_VERSION_NAME= '0.0.1x'
+
+group GROUP_ID
+version LIBRARY_VERSION_NAME
 
 apply plugin: 'maven-publish'
 
@@ -26,8 +35,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-//                implementation('sidev.lib.multiplatform.kotlin:StdLib:0.0.')
-                implementation project("path" : ":SidevLib-StdLib")
+                implementation project(":SidevLibKt-StdLib")
             }
         }
         commonTest {

@@ -1,4 +1,4 @@
-@file:JvmName("SiPropertiesKtJvm")
+@file:JvmName("_SiPropertyFunJvm")
 
 package sidev.lib.reflex.full
 

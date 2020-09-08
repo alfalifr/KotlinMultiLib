@@ -1,5 +1,5 @@
 package sidev.lib.reflex
-
+/*
 //import sidev.lib.annotation.AnnotatedFunctionClass
 //import sidev.lib.annotation.Rename
 //import sidev.lib.collection.string
@@ -10,10 +10,10 @@ class ClsGen<T, R>(val isi: T, var list: List<R>)
 
 class AE<out E, S: AE<out E, S, F>, F: S> where S: CharSequence
 
-annotation class Ano
-annotation class Anotasi<T: Number, O>(val a: Int= 1) //: Ano()
+internal annotation class Ano
+internal annotation class Anotasi<T: Number, O>(val a: Int= 1) //: Ano()
 /*
-fun anot(){
+internal fun anot(){
     val aa: Annotation
     val a= A::class.annotations.first()
 }
@@ -21,52 +21,52 @@ fun anot(){
 
 
 @Anotasi<Int, String>
-interface A
-interface Y
-interface X: Y{
+internal interface A
+internal interface Y
+internal interface X: Y{
     val x: String
 }
-open class B
+internal open class B
 
-class C: Z, B(){
+internal class C: Z, B(){
     override val a: Boolean
         get() = true
 }
 
-data class AAD(val a: Int= 100, val b: Boolean, val bClss: B= B(), val dClss: D?)
+internal data class AAD(val a: Int= 100, val b: Boolean, val bClss: B= B(), val dClss: D?)
 
 
 
-interface Z: A{
+internal interface Z: A{
     val a: Boolean
 }
-open class F{
+internal open class F{
     val f= 0
 }
-open class E{
+internal open class E{
     val e= true
     val fDiE= F()
 }
-open class D{
+internal open class D{
     var d= 1
     val dStr= ""
     val eDiD= E()
     val fDiD= F()
 }
 
-open class AA____
-open class AA___: AA____()
-open class AA__: AA___(){
+internal open class AA____
+internal open class AA___: AA____()
+internal open class AA__: AA___(){
     val aa__= 1
 }
-open class AA_: AA__(){
+internal open class AA_: AA__(){
     var aa_= 123
 }
-sealed class AA: AA_(){
+internal sealed class AA: AA_(){
     private val aa= ""
     var dDariAA= D()
 }
-sealed class AB: AA(){
+internal sealed class AB: AA(){
     protected val ab= "ok"
     private val ab_2= "ok"
     var ab_3= 6
@@ -75,13 +75,13 @@ sealed class AB: AA(){
     abstract fun ada()
 }
 
-annotation class FunAnot(val a: Int= 101)
-open class BlaBla
-interface BlaBlaInt
-open class BlaBla2: BlaBla(), BlaBlaInt
+internal annotation class FunAnot(val a: Int= 101)
+internal open class BlaBla
+internal interface BlaBlaInt
+internal open class BlaBla2: BlaBla(), BlaBlaInt
 
 @Anotasi<Int, Char>
-open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, T: BlaBlaInt/*, AnnotatedFunctionClass*/ {
+internal open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, T: BlaBlaInt/*, AnnotatedFunctionClass*/ {
     constructor(): this(Poin(1, 3))
     val ac= "ppop"
     private var acPriv= "aaa"
@@ -113,32 +113,32 @@ open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, T: BlaBla
     override fun ada() {}
 }
 
-class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az")*/ var z: Int= 10){
+internal class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az")*/ var z: Int= 10){
     constructor(): this(12, 100)
     /*@Rename("aa_aa_diPoin")*/ var aa_diPoin= AA_()
 }
 
 @Anotasi<Int, Char>
-class Bool{
+internal class Bool{
     val bool= true
 }
 
-open class AD_(val d: Int){
+internal open class AD_(val d: Int){
     constructor(): this(1)
     constructor(c: Int, d: Int): this(d)
 }
 
-class AD(val a: Int= 2, val b: Int= 15): AD_(a, 9){
+internal class AD(val a: Int= 2, val b: Int= 15): AD_(a, 9){
     constructor(): this(1, 2)
     constructor(c: Int): this(c, 2)
     val aa: Int= 1
 }
 
-class Asal{
+internal class Asal{
     var a: Int= 10
     var b= 0
 }
-class Tujuan{
+internal class Tujuan{
     val a: Int= 1
     var b= "asad"
 }
@@ -173,7 +173,7 @@ open class ModernPipel: Consumer<FastFood>()
 open class American: Consumer<Burger>()
 
 
-enum class En(val a: Int, val pos: Int){
+internal enum class En(val a: Int, val pos: Int){
     A(2, 10),
     B(2, 3),
     C(3, 5);
@@ -181,7 +181,7 @@ enum class En(val a: Int, val pos: Int){
 }
 
 
-class NoConstr private constructor()
+internal class NoConstr private constructor()
 
 /*
 @Suppress("UNREACHABLE_CODE")
@@ -755,7 +755,7 @@ fun main(args: Array<String>){
 
 
 /*
-enum class En(val a: Int, val pos: Int){
+internal enum class En(val a: Int, val pos: Int){
     A(2, 10),
     B(2, 3),
     C(3, 5);
@@ -763,11 +763,11 @@ enum class En(val a: Int, val pos: Int){
 }
  */
 
-suspend fun aga(): Int{
+internal suspend fun aga(): Int{
     return 1
 }
 
-fun asa(){
+internal fun asa(){
 }
 
 
@@ -786,3 +786,4 @@ fun <T> Sequence<T>.cut(other: Sequence<T>): Sequence<T>{
 }
 
 // */
+*/
