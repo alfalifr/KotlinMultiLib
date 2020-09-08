@@ -6,9 +6,13 @@ import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility
 import sidev.lib.reflex.core.ReflexTemplate
+import kotlin.reflect.KClass
 
 
 expect val isDynamicEnabled: Boolean
+
+/** Mengambil KClass dari [nativeClass]. */
+internal expect fun <T: Any> getKClass(nativeClass: Any): KClass<T>
 
 /** `this.extension` dapat berupa apa saja. */
 internal expect fun getNativeClass(any: Any): Any

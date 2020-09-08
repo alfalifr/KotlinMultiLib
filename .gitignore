@@ -11,3 +11,4 @@ StdLib/.gradle/
 StdLib/build/
 Reflex/.gradle/
 Reflex/build/
+gradle.properties

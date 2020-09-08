@@ -1,5 +1,8 @@
 package sidev.lib.reflex
 
+import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.exception.IllegalStateExc
+import sidev.lib.reflex.native.getKClass
 import kotlin.reflect.KClass
 
 expect val KClass<*>.nativeFullName: String
@@ -17,6 +20,13 @@ val KClass<*>.simpleName: String
 val Any.clazz: KClass<*>
     get()= this::class
 
-
-val <T: Any> SiClass<T>.kotlin: KClass<T>
-    get()= descriptor.native as KClass<T>
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+val <T: Any> SiClass<T>.kotlin: KClass<T> get()= when(val cls = descriptor.native){
+    is KClass<*> -> cls as KClass<T>
+    else -> if(cls != null) getKClass(cls)
+    else throw IllegalStateExc(
+        stateOwner = this::class,
+        currentState = "descriptor.native == null", expectedState = "descriptor.native != null",
+        detMsg = """Kelas: "$this" tidak memiliki native class."""
+    )
+}

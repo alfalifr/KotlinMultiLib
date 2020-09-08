@@ -224,6 +224,14 @@ class SampleTests {
     }
 
     @Test
+    fun nativeNew(){
+        data class Point(var x: Int, var y: Int= 198)
+        prin(Poin::class)
+        val poin = nativeNew(Point::class.si.kotlin)
+        prin(poin)
+    }
+
+    @Test
     fun typeAssignableTest(){
         val everyone= Everyone()
         val american= American()

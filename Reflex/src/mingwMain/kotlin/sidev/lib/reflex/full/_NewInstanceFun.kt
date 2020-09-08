@@ -38,5 +38,5 @@ actual fun <T: Any> T.nativeClone(isDeepClone: Boolean, constructorParamValFunc:
     MingwReflexConst.KOTLIN_NATIVE_NO_REFLEX_MSG,
     ReplaceWith("null")
 )
-actual fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?
+actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?
         = null

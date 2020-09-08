@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.console.prine
 import kotlin.js.Json
 import sidev.lib.reflex.js.call as _call
 import sidev.lib.reflex.js.new as _new
@@ -62,13 +63,13 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
     override val innerName: String
         get() = jsNativeName(func)
 
-    override val name: String = when{
+    override val name: String by lazy{ when{
         isPureJsFunction -> {
             try{ (func as JsClass<*>).name }
             catch (e: Throwable){ jsName(jsPureFunction(func)) }
         }
         else -> "<kotlin-lambda>"
-    }
+    } }
     override val parameters: List<JsParameter> by lazy {
         if(isPureJsFunction) getParam(jsPureFunction(func))
         else emptyList()
@@ -95,7 +96,11 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
     }
     override fun newBy(args: Json): T = new(*args.sliceWithParam(parameters).toTypedArray())
     override fun toString(): String = if(isPureJsFunction) func.toString() else "<kotlin-lambda>"
-    override fun valueOf(): dynamic = jsPureFunction(func).valueOf()
+    override fun valueOf(): dynamic = when{
+        isPureJsFunction -> jsPureFunction(func).valueOf()
+        this is JsProperty<*, *> -> ::get
+        else -> "<kotlin-lambda>"
+    }
 
     private fun validateArgs(vararg processedArgs: Any?){
         if(processedArgs.size < parameters.size){

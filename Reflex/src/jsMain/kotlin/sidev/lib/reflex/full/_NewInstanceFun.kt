@@ -4,7 +4,9 @@ import sidev.lib.check.asNotNull
 import sidev.lib.check.notNullTo
 import sidev.lib.console.prine
 import sidev.lib.exception.NonInstantiableTypeExc
+import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.clazz
+import sidev.lib.reflex.defaultPrimitiveValue
 import sidev.lib.reflex.js.*
 import sidev.lib.reflex.native.*
 import kotlin.reflect.KClass
@@ -69,8 +71,12 @@ actual fun <T: Any> T.nativeClone(isDeepClone: Boolean, constructorParamValFunc:
     return newInstance
 }
 
-actual fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
-    val constr= jsClass
+actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
+    val constr= try{ clazz.jsClass }
+    catch (e: ReflexComponentExc){
+        prine("""nativeNew(): Tidak dapat meng-instansiasi kelas "$clazz" karena tidak tersedia fungsi konstruktor, return `null`.""")
+        return null
+    }
 /*
     Pada Js, gakda private constructor.
     catch (e: Exception){
@@ -83,6 +89,8 @@ actual fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNa
     for(param in constr.parameters){
         args.add(
             defParamValFunc?.invoke(NativeReflexFactory._createNativeParameter(param))
+                ?: param.defaultValue
+                ?: param.type.classifier.notNullTo { defaultPrimitiveValue(it.kotlin) }
         )
     }
 

@@ -1,11 +1,19 @@
 package sidev.lib.reflex.native
 
+import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility
+import kotlin.reflect.KClass
 
 
 actual val isDynamicEnabled: Boolean = false
+
+/** Mengambil KClass dari [nativeClass]. */
+internal actual fun <T: Any> getKClass(nativeClass: Any): KClass<T> = when(nativeClass){
+    is KClass<*> -> nativeClass
+    else -> throw ReflexComponentExc(currentReflexedUnit = nativeClass::class, detMsg = "nativeClass bkn class.")
+} as KClass<T>
 
 /** `this.extension` dapat berupa apa saja. */
 internal actual fun getNativeClass(any: Any): Any = any::class //.qualifiedName ?: ""

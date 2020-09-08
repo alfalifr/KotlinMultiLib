@@ -19,6 +19,12 @@ import kotlin.reflect.jvm.javaField
 
 actual val isDynamicEnabled: Boolean = false
 
+/** Mengambil KClass dari [nativeClass]. */
+internal actual fun <T: Any> getKClass(nativeClass: Any): KClass<T> = when(nativeClass){
+    is KClass<*> -> nativeClass
+    is Class<*> -> nativeClass.kotlin
+    else -> throw ReflexComponentExc(currentReflexedUnit = nativeClass::class, detMsg = "nativeClass bkn class.")
+} as KClass<T>
 
 /** `this.extension` dapat berupa apa saja. */
 internal actual fun getNativeClass(any: Any): Any = if(any is KClass<*>) any else any::class

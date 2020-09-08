@@ -1,6 +1,7 @@
 package sidev.lib.reflex.js
 
 import sidev.lib.check.notNullTo
+import sidev.lib.console.log
 import sidev.lib.exception.ImplementationExc
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.fullName
@@ -17,8 +18,10 @@ import kotlin.reflect.KClass
     is SiClass<*> -> jsPureFunction(func.descriptor.native!!) //Recursive karena native-nya berupa [JsClass_].
     is KClass<*> -> func.js
     else -> {
-        if(!func.isFunction)
+        if(!func.isFunction){
+            log(func)
             throw IllegalArgumentException("""Objek: "${str(func)}" bkn fungsi.""")
+        }
 
         val checkObj= json().also { it[JsReflexConst.PARAMETER_CHECK_FUN_IS_WRAPPER]= false }
         try{

@@ -10,24 +10,24 @@ object IoConfig{
     const val PRINT_ERROR= PRINT && true
 }
 
-fun prind(any: Any, endWithNewLine: Boolean = true){
+fun prind(any: Any?, endWithNewLine: Boolean = true){
     if(IoConfig.PRINT_DEBUG)
         prin(any, StringLiteral.ANSI_CYAN, endWithNewLine)
 }
-fun prinr(any: Any, endWithNewLine: Boolean = true){
+fun prinr(any: Any?, endWithNewLine: Boolean = true){
     if(IoConfig.PRINT_RESULT)
         prin(any, StringLiteral.ANSI_GREEN, endWithNewLine)
 }
-fun prinw(any: Any, endWithNewLine: Boolean = true){
+fun prinw(any: Any?, endWithNewLine: Boolean = true){
     if(IoConfig.PRINT_WARNING)
         prin(any, StringLiteral.ANSI_YELLOW, endWithNewLine)
 }
-fun prine(any: Any, endWithNewLine: Boolean = true){
+fun prine(any: Any?, endWithNewLine: Boolean = true){
     if(IoConfig.PRINT_ERROR)
         prin(any, StringLiteral.ANSI_RED, endWithNewLine)
 }
 //@JvmOverloads
-fun prin(any: Any, color: String= StringLiteral.ANSI_RESET, endWithNewLine: Boolean = true){
+fun prin(any: Any?, color: String= StringLiteral.ANSI_RESET, endWithNewLine: Boolean = true){
     if(IoConfig.PRINT){
         if(endWithNewLine)
             println("$color $any ${StringLiteral.ANSI_RESET}")
@@ -35,6 +35,6 @@ fun prin(any: Any, color: String= StringLiteral.ANSI_RESET, endWithNewLine: Bool
             print("$color $any ${StringLiteral.ANSI_RESET}")
     }
 }
-fun prin_(any: Any) = prin(any)
+fun prin_(any: Any?) = prin(any)
 
 expect fun str(any: Any?): String

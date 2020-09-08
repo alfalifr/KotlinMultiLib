@@ -28,7 +28,7 @@ New Instance - Native
  *   Kemungkinan ke depannya akan disediakan properti [isShallowAnonymous] untuk native dg receiver adalah [KClass].
  */
 expect fun <T: Any> T.nativeClone(isDeepClone: Boolean= true, constructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): T
-expect fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?= null): T?
+expect fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?= null): T?
 
 /** Kode implementasi sama dg [arrayClone], namun menggunakan [nativeClone] sbg fungsi clone. */
 fun <T: Any> T.nativeArrayClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): T{

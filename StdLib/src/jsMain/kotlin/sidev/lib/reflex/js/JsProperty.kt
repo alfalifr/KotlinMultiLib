@@ -46,6 +46,10 @@ interface JsMutableProperty<T: Any, R>: JsProperty<T, R>{
 /** [func] adalah constructor dari property. Pada konteks mutable */
 internal abstract class JsPropertyImpl<T: Any, out R> : JsCallableImpl<R>(), JsProperty<T, R>{
     abstract override val name: String
+    override val func: Any by lazy { { args: Array<out Any?> ->
+        if(args.isNotEmpty()) get(args[0] as T)
+        else throw IllegalArgumentException("argumen dari fungsi lambda property \"$this\" tidak boleh null.")
+    } } //(args: Array<out Any?>) -> T
     override val parameters: List<JsParameter> = super<JsProperty>.parameters
     override fun call(vararg args: Any?): Any? = super<JsProperty>.call(*args, name)
     override fun callBy(args: Json): Any? = super<JsProperty>.callBy(args)

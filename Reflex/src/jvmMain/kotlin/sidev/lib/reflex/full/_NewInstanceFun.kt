@@ -6,6 +6,7 @@ import sidev.lib.check.notNullTo
 import sidev.lib.console.prine
 import sidev.lib.exception.NonInstantiableTypeExc
 import sidev.lib.reflex.clazz
+import sidev.lib.reflex.defaultPrimitiveValue
 import sidev.lib.reflex.native.*
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
@@ -69,7 +70,7 @@ actual fun <T: Any> T.nativeClone(isDeepClone: Boolean, constructorParamValFunc:
     return newInstance
 }
 
-actual fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
+actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
     val javaClass= clazz.java
     val constr =  try{ javaClass.leastParamConstructor }
     catch (e: Exception){
@@ -81,6 +82,7 @@ actual fun <T: Any> T.nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNa
     for(param in constr.parameters){
         args.add(
             defParamValFunc?.invoke(NativeReflexFactory._createNativeParameter(param))
+                ?: param.type.notNullTo { defaultPrimitiveValue(it.kotlin) }
         )
     }
 

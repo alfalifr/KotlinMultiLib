@@ -12,9 +12,12 @@ import sidev.lib.reflex.core.createNativeWrapper
 import sidev.lib.reflex.js.*
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.console.log
+import sidev.lib.console.prine
 import sidev.lib.reflex.core.createType
 import kotlin.reflect.KClass
 import sidev.lib.reflex.js.isFunction
+import sidev.lib.reflex.js.kotlin.kotlinMetadata
 import sidev.lib.structure.data.value.Val
 
 
@@ -34,10 +37,25 @@ val <T: Any> T.jsClass: JsClass_<T> get(){
         // walau tidak memiliki metadata seperti yg disuntikan pada Kotlin.
         if(isFunction)
             JsClassImpl_(this)
-        else throw ReflexComponentExc(currentReflexedUnit = this, detMsg = "`this` bkn merupakan fungsi Js.")
+        else if(jsClass.isFunction)
+            JsClassImpl_(jsClass)
+        else {
+            val kt = jsClass.kotlin
+            log(this)
+            log(kt)
+            log(jsClass.isFunction)
+            throw ReflexComponentExc(currentReflexedUnit = this, detMsg = "`this` bkn merupakan fungsi Js.")
+        }
     }
     else jsClass.toClassWrapper()
 }
+
+/** Mengambil KClass dari [nativeClass]. */
+internal actual fun <T: Any> getKClass(nativeClass: Any): KClass<T> = when(nativeClass){
+    is KClass<*> -> nativeClass
+    is JsClass_<*> -> nativeClass.kotlin
+    else -> throw ReflexComponentExc(currentReflexedUnit = nativeClass::class, detMsg = "nativeClass bkn class.")
+} as KClass<T>
 
 /** `this.extension` dapat berupa apa saja. */
 internal actual fun getNativeClass(any: Any): Any = any.jsClass
