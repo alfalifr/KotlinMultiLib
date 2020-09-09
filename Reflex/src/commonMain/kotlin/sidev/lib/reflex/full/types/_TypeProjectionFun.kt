@@ -20,6 +20,7 @@ import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.*
 import sidev.lib.reflex.native_.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import kotlin.jvm.JvmName
 import kotlin.reflect.*
 
 
@@ -130,6 +131,7 @@ val SiTypeProjection.nestedProjections: NestedSequence<SiTypeProjection>
 /**
  * Sama dg [KTypeProjection.nestedProjections]. `this.extension` juga diikutkan namun sbg [simpleTypeProjection].
  */
+@get:JvmName("nestedProjections")
 val SiType.nestedProjections: NestedSequence<SiTypeProjection>
     get()= object : NestedSequence<SiTypeProjection> {
         override fun iterator(): NestedIteratorSimple<SiTypeProjection>
@@ -141,6 +143,7 @@ val SiType.nestedProjections: NestedSequence<SiTypeProjection>
 /**
  * Sama dg [KTypeProjection.nestedProjections]. `this.extension` juga diikutkan namun sbg [simpleTypeProjection].
  */
+@get:JvmName("nestedProjectionsTree")
 val SiType.nestedProjectionsTree: NestedSequence<SiTypeProjection>
     get()= object : NestedSequence<SiTypeProjection> {
         override fun iterator(): NestedIteratorSimple<SiTypeProjection>
@@ -149,10 +152,13 @@ val SiType.nestedProjectionsTree: NestedSequence<SiTypeProjection>
                     = nowInput.type?.arguments?.iterator()
         }
     }
+
+@get:JvmName("simpleTypeProjection")
 val SiType.simpleTypeProjection: SiTypeProjection
     get()= SiTypeProjection(SiVariance.INVARIANT, this)
 
 
+@get:JvmName("nestedTypeParameters")
 val SiClass<*>.nestedTypeParameters: NestedSequence<SiTypeParameter>
     get()= object : NestedSequence<SiTypeParameter> {
         override fun iterator(): NestedIteratorSimple<SiTypeParameter>

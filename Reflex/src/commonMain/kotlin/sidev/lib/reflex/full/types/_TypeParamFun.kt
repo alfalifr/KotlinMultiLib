@@ -7,8 +7,10 @@ import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.isArray
 import sidev.lib.reflex.full.isObjectArray
 import sidev.lib.reflex.native_.si
+import kotlin.jvm.JvmName
 
 
+@get:JvmName("arrayTypeArgument")
 val <T: Any> SiClass<T>.arrayTypeArgument: SiTypeProjection?
     get(){
         if(!isArray) return null

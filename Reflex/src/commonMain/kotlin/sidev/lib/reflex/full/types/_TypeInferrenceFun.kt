@@ -13,6 +13,7 @@ import sidev.lib.reflex.SiTypeProjection
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.native_.si
+import kotlin.jvm.JvmName
 import kotlin.reflect.KType
 
 
@@ -31,6 +32,7 @@ fun <T> inferElementType(array: Array<T>): SiType = getCommonType(
  * Mengambil [InferredType] yg berisi [KType] yg disimpulkan dari properti yg ada di `this.extension` [Any].
  * Properti ini juga dapat menyimpulkan tipe dari null instance, namun tipe yg disimpulkan menjadi [Null?].
  */
+@get:JvmName("inferredType")
 val Any?.inferredType: InferredType
     get(){
         if(this == null)
