@@ -1,20 +1,17 @@
 package sidev.lib.reflex
 
-import sidev.lib.`val`.RoundingMode
-import sidev.lib.collection.common.arrayWrapperOf
-import sidev.lib.collection.common.getValue
-import sidev.lib.collection.lazy_list.CachedSequence
-import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.sequence.withLevel
+import sidev.lib.console.log
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.number.*
+import sidev.lib.platform.Platform
+import sidev.lib.platform.platform
+import sidev.lib.reflex.annotation.callAnnotatedFunction
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.*
 import sidev.lib.reflex.full.types.*
 import sidev.lib.reflex.native.si
-import kotlin.math.exp
-import kotlin.math.log
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
@@ -224,7 +221,7 @@ class SampleTests {
     }
 
     @Test
-    fun nativeNew(){
+    fun nativeNewTest(){
         data class Point(var x: Int, var y: Int= 198)
         prin(Poin::class)
         val poin = nativeNew(Point::class.si.kotlin)
@@ -284,5 +281,95 @@ class SampleTests {
         prin("En.A::class.si.isCopySafe= ${En.A::class.si.isCopySafe}")
         prin("\"aaf\"::class.si.isCopySafe= ${"aaf"::class.si.isCopySafe}")
         prin("AC::class.si.isCopySafe= ${AC::class.si.isCopySafe}")
+    }
+
+    @Test
+    fun annotationTest(){
+        prin("\n============= Anotasi::class.si.members ===============\n")
+        for((i, member) in Anotasi::class.si.members.withIndex()){
+            prin("i= $i member= $member")
+        }
+
+        class Anot2(val a: Int, val b: Int): SiAnnotation
+//        if(platform == Platform.JS){
+            prin("hasil penambahan = ${AC::class.si.setAnnotation(Anot2(2, 3))}")
+            prin("Anot2(2, 3)= ${Anot2(2, 3)}")
+            prin("AC::class.si.annotations= ${AC::class.si.annotations}")
+//        }
+
+        prin("\n============= AC::class.si.annotations ===============\n")
+        for((i, anot) in AC::class.si.annotations.withIndex()){
+            prin("i= $i anot= $anot")
+        }
+
+        prin("AC::class.si.findAnnotation<Anot2>()= ${AC::class.si.findAnnotation<Anot2>()}")
+        prin("AC::class.si.findAnnotation<Anotasi<*, *>>()= ${AC::class.si.findAnnotation<Anotasi<*, *>>()}")
+        log(AC::class.si.findAnnotation<Anot2>())
+    }
+
+    @ExperimentalTime
+    @Test
+    fun annotationCallTest(){
+        val ac= AC<BlaBla2>()
+        if(platform == Platform.JS){
+            val funAnot = nativeNew(FunAnot::class)!!
+            val funAnot2 = nativeNew(FunAnot::class){ 2 }!!
+            val func = AC::class.si.members.find { it.name == "someFun" }
+
+            AC::class.si.annotateMember("someOtherFun", funAnot2)
+            prin("func?.parameters?.first()?.isOptional= ${func?.parameters?.first()?.isOptional}")
+            func?.callBy(mapOf(func.parameters.first() to 100))
+            prin("func= $func")
+            log(func)
+            func?.setAnnotation(funAnot)
+            prin("ac::someFun = ${ac::someFun}")
+            prin("funAnot= $funAnot")
+            log(funAnot)
+            prin("FunAnot::class = ${FunAnot::class}")
+            log(FunAnot::class)
+        }
+        var time= measureTime {
+            ac.callAnnotatedFunction<FunAnot> {
+                prin("param= $it")
+                10
+            }
+        }
+        prine("time= $time")
+
+        prin("\n==========================================\n")
+        time= measureTime {
+            ac.callAnnotatedFunction<FunAnot> {
+//                prin("param= $it")
+                10
+            }
+        }
+        prine("time= $time")
+        prin("\n==========================================\n")
+        time= measureTime {
+            ac.callAnnotatedFunction<FunAnot>({
+                prin("it.a= ${it.a} it= $it")
+                it.a == 2
+            }){
+                prin("param= $it")
+                when(it.name){
+                    "x" -> 1018
+                    "az" -> 187
+                    else -> null
+                }
+            }
+        }
+        prine("time= $time")
+/*
+        val poin= Poin(y= 11)
+        time= measureTime {
+            ac.callAnnotatedFunctionWithParamContainer(FunAnot::class, poin){ it.a == 101 }
+        }
+        prine("time= $time")
+
+        time= measureTime {
+            ac.callAnnotatedFunctionWithParamContainer(FunAnot::class, poin){ it.a == 2 }
+        }
+        prine("time= $time")
+ */
     }
 }

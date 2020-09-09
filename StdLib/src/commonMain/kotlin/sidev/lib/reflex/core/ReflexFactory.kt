@@ -4,37 +4,21 @@ import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.property.reevaluateLazy
-import sidev.lib.reflex.SiCallable
+import sidev.lib.reflex.*
 import sidev.lib.reflex.SiCallableImpl
-import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiClassImpl
-import sidev.lib.reflex.SiClassifier
-import sidev.lib.reflex.SiDescriptor
-import sidev.lib.reflex.SiDescriptorContainer
-import sidev.lib.reflex.SiField
 import sidev.lib.reflex.SiFieldImpl
-import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.SiFunctionImpl
-import sidev.lib.reflex.SiModifier
-import sidev.lib.reflex.SiMutableField
 import sidev.lib.reflex.SiMutableFieldImpl
-import sidev.lib.reflex.SiMutableProperty
-import sidev.lib.reflex.SiMutableProperty1
-import sidev.lib.reflex.SiParameter
-import sidev.lib.reflex.SiParamterImpl
-import sidev.lib.reflex.SiProperty
-import sidev.lib.reflex.SiProperty1
 import sidev.lib.reflex.SiMutableProperty1Impl
+import sidev.lib.reflex.SiParamterImpl
 import sidev.lib.reflex.SiProperty1Impl
 import sidev.lib.reflex.SiPropertyGetter1
 import sidev.lib.reflex.SiPropertySetter1
-import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiTypeImpl
-import sidev.lib.reflex.SiTypeParameter
 import sidev.lib.reflex.SiTypeParameterImpl
-import sidev.lib.reflex.SiTypeProjection
-import sidev.lib.reflex.SiVariance
-import sidev.lib.reflex.SiVisibility
+import sidev.lib.reflex.core.nativeFullName
+import sidev.lib.reflex.core.nativeSimpleName
 import sidev.lib.reflex.native.*
 import sidev.lib.reflex.native.getReturnType
 import sidev.lib.reflex.native.getVisibility
@@ -107,6 +91,10 @@ object ReflexFactory{
         defaultValue: Any?= null,
         modifier: Int= 0
     ): SiParameter = object: SiParamterImpl() {
+        override val annotations: MutableList<Annotation> by lazy {
+            nativeCounterpart?.implementation?.let{ getNativeAnnotations(it).toMutableList() }
+                ?: arrayListOf()
+        }
         override val descriptor: SiDescriptor = createDescriptor(hostCallable, nativeCounterpart, modifier)
         override val index: Int = index
         override val name: String? = name ?: nativeCounterpart?.qualifiedNativeName
@@ -126,6 +114,10 @@ object ReflexFactory{
         defaultValue: Any?= null,
         modifier: Int= 0
     ): SiParameter = object: SiParamterImpl() {
+        override val annotations: MutableList<Annotation> by lazy {
+            nativeCounterpart?.implementation?.let{ getNativeAnnotations(it).toMutableList() }
+                ?: arrayListOf()
+        }
         override val descriptor: SiDescriptor = createDescriptor(hostCallable, nativeCounterpart, modifier)
         override val index: Int = index
         override val name: String? = name ?: nativeCounterpart?.qualifiedNativeName
@@ -164,6 +156,9 @@ object ReflexFactory{
         defaultCallBlock: ((args: Array<out Any?>) -> R)?= null,
         callBlock: (args: Array<out Any?>) -> R
     ): SiCallable<R> = object : SiCallableImpl<R>(){
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val callBlock: (args: Array<out Any?>) -> R = callBlock
         override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
@@ -188,6 +183,9 @@ object ReflexFactory{
         defaultCallBlock: ((args: Array<out Any?>) -> R)?= null,
         callBlock: (args: Array<out Any?>) -> R
     ): SiCallable<R> = object : SiCallableImpl<R>(){
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val callBlock: (args: Array<out Any?>) -> R = callBlock
         override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
@@ -219,8 +217,10 @@ object ReflexFactory{
     ): SiFunction<R> {
         val callable= createCallable(
             nativeCounterpart, host, returnType, parameters, typeParameters, modifier, defaultCallBlock, callBlock
-        )
+        ) as SiCallableImpl
         return object : SiFunctionImpl<R>(), SiCallable<R> by callable{
+            override val annotations: MutableList<Annotation>
+                get() = callable.annotations
             override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier) //Agar ownernya jadi SiFunction
             override val callBlock: (args: Array<out Any?>) -> R = callBlock
             override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
@@ -239,8 +239,10 @@ object ReflexFactory{
     ): SiFunction<R> {
         val callable= createCallableLazyly(
             nativeCounterpart, host, parameters, typeParameters, modifier, defaultCallBlock, callBlock
-        )
+        ) as SiCallableImpl
         return object : SiFunctionImpl<R>(), SiCallable<R> by callable{
+            override val annotations: MutableList<Annotation>
+                get() = callable.annotations
             override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier) //Agar ownernya jadi SiFunction
             override val callBlock: (args: Array<out Any?>) -> R = callBlock
             override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
@@ -254,6 +256,9 @@ object ReflexFactory{
         type: SiType = ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiProperty1<T, R> = object : SiProperty1Impl<T, R>(){
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType = type
@@ -268,6 +273,9 @@ object ReflexFactory{
 //        type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiProperty1<T, R> = object : SiProperty1Impl<T, R>(){
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType by reevaluateLazy {
@@ -287,6 +295,9 @@ object ReflexFactory{
         type: SiType = ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiMutableProperty1<T, R> = object : SiMutableProperty1Impl<T, R>(){
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType = type
@@ -302,6 +313,9 @@ object ReflexFactory{
 //        type: SiType= ReflexTemplate.typeAnyNullable,
         modifier: Int= 0
     ): SiMutableProperty1<T, R> = object : SiMutableProperty1Impl<T, R>(){
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType by reevaluateLazy {
@@ -340,6 +354,9 @@ object ReflexFactory{
         typeParameters: List<SiTypeParameter> = emptyList(),
         modifier: Int= 0
     ): SiClass<T> = object : SiClassImpl<T>() {
+        override val annotations: MutableList<Annotation> by lazy {
+            getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
+        }
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val qualifiedName: String? = nativeCounterpart.nativeFullName //nativeCounterpart.qualifiedNativeName
         override val simpleName: String? = nativeCounterpart.nativeSimpleName //ReflexFactoryHelper.getSimpleName(nativeCounterpart, qualifiedName)
@@ -354,6 +371,16 @@ object ReflexFactory{
         }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
+    }
+
+    fun createAnnotation(
+        nativeCounterpart: SiNative?,
+        host: SiAnnotatedElement?= null,
+    ): SiAnnotation = object : SiAnnotationImpl(){
+        override val descriptor: SiDescriptor = createDescriptor(
+            if(host is SiDescriptorContainer) host else null,
+            nativeCounterpart
+        )
     }
 ///*
     fun <R, T>createField(
@@ -371,6 +398,10 @@ object ReflexFactory{
         return object : SiFieldImpl<R, T>(
             { receiver: R -> getBlock(arrayOf<Any>(receiver!!)) }
         ){
+            override val annotations: MutableList<Annotation> by lazy {
+                nativeCounterpart?.implementation?.let{ getNativeAnnotations(it).toMutableList() }
+                    ?: arrayListOf()
+            }
             override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
             override val name: String = name
             override val type: SiType = type
@@ -399,6 +430,10 @@ object ReflexFactory{
             { receiver: R -> getBlock(arrayOf<Any>(receiver!!)) },
             { receiver: R, value: T -> setBlock(arrayOf<Any>(receiver!!), value) }
         ){
+            override val annotations: MutableList<Annotation> by lazy {
+                nativeCounterpart?.implementation?.let{ getNativeAnnotations(it).toMutableList() }
+                    ?: arrayListOf()
+            }
             override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
             override val name: String = name
             override val type: SiType = type

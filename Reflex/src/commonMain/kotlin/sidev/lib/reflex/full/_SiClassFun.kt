@@ -130,6 +130,8 @@ fun SiClass<*>.isExclusivelySuperclassOf(derived: SiClass<*>): Boolean
 fun SiClass<*>.isExclusivelySubclassOf(base: SiClass<*>): Boolean
         = this != base && isSubclassOf(base)
 
+fun SiClass<*>.isAssignableFrom(other: SiClass<*>): Boolean = other.isSubclassOf(this)
+
 
 val SiClass<*>.sealedSubclassesTree: NestedSequence<SiClass<*>>
     get()= object : NestedSequence<SiClass<*>> {
@@ -193,4 +195,11 @@ fun SiClass<*>.getSealedClassName(isQualifiedName: Boolean= true): String?{
 //        Log.e("getSealedClassName", "thisNameRes= $thisNameRes")
         thisNameRes
     }
+}
+
+fun SiClass<*>.annotateMember(name: String, annotation: Annotation): Boolean{
+    return members.find { it.name == name }?.let {
+        it.setAnnotation(annotation)
+        true
+    } ?: false
 }

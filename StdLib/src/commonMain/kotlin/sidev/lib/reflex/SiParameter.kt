@@ -1,7 +1,7 @@
 package sidev.lib.reflex
 
 
-interface SiParameter: SiDescriptorContainer {
+interface SiParameter: SiDescriptorContainer, SiAnnotatedElement {
     val index: Int
     val name: String?
     val type: SiType

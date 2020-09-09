@@ -4,6 +4,7 @@ package sidev.lib.console
 import sidev.lib.`val`.StringLiteral
 
 actual fun str(any: Any?): String = any.toString()
+actual fun log(any: Any?) = println(any)
 
 fun prind(any: Any?) = prind(any, true)
 fun prinr(any: Any?) = prinr(any, true)

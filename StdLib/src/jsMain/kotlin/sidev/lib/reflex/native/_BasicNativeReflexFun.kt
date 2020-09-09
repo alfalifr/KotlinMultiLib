@@ -17,7 +17,6 @@ import sidev.lib.console.prine
 import sidev.lib.reflex.core.createType
 import kotlin.reflect.KClass
 import sidev.lib.reflex.js.isFunction
-import sidev.lib.reflex.js.kotlin.kotlinMetadata
 import sidev.lib.structure.data.value.Val
 
 
@@ -49,6 +48,10 @@ val <T: Any> T.jsClass: JsClass_<T> get(){
     }
     else jsClass.toClassWrapper()
 }
+
+
+internal actual fun getNativeAnnotations(nativeAnnotatedElement: Any): Sequence<Annotation>
+        = unavailableReflexAcces_sequence("getNativeAnnotations(nativeAnnotatedElement: Any)", nativeAnnotatedElement, "annotation")
 
 /** Mengambil KClass dari [nativeClass]. */
 internal actual fun <T: Any> getKClass(nativeClass: Any): KClass<T> = when(nativeClass){

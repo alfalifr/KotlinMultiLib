@@ -1,28 +1,14 @@
 package sidev.lib.reflex.core
 
 import sidev.lib.check.asNotNullTo
+import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
-import sidev.lib.reflex.SiCallable
-import sidev.lib.reflex.SiClass
-import sidev.lib.reflex.SiDescriptor
-import sidev.lib.reflex.SiDescriptorContainer
+import sidev.lib.reflex.*
 import sidev.lib.reflex.SiDescriptorImpl
-import sidev.lib.reflex.SiField
-import sidev.lib.reflex.SiFunction
-import sidev.lib.reflex.SiModifier
-import sidev.lib.reflex.SiMutableField
-import sidev.lib.reflex.SiMutableProperty
-import sidev.lib.reflex.SiParameter
-import sidev.lib.reflex.SiProperty
-import sidev.lib.reflex.SiType
-import sidev.lib.reflex.SiTypeParameter
-import sidev.lib.reflex.SiTypeProjection
-import sidev.lib.reflex.SiVariance
+import sidev.lib.reflex.core.nativeFullName
 import sidev.lib.reflex.native.SiKClassifier
 import sidev.lib.reflex.native.SiNative
-import sidev.lib.reflex.fullName
-import sidev.lib.reflex.getHashCode
 import sidev.lib.reflex.native.isDynamicEnabled
 import sidev.lib.reflex.native.isTypeFinal
 import kotlin.reflect.KClass
@@ -243,6 +229,13 @@ object ReflexDescriptor {
                     else ""
                 "$str$nullableStr$additionStr"
             }
+            is SiAnnotation -> {
+                val cls= createNativeWrapper(owner.descriptor.native?.clazz ?: owner::class)
+                val clsName= cls.nativeFullName ?: cls.nativeInnerName
+                    ?: SiReflexConst.TEMPLATE_NATIVE_ANNOTATION_NAME
+                val hostStr= owner.descriptor.host?.toString()?.let { " -- of -- $it" } ?: ""
+                " @$clsName$hostStr"
+            }
             else -> " ${SiReflexConst.TEMPLATE_REFLEX_UNIT_NAME}"
         }
         return str
@@ -275,6 +268,7 @@ internal fun getReflexElementType(reflexUnit: SiDescriptorContainer, nativeCount
     is SiParameter -> SiDescriptor.ElementType.PARAMETER
     is SiTypeParameter -> SiDescriptor.ElementType.TYPE_PARAMETER
     is SiType -> SiDescriptor.ElementType.TYPE
+    is SiAnnotation -> SiDescriptor.ElementType.ANNOTATION
     else -> (if(nativeCounterpart != null) getNativeReflexDescription(nativeCounterpart) else null)
         ?: SiDescriptor.ElementType.ANY
 }

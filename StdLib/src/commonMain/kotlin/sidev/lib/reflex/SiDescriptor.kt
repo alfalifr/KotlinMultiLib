@@ -51,6 +51,7 @@ interface SiDescriptor: SiReflex {
         MUTABLE_FIELD("mutable field"),
         PARAMETER("parameter"),
         FUNCTION("fun"),
+        ANNOTATION("annotation"),
 
         /**
          * Untuk tipe dinamis yg tidak dapat digambarkan dalam refleksi.

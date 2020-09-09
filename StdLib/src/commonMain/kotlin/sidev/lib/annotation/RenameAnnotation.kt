@@ -1,7 +1,7 @@
 package sidev.lib.annotation
 
-/*
-import sidev.lib.reflex.inner.findAnnotation
+import sidev.lib.reflex.*
+import sidev.lib.reflex.native.si
 import kotlin.reflect.*
 
 /**
@@ -12,20 +12,20 @@ import kotlin.reflect.*
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Rename(val newName: String)
 
+class SiRename(val newName: String): SiAnnotation
 
-val KAnnotatedElement.renamedName: String
+
+val SiAnnotatedElement.renamedName: String
     get(){
-        return findAnnotation<Rename>()?.newName
+        return (findAnnotation<Rename>()?.newName ?: findAnnotation<SiRename>()?.newName)
             ?: when(this){
-                is KParameter -> name ?: "<parameter: ${toString()}>"
-                is KCallable<*> -> name
-                is KClass<*> -> qualifiedName ?: "<class: ${toString()}>"
-                is KType -> (classifier as? KClass<*>)?.qualifiedName ?: toString()
-                is KTypeParameter -> name
-                is KClassifier -> toString()
-                is Annotation -> this::class.qualifiedName ?: "<annotation: ${toString()}>"
+                is SiParameter -> name ?: "<parameter: ${toString()}>"
+                is SiCallable<*> -> name
+                is SiClass<*> -> qualifiedName ?: "<class: ${toString()}>"
+                is SiType -> (classifier as? SiClass<*>)?.qualifiedName ?: toString()
+                is SiTypeParameter -> name
+                is SiClassifier -> toString()
+                is SiAnnotation -> this::class.si.qualifiedName ?: "<annotation: ${toString()}>"
                 else -> toString()
             }
     }
-
- */

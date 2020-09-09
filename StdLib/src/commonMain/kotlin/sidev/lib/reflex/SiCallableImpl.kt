@@ -4,7 +4,8 @@ import sidev.lib.console.prine
 
 internal abstract class SiCallableImpl<out R>
     : SiDescriptorContainerImpl(),
-    SiCallable<R> {
+    SiCallable<R>, SiAnnotatedElementImpl {
+    override val annotations: MutableList<Annotation> = arrayListOf()
     protected abstract val callBlock: (args: Array<out Any?>) -> R
 
     //Format fungsi default (fungsi dg param opsional) di Kotlin:
@@ -64,6 +65,8 @@ internal abstract class SiCallableImpl<out R>
         //Hanya sbg param tambahan di akhir, krg tau gunanya.
         // Mungkin marker, misalkan DefaultConstructorMarker dan Object pada fungsi biasa.
         passedArgs.add(null)
+
+        prine("callBy: passedArgs= $passedArgs")
 
         return defaultCallBlock!!(passedArgs.toTypedArray())
     }

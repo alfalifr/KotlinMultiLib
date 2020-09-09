@@ -1,7 +1,7 @@
 package sidev.lib.reflex
 
 
-interface SiCallable<out R>: SiDescriptorContainer {
+interface SiCallable<out R>: SiDescriptorContainer, SiAnnotatedElement {
     val name: String
     val returnType: SiType
     val parameters: List<SiParameter>

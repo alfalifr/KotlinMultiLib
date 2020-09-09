@@ -4,7 +4,7 @@ package sidev.lib.reflex
  * File yg berisi komponen refleksi yg dapat digunakan scr multi-platform.
  */
 
-interface SiClass<T: Any>: SiClassifier {
+interface SiClass<T: Any>: SiClassifier, SiAnnotatedElement {
     /** Nama lengkap dari kelas ini. `null` jika anonymous. */
     val qualifiedName: String?
 

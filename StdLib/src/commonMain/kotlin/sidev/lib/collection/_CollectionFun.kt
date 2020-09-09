@@ -40,6 +40,7 @@ fun <T> MutableList<T>.removeLast(element: T): Boolean{ //= if(isEmpty()) throw 
 
 
 /**
+ * [chekcFun] return `true` brarti element yg akan dimasukan adalah identik dg yg udah ada dan tidak dimasukan.
  * @return true jika [element] tidak terdapat sebelumnya di list ini.
  * Fungsi ini menggunakan standard equals().
  */
@@ -49,6 +50,17 @@ inline fun <T> MutableList<T>.addIfAbsent(element: T, chekcFun: ((existingElemen
     if(canAdd)
         this.add(element)
     return canAdd
+}
+/**
+ * [chekcFun] return `true` brarti element yg akan dimasukan adalah identik dg yg udah ada dan tidak dimasukan.
+ * @return true jika [element] tidak terdapat sebelumnya di list ini.
+ * Fungsi ini menggunakan standard equals().
+ */
+inline fun <T> MutableList<T>.addAllIfAbsent(vararg element: T, chekcFun: ((existingElement: T) -> Boolean)= {true}): Boolean{
+    var res= false
+    for(e in element)
+        res= res || addIfAbsent(e, chekcFun)
+    return res
 }
 
 

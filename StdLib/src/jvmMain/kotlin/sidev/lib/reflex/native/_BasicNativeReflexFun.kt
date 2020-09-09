@@ -19,6 +19,13 @@ import kotlin.reflect.jvm.javaField
 
 actual val isDynamicEnabled: Boolean = false
 
+
+internal actual fun getNativeAnnotations(nativeAnnotatedElement: Any): Sequence<Annotation> {
+    if(nativeAnnotatedElement !is KAnnotatedElement)
+        throw ReflexComponentExc(currentReflexedUnit = nativeAnnotatedElement::class, detMsg = "nativeAnnotatedElement bkn annotatedElement.")
+    return nativeAnnotatedElement.annotations.asSequence()
+}
+
 /** Mengambil KClass dari [nativeClass]. */
 internal actual fun <T: Any> getKClass(nativeClass: Any): KClass<T> = when(nativeClass){
     is KClass<*> -> nativeClass

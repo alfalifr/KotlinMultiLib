@@ -1,14 +1,21 @@
 package sidev.lib.reflex.full
 
+import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
+import sidev.lib.console.log
+import sidev.lib.console.prine
 import sidev.lib.reflex.SiCallable
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiParameter
+import sidev.lib.reflex.core.ReflexTemplate
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.native.getIsAccessible
 import sidev.lib.reflex.native.setIsAccessible
+import sidev.lib.reflex.native.si
 import kotlin.reflect.KCallable
+import kotlin.reflect.KClass
+import kotlin.reflect.KClassifier
 
 
 var SiCallable<*>.isAccessible: Boolean
@@ -27,14 +34,17 @@ fun <R> SiCallable<R>.callBySafely(args: Map<SiParameter, Any?>): R{
     val newArgs= HashMap<SiParameter, Any?>()
     for(param in parameters){
         var value= args[param]
+        prine("SiCallable<R>.callBySafely() param= $param value= $value")
         if(value == null){
             if(param.isOptional) continue
             if(!param.type.isMarkedNullable)
                 throw IllegalArgumentException("Nilai argumen param: \"$param\" tidak boleh null")
-        } else if(param.type.classifier != value::class){
-            if(param.isOptional) continue
-            if(param.type.isMarkedNullable) value= null
-            else throw IllegalArgumentException("Tipe param: \"$param\" adalah ${param.type.classifier}, namun argumen bertipe ${value::class}")
+        } else if(param.type.classifier.asNotNullTo { it: SiClass<*> -> it.isAssignableFrom(value!!::class.si) } != true ){
+            if(param.type != ReflexTemplate.typeDynamic){
+                if(param.isOptional) continue
+                if(param.type.isMarkedNullable) value= null
+                else throw IllegalArgumentException("Tipe param: \"$param\" adalah ${param.type.classifier}, namun argumen bertipe ${value::class}")
+            }
         }
         newArgs[param]= value
     }

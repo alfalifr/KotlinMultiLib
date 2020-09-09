@@ -11,6 +11,9 @@ import kotlin.reflect.KClass
 
 expect val isDynamicEnabled: Boolean
 
+
+internal expect fun getNativeAnnotations(nativeAnnotatedElement: Any): Sequence<Annotation>
+
 /** Mengambil KClass dari [nativeClass]. */
 internal expect fun <T: Any> getKClass(nativeClass: Any): KClass<T>
 

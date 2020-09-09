@@ -37,4 +37,5 @@ fun prin(any: Any?, color: String= StringLiteral.ANSI_RESET, endWithNewLine: Boo
 }
 fun prin_(any: Any?) = prin(any)
 
+expect fun log(any: Any?)
 expect fun str(any: Any?): String

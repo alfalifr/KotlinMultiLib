@@ -1,9 +1,12 @@
 package sidev.lib.reflex
 
-//import sidev.lib.annotation.AnnotatedFunctionClass
+import sidev.lib.annotation.Rename
+import sidev.lib.reflex.annotation.AnnotatedFunctionClass
 //import sidev.lib.annotation.Rename
 //import sidev.lib.collection.string
 import sidev.lib.console.prin
+import sidev.lib.reflex.annotation.AnnotatedFunctionClassManager
+
 //import sidev.lib.reflex.type.inferElementType
 
 class ClsGen<T, R>(val isi: T, var list: List<R>)
@@ -81,8 +84,12 @@ interface BlaBlaInt
 open class BlaBla2: BlaBla(), BlaBlaInt
 
 @Anotasi<Int, Char>
-open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, T: BlaBlaInt/*, AnnotatedFunctionClass*/ {
+open class AC<T>(val poinConstr: Poin): Z, Y, X, AB(), AnnotatedFunctionClass
+        where T: BlaBla, T: BlaBlaInt{
     constructor(): this(Poin(1, 3))
+
+    override val manager: AnnotatedFunctionClassManager? = AnnotatedFunctionClassManager(owner)
+
     val ac= "ppop"
     private var acPriv= "aaa"
     var acStr1= "aaa1"
@@ -109,13 +116,13 @@ open class AC<T>(val poinConstr: Poin): Z, Y, X, AB() where T: BlaBla, T: BlaBla
     @Anotasi<Int, Any> @FunAnot(10)
     fun someFun(x: Int) = prin("\n\n ==== Halo dari AC.someFun() x= $x ==== \n\n")
     @Anotasi<Int, Any> @FunAnot(2)
-    fun <T: BlaBlaInt, R: Int> someOtherFun(vararg x: Any, az: Int = 1) where T: BlaBla = prin("\n\n ==== Halo dari AC.someOtherFun() x= $x az= $az ==== \n\n")
+    fun <T: BlaBlaInt, R: Int> someOtherFun(x: Any, az: Int = 1) where T: BlaBla = prin("\n\n ==== Halo dari AC.someOtherFun() x= $x az= $az ==== \n\n")
     override fun ada() {}
 }
 
-class Poin(var x: Int= 13, var y: Int, /*@property:Rename("az")*/ var z: Int= 10){
+class Poin(var x: Int= 13, var y: Int, @property:Rename("az") var z: Int= 10){
     constructor(): this(12, 100)
-    /*@Rename("aa_aa_diPoin")*/ var aa_diPoin= AA_()
+    @Rename("aa_aa_diPoin") var aa_diPoin= AA_()
 }
 
 @Anotasi<Int, Char>
