@@ -1,8 +1,7 @@
 package sidev.lib.annotation
 
 import sidev.lib.reflex.*
-import sidev.lib.reflex.native.si
-import kotlin.reflect.*
+import sidev.lib.reflex.native_.si
 
 /**
  * Digunakan untuk menandai bahwa element yg ditandai dg anotasi ini memiliki nama yg berbeda
@@ -12,7 +11,7 @@ import kotlin.reflect.*
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Rename(val newName: String)
 
-class SiRename(val newName: String): SiAnnotation
+data class SiRename(val newName: String): SiAnnotation
 
 
 val SiAnnotatedElement.renamedName: String

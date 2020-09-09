@@ -2,7 +2,7 @@ package sidev.lib.reflex.core
 
 import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.*
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import java.lang.reflect.Field
 import kotlin.reflect.*
 import kotlin.reflect.jvm.javaField

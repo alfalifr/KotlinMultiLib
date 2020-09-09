@@ -1,5 +1,7 @@
 package sidev.lib.reflex
 
+import sidev.lib.annotation.SiRename
+import sidev.lib.annotation.renamedName
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.log
 import sidev.lib.console.prin
@@ -11,7 +13,7 @@ import sidev.lib.reflex.annotation.callAnnotatedFunction
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.*
 import sidev.lib.reflex.full.types.*
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
@@ -371,5 +373,14 @@ class SampleTests {
         }
         prine("time= $time")
  */
+    }
+
+    @Test
+    fun renameTest(){
+        val poin= Poin()
+        if(platform == Platform.JS){
+            poin::class.si.annotateMember("aa_diPoin", SiRename("aa_aa_diPoin"))
+        }
+        prin(poin::class.si.members.find { it.name == "aa_diPoin" }?.renamedName)
     }
 }

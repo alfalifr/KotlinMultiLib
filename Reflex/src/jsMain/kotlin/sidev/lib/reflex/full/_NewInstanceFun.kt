@@ -8,7 +8,7 @@ import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.clazz
 import sidev.lib.reflex.defaultPrimitiveValue
 import sidev.lib.reflex.js.*
-import sidev.lib.reflex.native.*
+import sidev.lib.reflex.native_.*
 import kotlin.reflect.KClass
 
 

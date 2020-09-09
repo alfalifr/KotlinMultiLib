@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.console.prine
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 
 /**
@@ -98,12 +99,19 @@ fun createFunWrapper(name: String, paramStr: String, func: dynamic, isMemberFunc
     val funcCallStr= if(isMemberFunc) "func.call(this${ if(paramStr.isNotBlank()) ", $paramStr" else "" })"
         else "func($paramStr)"
     val temp= null
-//    prine("createFunWrapper() paramStr= $paramStr")
+//    prine("createFunWrapper() paramStr= $paramStr funcCallStr= $funcCallStr func= $func isimember= $isMemberFunc")
     return eval("""
         temp = function $name($paramStr){
             return $funcCallStr
         }
     """.trimIndent())
+    /*
+            try{ return $funcCallStr }
+            catch(e){
+                console.warn("Tidak dapat memanggil fungsi asli, return func= " +func +"\n  e= " +e)
+                return func
+            }
+     */
 }
 
 fun isFunMember(blockStr: String): Boolean = blockStr.contains("this.[\\S]".toRegex())

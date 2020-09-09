@@ -4,7 +4,7 @@ import sidev.lib.check.notNullTo
 import sidev.lib.platform.getGlobalObject
 import sidev.lib.property.reevaluateLazy
 import sidev.lib.reflex.core.SiReflexConst
-import sidev.lib.reflex.native.jsClass
+import sidev.lib.reflex.native_.jsClass
 
 //fun ada(){ js("class;") }
 

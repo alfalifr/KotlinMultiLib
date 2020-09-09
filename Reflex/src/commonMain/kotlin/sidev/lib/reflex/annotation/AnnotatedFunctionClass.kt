@@ -1,14 +1,13 @@
 package sidev.lib.reflex.annotation
 
 import sidev.lib.annotation.renamedName
-import sidev.lib.console.prine
 import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.full.callBySafely
 import sidev.lib.reflex.full.declaredMemberFunctions
 import sidev.lib.reflex.full.implementedPropertyValuesTree
 import sidev.lib.reflex.full.isSuperclassOf
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import sidev.lib.reflex.realAnnotation
 import kotlin.reflect.KClass
 /*

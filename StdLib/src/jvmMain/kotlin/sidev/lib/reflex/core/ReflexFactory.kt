@@ -3,8 +3,8 @@
 package sidev.lib.reflex.core
 
 //import sidev.lib.reflex.comp.native.*
-import sidev.lib.reflex.native.SiNative
-import sidev.lib.reflex.native.getNativeClass
+import sidev.lib.reflex.native_.SiNative
+import sidev.lib.reflex.native_.getNativeClass
 import java.lang.reflect.Executable
 import java.lang.reflect.Field
 import java.lang.reflect.Type

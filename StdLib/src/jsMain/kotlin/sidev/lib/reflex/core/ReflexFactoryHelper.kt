@@ -5,7 +5,7 @@ import sidev.lib.reflex.*
 import sidev.lib.reflex.js.JsCallableImpl
 import sidev.lib.reflex.js.JsClassImpl_
 import sidev.lib.reflex.js.JsProperty
-import sidev.lib.reflex.native.siClass
+import sidev.lib.reflex.native_.siClass
 import kotlin.reflect.KClass
 
 

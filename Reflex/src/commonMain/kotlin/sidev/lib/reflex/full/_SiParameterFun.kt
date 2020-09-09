@@ -3,8 +3,9 @@ package sidev.lib.reflex.full
 import sidev.lib.reflex.SiCallable
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiProperty
+import kotlin.jvm.JvmName
 
-
+@get:JvmName("isInConstructor")
 val SiParameter.isInConstructor: Boolean
     get()= (descriptor.host as? SiCallable<*>)?.isConstructor == true //.contains(K_FUNCTION_CONSTRUCTOR_NAME_PREFIX)
 //Karena tidak tersedia informasi mengenai fungsi pada interface KParameter,

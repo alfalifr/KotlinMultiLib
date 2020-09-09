@@ -3,21 +3,20 @@ package sidev.lib.reflex.full
 import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
-import sidev.lib.console.log
 import sidev.lib.console.prine
 import sidev.lib.reflex.SiCallable
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.core.ReflexTemplate
 import sidev.lib.reflex.core.SiReflexConst
-import sidev.lib.reflex.native.getIsAccessible
-import sidev.lib.reflex.native.setIsAccessible
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.getIsAccessible
+import sidev.lib.reflex.native_.setIsAccessible
+import sidev.lib.reflex.native_.si
+import kotlin.jvm.JvmName
 import kotlin.reflect.KCallable
-import kotlin.reflect.KClass
-import kotlin.reflect.KClassifier
 
-
+@set:JvmName("setAccessible")
+@get:JvmName("getAccessible")
 var SiCallable<*>.isAccessible: Boolean
     get()= descriptor.native.notNullTo { getIsAccessible(it) } ?: false
     set(v){ descriptor.native.notNull { setIsAccessible(it, v) } }
@@ -67,6 +66,7 @@ fun <R> SiCallable<R>.forceCallBy(args: Map<SiParameter, Any?>): R{
     return vals
 }
 
+@get:JvmName("isConstructor")
 val SiCallable<*>.isConstructor: Boolean
     get()= if((descriptor.host as? SiClass<*>)?.isArray == true) true
         else toString().matches(SiReflexConst.FUNCTION_CONSTRUCTOR_NAME_PATTERN.toRegex())

@@ -4,7 +4,7 @@ import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.full.callBySafely
 import sidev.lib.reflex.full.isSuperclassOf
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import sidev.lib.reflex.realAnnotation
 import kotlin.reflect.KClass
 

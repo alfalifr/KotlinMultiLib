@@ -12,11 +12,11 @@ import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiParameterImplConst
 import sidev.lib.reflex.SiProperty1
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.reflex.native.*
-import sidev.lib.reflex.native.getConstrCallBlock
-import sidev.lib.reflex.native.getFuncDefaultCallBlock
-import sidev.lib.reflex.native.getModifiers
-import sidev.lib.reflex.native.getNativeConstructors
+import sidev.lib.reflex.native_.*
+import sidev.lib.reflex.native_.getConstrCallBlock
+import sidev.lib.reflex.native_.getFuncDefaultCallBlock
+import sidev.lib.reflex.native_.getModifiers
+import sidev.lib.reflex.native_.getNativeConstructors
 
 /**
  * Objek yg bertugas untuk me-reload data refleksi dari sebuah instance.

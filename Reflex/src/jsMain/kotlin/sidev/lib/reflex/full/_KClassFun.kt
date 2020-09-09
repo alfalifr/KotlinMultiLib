@@ -5,9 +5,6 @@ import sidev.lib.collection.iterator.nestedSequenceSimple
 import sidev.lib.reflex.js.JsPrimitiveType
 import sidev.lib.reflex.js.getSupertypes
 import sidev.lib.reflex.js.jsPureFunction
-import sidev.lib.reflex.js.jsSuperclass
-import sidev.lib.reflex.js.kotlin.kotlinSupertypes
-import sidev.lib.reflex.native.jsClass
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.reflect.KClass
 

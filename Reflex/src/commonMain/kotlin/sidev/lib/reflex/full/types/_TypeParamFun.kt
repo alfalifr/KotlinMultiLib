@@ -6,7 +6,7 @@ import sidev.lib.reflex.SiVariance
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.isArray
 import sidev.lib.reflex.full.isObjectArray
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 
 
 val <T: Any> SiClass<T>.arrayTypeArgument: SiTypeProjection?

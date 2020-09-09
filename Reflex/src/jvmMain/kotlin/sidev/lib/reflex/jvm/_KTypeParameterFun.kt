@@ -28,6 +28,7 @@ fun KTypeParameter.getTypeParameterLink(clazz: KClass<*>): LinkedTypeParameter? 
 }
 
 /** Sequence semua nested [KTypeProjection] dari `upperBounds`. `this.extension` upperBounds juga disertakan. */
+@get:JvmName("nestedUpperBoundTypeArguments")
 val KTypeParameter.nestedUpperBoundTypeArguments: NestedSequence<KTypeProjection>
     get()= object : NestedSequence<KTypeProjection> {
         private val initUpperBounds= this@nestedUpperBoundTypeArguments.upperBounds

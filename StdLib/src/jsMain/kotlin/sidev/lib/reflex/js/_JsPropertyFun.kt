@@ -2,7 +2,10 @@ package sidev.lib.reflex.js
 
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
+import sidev.lib.console.log
+import sidev.lib.console.prine
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
+import kotlin.js.json
 
 fun <T: Any, R> createJsProperty(
     name: String, isLateinit: Boolean, innerName: String= name, type: JsType = JsType.dynamicType
@@ -68,7 +71,7 @@ fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
             val type= if(propName == vals[lastIndex-1]) createTypeLazyly(JsPrimitiveType.OBJECT)
                 else inferType(vals[lastIndex-1])
 //            prine("getDeclaredProp()= type= $type val= ${vals[lastIndex-1]}")
-
+//            prine("getDeclaredProperty() propName= $propName propList= ${str(propList)} propList== undefined => ${propList == undefined}")
             propList[propName].isNull {
                 propList[propName]= createJsMutableProperty<T, Any?>(propName, isLateinit, propInnerName, type)
             }
@@ -82,10 +85,18 @@ fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
  */
 fun <R> JsProperty<*, R>.getPropRealValue(receiver: Any): R{
     val vals= eval("receiver.$innerName")
-    val finalVal= when{
+//    prine("JsProperty<*, R>.getPropRealValue vals= ${str(vals)}")
+//    log(vals)
+//    prine("JsProperty<*, R>.getPropRealValue vals == null= ${vals == null}")
+//    prine("JsProperty<*, R>.getPropRealValue vals == undefined= ${vals == undefined}")
+//    prine("JsProperty<*, R>.getPropRealValue vals::class= ${vals::class}")
+    val finalVal= try{ when{
         vals == undefined -> undefined
+        vals == null -> null
         jsName(vals) == KotlinJsConst.LAZY_DELEGATE_NAME -> vals[KotlinJsConst.LAZY_DELEGATE_INITIALIZER_NAME]()
         else -> vals
-    }
+    } }
+    catch (e: Throwable){ json() } //vals //Kemungkinan karena `vals` == null
+
     return finalVal as R
 }

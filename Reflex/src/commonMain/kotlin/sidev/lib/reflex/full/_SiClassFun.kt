@@ -7,8 +7,9 @@ import sidev.lib.collection.iterator.skip
 import sidev.lib.property.UNINITIALIZED_VALUE
 import sidev.lib.reflex.*
 //import sidev.lib.reflex.SiReflexImpl
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import kotlin.jvm.JvmName
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
@@ -31,28 +32,39 @@ val <T: Any> SiClass<T>.kotlin: KClass<T>
     get()= descriptor.native as KClass<T>
  */
 
+@get:JvmName("isSealed")
 val SiClass<*>.isSealed: Boolean
     get()= SiModifier.isSealed(this)
 
 
+@get:JvmName("isPrimitive")
 val SiType.isPrimitive: Boolean
     get()= (classifier as? SiClass<*>)?.isPrimitive == true
 
 
+@get:JvmName("isArray")
 val SiClass<*>.isArray: Boolean
     get()= isObjectArray || isPrimitiveArray
 
+@get:JvmName("isCollection")
 val SiClass<*>.isCollection: Boolean
     get()= isSubclassOf(Collection::class.si)
 
+@get:JvmName("isMap")
+val SiClass<*>.isMap: Boolean
+    get()= isSubclassOf(Map::class.si)
 
+
+@get:JvmName("isReflexUnit")
 val Any.isReflexUnit: Boolean
     get()= this is SiReflex || this is SiDescriptor
             || isNativeReflexUnit
 
+@get:JvmName("isUninitializedValue")
 val Any.isUninitializedValue: Boolean
     get()= this == UNINITIALIZED_VALUE //this::class == UNINITIALIZED_VALUE::class
 
+@get:JvmName("isDelegate")
 val Any.isDelegate: Boolean get()= when(this){
 //    is Lazy<*> -> true //Gak semua Lazy adalah delegate. Hal teresebut dikarenakan Lazy gak punya fungsi getValue() sbg instance member.
     is ReadOnlyProperty<*, *> -> true
@@ -62,15 +74,19 @@ val Any.isDelegate: Boolean get()= when(this){
 
 //<23 Agustus 2020> => implementasi diganti menjadi [isNativeInterface], karena jika isAbstract && !isInstantiable,
 // belum tentu merupakan interface. Bisa jadi itu adalah abstract kelas yg hanya bisa di-instansiasi lewat builder di dalamnya.
+@get:JvmName("isInterface")
 val SiClass<*>.isInterface: Boolean
     get()= isNativeInterface //isAbstract && !isInstantiable
 
+@get:JvmName("isObject")
 val SiClass<*>.isObject: Boolean
     get()= !isAbstract && !isInstantiable
 
+@get:JvmName("isInstantiable")
 val SiClass<*>.isInstantiable: Boolean
     get()= constructors.isNotEmpty()
 
+@get:JvmName("isInterface")
 val SiType.isInterface: Boolean
     get()= (this.classifier as? SiClass<*>)?.isInterface ?: false
 
@@ -79,6 +95,7 @@ val SiType.isInterface: Boolean
  * Menunjukan jika kelas `this.extension` ini merupakan anonymous karena di-extend
  * oleh variabel lokal dan kelas yg di-extend bkn merupakan kelas abstract.
  */
+@get:JvmName("isShallowAnonymous")
 val SiClass<*>.isShallowAnonymous: Boolean
     get()= isAnonymous && supertypes.size == 1
             && superclass?.isAbstract == false
@@ -90,11 +107,13 @@ val SiClass<*>.isShallowAnonymous: Boolean
  * Berguna untuk operasi [new] pada kelas abstrak sehingga dapat mengembalikan
  * instance dg superclass.
  */
+@get:JvmName("isShallowAbstract")
 val SiClass<*>.isShallowAbstract: Boolean
     get()= isAbstract && supertypes.size == 1
             && superclass?.isAbstract == false
             && isAllMembersImplemented
 
+@get:JvmName("isAllMembersImplemented")
 val SiClass<*>.isAllMembersImplemented: Boolean
     get()= members.find { it.isAbstract } == null
 
@@ -106,6 +125,7 @@ val SiClass<*>.isAllMembersImplemented: Boolean
  * tipe data primitif dan String. Jika ada tipe data lain yg immutable, tipe data tersebut juga
  * copy-safe.
  */
+@get:JvmName("isCopySafe")
 val <T: Any> SiClass<T>.isCopySafe: Boolean
     get()= isPrimitive || this == String::class.si || isSubclassOf(Enum::class.si)
 /*
@@ -132,7 +152,7 @@ fun SiClass<*>.isExclusivelySubclassOf(base: SiClass<*>): Boolean
 
 fun SiClass<*>.isAssignableFrom(other: SiClass<*>): Boolean = other.isSubclassOf(this)
 
-
+@get:JvmName("sealedSubclassesTree")
 val SiClass<*>.sealedSubclassesTree: NestedSequence<SiClass<*>>
     get()= object : NestedSequence<SiClass<*>> {
         override fun iterator(): NestedIteratorSimple<SiClass<*>>

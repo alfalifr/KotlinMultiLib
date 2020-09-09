@@ -2,8 +2,8 @@ package sidev.lib.reflex
 
 import sidev.lib.reflex.core.ReflexFactory
 import sidev.lib.reflex.core.ReflexTemplate
-import sidev.lib.reflex.native.getPropGetValueBlock
-import sidev.lib.reflex.native.getPropSetValueBlock
+import sidev.lib.reflex.native_.getPropGetValueBlock
+import sidev.lib.reflex.native_.getPropSetValueBlock
 
 //import sidev.lib.reflex.comp.native.getPropGetValueBlock
 //import sidev.lib.reflex.comp.native.getPropSetValueBlock

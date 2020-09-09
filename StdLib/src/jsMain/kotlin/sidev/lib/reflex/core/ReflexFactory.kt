@@ -1,6 +1,6 @@
 package sidev.lib.reflex.core
 
-import sidev.lib.reflex.native.SiNative
+import sidev.lib.reflex.native_.SiNative
 import sidev.lib.reflex.js.*
 import kotlin.reflect.KClass
 

@@ -2,7 +2,7 @@ package sidev.lib.reflex.js
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.reflex.fullName
-import sidev.lib.reflex.native.jsClass
+import sidev.lib.reflex.native_.jsClass
 import kotlin.reflect.KClass
 
 fun <T: Any> JsClass<T>.toClassWrapper(): JsClass_<T> = if(isFunction) JsClassImpl_(this)

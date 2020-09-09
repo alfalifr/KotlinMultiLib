@@ -17,11 +17,9 @@ import sidev.lib.reflex.SiPropertyGetter1
 import sidev.lib.reflex.SiPropertySetter1
 import sidev.lib.reflex.SiTypeImpl
 import sidev.lib.reflex.SiTypeParameterImpl
-import sidev.lib.reflex.core.nativeFullName
-import sidev.lib.reflex.core.nativeSimpleName
-import sidev.lib.reflex.native.*
-import sidev.lib.reflex.native.getReturnType
-import sidev.lib.reflex.native.getVisibility
+import sidev.lib.reflex.native_.*
+import sidev.lib.reflex.native_.getReturnType
+import sidev.lib.reflex.native_.getVisibility
 
 
 internal expect val SiNative.nativeInnerName: String?

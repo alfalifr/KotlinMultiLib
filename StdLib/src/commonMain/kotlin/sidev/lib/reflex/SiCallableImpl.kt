@@ -45,7 +45,7 @@ internal abstract class SiCallableImpl<out R>
                         )
                     passedArgs.add(defaultValue)
 
-                    prine("""callBy(): param= "$param" nilai default= $defaultValue""")
+//                    prine("""callBy(): param= "$param" nilai default= $defaultValue""")
 
                     mask= mask or (1 shl (i % Int.SIZE_BITS))
                     isAnyOptional= true
@@ -66,7 +66,7 @@ internal abstract class SiCallableImpl<out R>
         // Mungkin marker, misalkan DefaultConstructorMarker dan Object pada fungsi biasa.
         passedArgs.add(null)
 
-        prine("callBy: passedArgs= $passedArgs")
+//        prine("callBy: passedArgs= $passedArgs")
 
         return defaultCallBlock!!(passedArgs.toTypedArray())
     }

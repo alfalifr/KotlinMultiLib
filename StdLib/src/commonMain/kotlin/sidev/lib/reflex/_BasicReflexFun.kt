@@ -2,7 +2,7 @@ package sidev.lib.reflex
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.exception.IllegalStateExc
-import sidev.lib.reflex.native.getKClass
+import sidev.lib.reflex.native_.getKClass
 import kotlin.reflect.KClass
 
 expect val KClass<*>.nativeFullName: String

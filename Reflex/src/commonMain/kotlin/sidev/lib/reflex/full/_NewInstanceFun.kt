@@ -6,10 +6,11 @@ import sidev.lib.console.prine
 import sidev.lib.exception.ClassCastExc
 import sidev.lib.exception.NonInstantiableTypeExc
 import sidev.lib.reflex.*
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.reflex.native.SiNativeParameter
-import sidev.lib.reflex.native.isDynamicEnabled
+import sidev.lib.collection.takeLast
+import sidev.lib.reflex.native_.SiNativeParameter
+import sidev.lib.reflex.native_.isDynamicEnabled
 import kotlin.reflect.KClass
 
 
@@ -114,13 +115,39 @@ fun <T: Any> Any.anyClone(isDeepClone: Boolean= true, constructorParamValFunc: (
  *   berupa interface, abstract, atau anonymous class.
  */
 //@Suppress(SuppressLiteral.UNCHECKED_CAST)
+private var clonedObjOriginStack: MutableList<Any>?= null
+private var clonedObjStack: MutableList<Any>?= null
 fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): T{
-    if(isReflexUnit || isUninitializedValue) return this
-    var clazz= this::class.si.also { if(it.isCopySafe) return this }
+    if(clonedObjOriginStack != null) {
+        val ind= clonedObjOriginStack!!.indexOf(this)
+        if(ind >= 0)
+            return clonedObjStack!![ind] as T
+    }
+
+    /**
+     * Agar jml stack untuk obj asli [clonedObjOriginStack] dg hasil clone [clonedObjStack] sama.
+     */
+    fun T.preReturnObj(): T{
+//        clonedObjStack!!.add(this)
+        clonedObjOriginStack!!.takeLast()
+        return this
+    }
+
+    if(clonedObjOriginStack == null)
+        clonedObjOriginStack= ArrayList()
+    if(clonedObjStack == null)
+        clonedObjStack= ArrayList()
+    clonedObjOriginStack!!.add(this)
+
+    if(isReflexUnit || isUninitializedValue) return this.preReturnObj()
+    var clazz= this::class.si.also { if(it.isCopySafe) return this.preReturnObj() }
     var continueCreateNewInstance= true
     val valueMapTree= fieldValuesTree //implementedPropertyValuesTree.filter { it.first.hasBackingField } //Hanya yg punya backingField agar setiap state pada kelas terjamin. //implementedPropertiesValueMapTree
     //clazz.declaredMemberPropertiesTree.filter { !it.isAbstract && it.hasBackingField }
     //Berguna untuk mengecek apakah `KProperty` merupakan properti dg mengecek kesamaannya dg `KParameter` di contrustor.
+
+//    prine("T.clone() clazz= $clazz")
+
 
     val constr= try{
         try{ clazz.primaryConstructor } //Agar property yg brupa val pada konstruktor pada di-copy value-nya dari instance lama.
@@ -156,12 +183,13 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
 //    prine("clone() clazz= $clazz ke new this= $this")
 
     val newInstance= if(continueCreateNewInstance) when{
-        clazz.isArray -> return arrayClone(isDeepClone, newInsConstrParamValFunc) //as T
-        clazz.isCollection -> return (this as Collection<T>).deepClone(isDeepClone, newInsConstrParamValFunc) as T
+        clazz.isArray -> return arrayClone(isDeepClone, newInsConstrParamValFunc).preReturnObj() //as T
+        clazz.isCollection -> return ((this as Collection<T>).deepClone(isDeepClone, newInsConstrParamValFunc) as T).preReturnObj()
+        clazz.isMap -> return ((this as Map<*, T>).deepClone(isDeepClone, newInsConstrParamValFunc) as T).preReturnObj()
         else -> new(clazz, constructor = constr, defParamValFunc = newInsConstrParamValFuncWrapper)
             ?: if(isDelegate) {
                 prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")
-                return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
+                return this.preReturnObj() //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
             } else throw NonInstantiableTypeExc(typeClass = this::class,
                 msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     } else{
@@ -169,14 +197,16 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
             defParamValFunc = newInsConstrParamValFuncWrapper)
             ?:  if(isDelegate) {
                 prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")
-                return this //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
+                return this.preReturnObj() //Jika `this` merupakan built-in delegate yg gk bisa di-init, maka return this.
             } else throw NonInstantiableTypeExc(typeClass = this::class,
                 msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     }
 
+    clonedObjStack!!.add(newInstance)
+
 
     for((field, value) in valueMapTree.filter { it.first !in constructorPropertyList }){
-//        prine("clone() valMap= $valueMap")
+//        prine("T.clone() field= $field value= ${str(value)}")
 /*
         val continueCopy= field is SiMutableProperty1<*, *>
                 || (constr.parameters.isNotEmpty() //Jika property ada di primary constr walaupun val, maka copy aja.
@@ -206,6 +236,17 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
 //    prine("this::class= ${this::class} newInstance::class= ${newInstance::class}")
     if(newInstance::class.si.isExclusivelySuperclassOf(this::class.si))
         prine("Kelas yg di-clone: \"${this::class}\" merupakan shallow-anonymous, newInstance yg di-return adalah superclass: \"${newInstance::class}\".")
+
+    clonedObjOriginStack!!.takeLast()
+    clonedObjStack!!.takeLast()
+//    prine("clone() clonedObjOriginStack.size= ${clonedObjOriginStack?.size} clonedObjStack.size= ${clonedObjStack?.size}")
+//    prine("clone() clonedObjOriginStack= $clonedObjOriginStack clonedObjStack= $clonedObjStack")
+    if(clonedObjOriginStack!!.isEmpty()){
+        clonedObjOriginStack= null
+        clonedObjStack= null
+//        prine("clone() clonedObjStack == null => ${clonedObjStack == null} clonedObjOriginStack == null => ${clonedObjOriginStack == null}")
+    }
+
     return newInstance
 }
 
@@ -289,6 +330,23 @@ fun <T> Collection<T>.deepClone(isElementDeepClone: Boolean= true, elementConstr
     }
 }
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <K, V> Map<K, V>.deepClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): Map<K, V>{
+    val newMap= mutableMapOf<K, V>()
+
+    for((k, v) in this)
+        newMap[k]=
+            (if(v != null)
+                try{ (v as Any).clone(isElementDeepClone, elementConstructorParamValFunc) }
+                catch (e: NonInstantiableTypeExc){ e }
+            else null) as V //Jika `this.extension` merupakan collection of nullables.
+
+    return when(this){
+        is MutableMap<*, *> -> newMap
+        else -> newMap.toMap()
+    }
+}
+
 
 
 /**
@@ -367,7 +425,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
     }
 
     val params=  constr.parameters
-    val defParamVal= HashMap<SiParameter, Any?>()
+    val defParamVal= mutableMapOf<SiParameter, Any?>()
 
 //    prine("new() clazz= $clazz usedClazz= $usedClazz constr= $constr param.size= ${params.size}")
 
@@ -379,7 +437,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
             try{
 //                prine("new() defParamValFunc!!(param) mulai")
                 val vals= defParamValFunc?.invoke(param)
-//                prine("new() defParamValFunc!!(param) val= $vals")
+//                prine("new() defParamValFunc!!(param) val= $vals param= $param")
                 vals!!
             } //Yg diprioritaskan pertama adalah definisi value dari programmer.
             catch (e: Exception) { //Jika programmer tidak mendefinisikan, coba cari nilai default.
@@ -394,6 +452,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
             }
         if(paramVal != null){
             defParamVal[param]= paramVal
+//            prine("new() paramVal != null => ${paramVal != null} paramVal= $paramVal defParamVal= $defParamVal")
         } else{
             if(type.isMarkedNullable)
                 defParamVal[param]= null
@@ -422,6 +481,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
  */
 //    val resNew= constr.forceCallBy(defParamVal) //.forcedCall()//.callBy(defParamVal)
 //    prine("new() resNew= $resNew")
+//    prine("new() defParamVal= $defParamVal")
     return constr.forceCallBy(defParamVal)
 }
 

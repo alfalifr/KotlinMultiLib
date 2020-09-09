@@ -32,7 +32,7 @@ abstract class NestedIteratorImpl<I, O>(internal var startInputIterator: Iterato
     private var nowOutput: O?= null
         set(v){
             field= v
-            prind("nowOutput= $nowOutput tag= $tag")
+//            prind("nowOutput= $nowOutput tag= $tag")
         }
     internal var skipBlock: (output: O) -> Boolean = { false }
     internal var transformingBlock: (output: O) -> Boolean = { false }
@@ -58,7 +58,7 @@ abstract class NestedIteratorImpl<I, O>(internal var startInputIterator: Iterato
         val hasNextRes= if(hasNext){
             nowOutput= activeOutputIterator!!.next()
 
-            prind("hasNext() nowOutput= $nowOutput tag= $tag")
+//            prind("hasNext() nowOutput= $nowOutput tag= $tag")
 
             if(skip(nowOutput!!)){
                 calcNext()

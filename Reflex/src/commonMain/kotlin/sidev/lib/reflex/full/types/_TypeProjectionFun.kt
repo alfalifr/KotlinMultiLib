@@ -18,7 +18,7 @@ import sidev.lib.reflex.SiVariance
 import sidev.lib.reflex.core.ReflexCheck
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.*
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.reflect.*
 

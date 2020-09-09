@@ -1,7 +1,8 @@
 package sidev.lib.reflex.full
 
 import sidev.lib.reflex.SiProperty1
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
+import kotlin.jvm.JvmName
 
 /** Mengambil semua enum anggota `this.extension` [Enum] [Enum.ordinal] dan [Enum.name]. */
 inline fun <reified E: Enum<E>> ordinalNamePairs(): Array<Pair<Int, String>>{
@@ -14,6 +15,7 @@ inline fun <reified E: Enum<E>, reified A> Enum<E>.toArray(init: (E) -> A): Arra
     return Array(vals.size){init(vals[it])}
 }
 /** Mengambil data Enum yg berada pada konstruktor. Selain di konstruktor tidak diambil. */
+@get:JvmName("enumData")
 val <E: Enum<E>> E.data: Sequence<Pair<SiProperty1<*, *>, Any?>>
     get(){
         val constrProps=

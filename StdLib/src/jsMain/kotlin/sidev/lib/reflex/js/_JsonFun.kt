@@ -1,12 +1,9 @@
 package sidev.lib.reflex.js
 
 import sidev.lib.exception.TypeExc
-import sidev.lib.reflex.native.getNativeMutableProperties
-import sidev.lib.reflex.native.getNativeProperties
-import sidev.lib.reflex.native.jsClass
+import sidev.lib.reflex.native_.getNativeMutableProperties
+import sidev.lib.reflex.native_.jsClass
 import kotlin.js.Json
-import kotlin.js.json
-import kotlin.reflect.*
 
 /*
 //<15 Agustus 2020> => Dihapus, gunakan Any.asJson() agar sesuai konteks.

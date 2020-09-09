@@ -10,12 +10,15 @@ import sidev.lib.reflex.SiField
 import sidev.lib.reflex.SiMutableField
 import sidev.lib.reflex.SiMutableProperty1
 import sidev.lib.reflex.SiProperty1
-import sidev.lib.reflex.native.getIsAccessible
-import sidev.lib.reflex.native.setIsAccessible
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.getIsAccessible
+import sidev.lib.reflex.native_.setIsAccessible
+import sidev.lib.reflex.native_.si
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import kotlin.jvm.JvmName
 
 
+@set:JvmName("setAccessible")
+@get:JvmName("getAccessible")
 var SiField<*, *>.isAccessible: Boolean
     get()= descriptor.native.notNullTo { getIsAccessible(it) } ?: false
     set(v){ descriptor.native.notNull { setIsAccessible(it, v) } }
@@ -35,20 +38,25 @@ fun <T: Any, R> SiMutableField<T, R>.forceSet(receiver: T, value: R) {
     isAccessible= initAccessible
 }
 
+@get:JvmName("getProperty")
 val <T, R> SiField<T, R>.property: SiProperty1<T, R>
     get()= descriptor.host as SiProperty1<T, R>
 
+@get:JvmName("getProperty")
 val <T, R> SiMutableField<T, R>.property: SiMutableProperty1<T, R>
     get()= descriptor.host as SiMutableProperty1<T, R>
 
 
+@get:JvmName("declaredFields")
 val <T: Any> SiClass<T>.declaredFields: Sequence<SiField<T, *>>
     get()= declaredMemberProperties.mapNotNull { it.backingField }
 
+@get:JvmName("declaredFieldsTree")
 val <T: Any> SiClass<T>.declaredFieldsTree: NestedSequence<SiField<T, *>>
     get()= nestedSequence(classesTree){ cls: SiClass<*> -> cls.declaredFields.iterator() }
             as NestedSequence<SiField<T, *>>
 
+@get:JvmName("nestedDeclaredFieldsTree")
 val SiClass<*>.nestedDeclaredFieldsTree: NestedSequence<SiField<Any, *>>
     get()= nestedSequence<SiClass<*>, SiField<Any, *>>(classesTree, {
         it.type.classifier.asNotNullTo { cls: SiClass<*> -> cls.classesTree.iterator() }
@@ -64,6 +72,7 @@ val SiClass<*>.implementedNestedFieldsTree: Sequence<SiField<*, *>>
     get()= implementedNestedMemberPropertiesTree.mapNotNull { it.backingField }
  */
 
+@get:JvmName("fieldValues")
 val <T: Any> T.fieldValues: Sequence<Pair<SiField<T, *>, Any?>>
     get(){
         return this::class.si.declaredFields.asSequence().map {
@@ -72,6 +81,7 @@ val <T: Any> T.fieldValues: Sequence<Pair<SiField<T, *>, Any?>>
         }
     }
 
+@get:JvmName("fieldValuesTree")
 val <T: Any> T.fieldValuesTree: NestedSequence<Pair<SiField<T, *>, Any?>>
     get(){
         return nestedSequence(this::class.si.classesTree){ innerCls: SiClass<*> ->
@@ -84,6 +94,7 @@ val <T: Any> T.fieldValuesTree: NestedSequence<Pair<SiField<T, *>, Any?>>
         }
     }
 
+@get:JvmName("nestedFieldValuesTree")
 val Any.nestedFieldValuesTree: NestedSequence<Pair<SiField<Any, *>, Any?>>
     get()= nestedSequenceSimple<Pair<SiField<Any, *>, Any?>>(fieldValuesTree.iterator()){
         it.second?.fieldValuesTree?.iterator()

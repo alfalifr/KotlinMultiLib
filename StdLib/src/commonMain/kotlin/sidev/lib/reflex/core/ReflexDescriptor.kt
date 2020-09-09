@@ -1,16 +1,14 @@
 package sidev.lib.reflex.core
 
 import sidev.lib.check.asNotNullTo
-import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.reflex.*
 import sidev.lib.reflex.SiDescriptorImpl
-import sidev.lib.reflex.core.nativeFullName
-import sidev.lib.reflex.native.SiKClassifier
-import sidev.lib.reflex.native.SiNative
-import sidev.lib.reflex.native.isDynamicEnabled
-import sidev.lib.reflex.native.isTypeFinal
+import sidev.lib.reflex.native_.SiKClassifier
+import sidev.lib.reflex.native_.SiNative
+import sidev.lib.reflex.native_.isDynamicEnabled
+import sidev.lib.reflex.native_.isTypeFinal
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
 

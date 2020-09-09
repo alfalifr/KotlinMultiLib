@@ -1,11 +1,10 @@
 package sidev.lib.type
 
-import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.platform.putInternalObjectOnGlobal
 import sidev.lib.reflex.core.createType
-import sidev.lib.reflex.native.si
+import sidev.lib.reflex.native_.si
 
 /**
  * Tipe data yg digunakan untuk menunjukan tipe null.

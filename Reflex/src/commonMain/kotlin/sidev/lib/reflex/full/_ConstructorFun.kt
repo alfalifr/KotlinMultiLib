@@ -11,6 +11,7 @@ import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiProperty1
 import sidev.lib.universal.structure.collection.iterator.NestedIterator
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 
 
@@ -21,6 +22,7 @@ Constructor
  */
 
 /** Mengambil konstruktor dg jumlah parameter paling sedikit. */
+@get:JvmName("leastParamConstructor")
 val <T: Any> SiClass<T>.leastParamConstructor: SiFunction<T>
     get(){
         var constr= try{ constructors.first() }
@@ -38,6 +40,7 @@ val <T: Any> SiClass<T>.leastParamConstructor: SiFunction<T>
     }
 
 /** Mirip dg [leastParamConstructor], namun param opsional tidak disertakan. Nullable tetap disertakan. */
+@get:JvmName("leastRequiredParamConstructor")
 val <T: Any> SiClass<T>.leastRequiredParamConstructor: SiFunction<T>
     get(){
         var constr= try{ constructors.first() }
@@ -86,6 +89,7 @@ fun <T: Any> SiClass<T>.findConstructorWithParam(vararg paramClass: SiClass<*>):
 
 
 /** Mengambil semua konstruktor yg tersedia mulai dari `this.extension` [KClass] hingga superclass. */
+@get:JvmName("contructorsTree")
 val SiClass<*>.contructorsTree: NestedSequence<SiFunction<*>>
     get()= object : NestedSequence<SiFunction<*>> {
         override fun iterator(): NestedIterator<SiClass<*>, SiFunction<*>>
@@ -99,6 +103,7 @@ val SiClass<*>.contructorsTree: NestedSequence<SiFunction<*>>
     }
 
 /** Mengambil semua parameter yg tersedia dari [contructorsTree]. */
+@get:JvmName("contructorParamsTree")
 val SiClass<*>.contructorParamsTree: NestedSequence<SiParameter>
     get()= object : NestedSequence<SiParameter> {
         override fun iterator(): NestedIterator<SiFunction<*>, SiParameter> //!!!<20 Juli 2020> => Blum bisa pake NestedIterator.
@@ -112,6 +117,7 @@ val SiClass<*>.contructorParamsTree: NestedSequence<SiParameter>
     }
 
 /** Mengambil semua parameter konstruktor yg diambil dari [contructorParamsTree] yg merupakan properti. */
+@get:JvmName("contructorPropertiesTree")
 val SiClass<*>.contructorPropertiesTree: Sequence<SiProperty1<*, *>>
     get()= object : Sequence<SiProperty1<*, *>>{
         override fun iterator(): Iterator<SiProperty1<*, *>>

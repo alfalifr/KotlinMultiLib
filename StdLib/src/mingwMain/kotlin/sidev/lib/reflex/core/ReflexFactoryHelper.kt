@@ -5,8 +5,8 @@ import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiProperty1
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiTypeParameter
-import sidev.lib.reflex.native.unavailableReflexAcces_bool
-import sidev.lib.reflex.native.unavailableReflexAcces_list
+import sidev.lib.reflex.native_.unavailableReflexAcces_bool
+import sidev.lib.reflex.native_.unavailableReflexAcces_list
 import kotlin.reflect.KClass
 
 
