@@ -143,6 +143,7 @@ class SampleTests {
         lazyMap["Mau"]= 7
         lazyMap["Iya"]= 6
         lazyMap .. pairSeq .. pairSeq2
+//        lazyMap.addIterator(pairSeq.iterator())
 
         println("\n============= BATAS LazyHashMap.iterator() ==============\n")
         for((i, data) in lazyMap.withIndex()){

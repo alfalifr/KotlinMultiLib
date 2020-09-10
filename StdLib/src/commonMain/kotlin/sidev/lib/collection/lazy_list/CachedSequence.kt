@@ -1,5 +1,6 @@
 package sidev.lib.collection.lazy_list
 
+import sidev.lib.collection.iterator.emptyIterator
 import sidev.lib.collection.iterator.withKeyIndexed
 import sidev.lib.number.isNegative
 
@@ -8,7 +9,7 @@ import sidev.lib.number.isNegative
  * data yg disimpan tidak besar di awal dan sesuai kebutuhan.
  */
 open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T> by arrayList,
-    MutableIndexedCachedLazyList_Internal<T> {
+    MutableIndexedCachedLazyList<T>, MutableLazyList<Pair<Int, T>> { //by MutableLazyListImpl_Internal<Pair<Int, T>>() {
     constructor(): this(ArrayList())
     constructor(iterator: Iterator<T>): this(ArrayList()){
         builderIterator= iterator.withKeyIndexed { index, value -> index }
@@ -20,13 +21,20 @@ open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T
         builderIterator= inSequence.iterator().withKeyIndexed { index, value -> index }
     }
 
-    final override val iteratorList: MutableList<Iterator<Pair<Int, T>>> = ArrayList()
-    final override lateinit var builderIterator: Iterator<Pair<Int, T>>
     /**
      * Digunakan untuk menyocokan apakah hasil dari [findNext] sesuai dg index yg direquest.
      * Variabel ini digunakan pada [isNextMatched].
      */
     private var requestedGetIndex: Int= -1
+
+    private val delegate = MutableLazyListImpl_Internal<Pair<Int, T>>()
+    final override val iteratorList: List<Iterator<Pair<Int, T>>>
+        get() = delegate.iteratorList
+    final override var builderIterator: Iterator<Pair<Int, T>>
+        private set(v){ delegate.builderIterator= v }
+        get()= delegate.builderIterator
+    final override fun addIterator(itr: Iterator<Pair<Int, T>>): Boolean = delegate.addIterator(itr)
+    final override fun iteratorHasNext(): Boolean = delegate.iteratorHasNext()
 
     override fun getExisting(key: Int): T? = if(key in indices) arrayList[key] else null
     override fun getExistingKey(value: T): Int?{

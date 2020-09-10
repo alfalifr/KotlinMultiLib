@@ -2,7 +2,7 @@ package sidev.lib.collection.lazy_list
 
 
 fun <T> cachedSequenceOf(vararg elements: T): CachedSequence<T> = CachedSequence(elements.iterator())
-fun <K, V> lazaMapOf(vararg elements: Pair<K, V>): LazyHashMap<K, V> = LazyHashMap(elements.iterator())
+fun <K, V> lazyMapOf(vararg elements: Pair<K, V>): LazyHashMap<K, V> = LazyHashMap(elements.iterator())
 
 fun <T> Sequence<T>.asCached(): CachedSequence<T> = CachedSequence(this)
 fun <T> Iterator<T>.asCached(): CachedSequence<T> = CachedSequence(this)

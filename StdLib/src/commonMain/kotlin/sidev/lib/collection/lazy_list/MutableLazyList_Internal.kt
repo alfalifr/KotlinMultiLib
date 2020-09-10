@@ -1,5 +1,6 @@
 package sidev.lib.collection.lazy_list
 
+import sidev.lib.collection.iterator.emptyIterator
 import sidev.lib.collection.takeFirst
 import sidev.lib.exception.isUninitializedExc
 
@@ -22,4 +23,9 @@ internal interface MutableLazyList_Internal<T>:
         return hasNext
     }
     override fun addIterator(itr: Iterator<T>): Boolean = iteratorList.add(itr)
+}
+
+internal class MutableLazyListImpl_Internal<T>: MutableLazyList_Internal<T>{
+    override val iteratorList: MutableList<Iterator<T>> = arrayListOf()
+    override var builderIterator: Iterator<T> = emptyIterator()
 }

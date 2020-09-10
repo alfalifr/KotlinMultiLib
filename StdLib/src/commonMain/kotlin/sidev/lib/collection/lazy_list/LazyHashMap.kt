@@ -1,5 +1,6 @@
 package sidev.lib.collection.lazy_list
 
+import sidev.lib.collection.iterator.emptyIterator
 import sidev.lib.collection.toMutableMapEntry
 
 
@@ -8,7 +9,9 @@ import sidev.lib.collection.toMutableMapEntry
  * data yg disimpan tidak besar di awal dan sesuai kebutuhan.
  */
 open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
-    : MutableMap<K, V> by hashMap, MutableCachedLazyList_Internal<K, V>, MutableIterable<MutableMap.MutableEntry<K, V>> {
+    : MutableMap<K, V> by hashMap,
+    MutableCachedLazyList<K, V>, MutableLazyList<Pair<K, V>>, //by MutableLazyListImpl_Internal<Pair<K, V>>(),
+    MutableIterable<MutableMap.MutableEntry<K, V>> {
     constructor(): this(HashMap())
     constructor(iterator: Iterator<Pair<K, V>>): this(HashMap()){
         builderIterator= iterator
@@ -25,8 +28,14 @@ open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
 
     private var requestedAddedKey: K?= null
 
-    final override val iteratorList: MutableList<Iterator<Pair<K, V>>> = ArrayList()
-    final override lateinit var builderIterator: Iterator<Pair<K, V>>
+    private val delegate = MutableLazyListImpl_Internal<Pair<K, V>>()
+    final override val iteratorList: List<Iterator<Pair<K, V>>>
+        get() = delegate.iteratorList
+    final override var builderIterator: Iterator<Pair<K, V>>
+        private set(v){ delegate.builderIterator= v }
+        get()= delegate.builderIterator
+    final override fun addIterator(itr: Iterator<Pair<K, V>>): Boolean = delegate.addIterator(itr)
+    final override fun iteratorHasNext(): Boolean = delegate.iteratorHasNext()
 
     override fun getExisting(key: K): V? = entries.find { it.key == key }?.value
     override fun getExistingKey(value: V): K? = entries.find { it.value == value }?.key
