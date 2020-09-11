@@ -28,8 +28,8 @@ fun <O> nestedSequenceSimple(start: O, getOutputBlock: (input: O) -> Iterator<O>
     override fun iterator(): NestedIterator<*, O> =
         nestedIteratorSimple(start, getOutputBlock)
 }
-fun <O> nestedSequenceSimple(startIterator: Iterator<O>, getOutputBlock: (input: O) -> Iterator<O>?)
+fun <O> nestedSequenceSimple(startSequence: Sequence<O>, getOutputBlock: (input: O) -> Iterator<O>?)
         : NestedSequence<O> = object : NestedSequence<O> {
     override fun iterator(): NestedIterator<*, O> =
-        nestedIteratorSimple(startIterator, getOutputBlock)
+        nestedIteratorSimple(startSequence.iterator(), getOutputBlock)
 }

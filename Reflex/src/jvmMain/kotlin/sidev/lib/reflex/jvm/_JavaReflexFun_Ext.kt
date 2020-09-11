@@ -57,7 +57,7 @@ val Class<*>.extendingClassesTree: NestedSequence<Class<*>>
 /** Mirip dg [classesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 @get:JvmName("superclassesTree")
 val Class<*>.superclassesTree: NestedSequence<Class<*>>
-    get()= nestedSequenceSimple<Class<*>>(classes.iterator()){ it.classes.iterator() }
+    get()= nestedSequenceSimple<Class<*>>(classes.asSequence()){ it.classes.iterator() }
 
 /** Mirip dg [extendingClassesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 @get:JvmName("extendingSuperclassesTree")
@@ -119,7 +119,7 @@ val Any.javaFieldValuesTree: NestedSequence<Pair<Field, Any?>>
     }
 @get:JvmName("javaNestedFieldValuesTree")
 val Any.javaNestedFieldValuesTree: NestedSequence<Pair<Field, Any?>>
-    get()= nestedSequenceSimple<Pair<Field, Any?>>(javaFieldValuesTree.iterator()){
+    get()= nestedSequenceSimple<Pair<Field, Any?>>(javaFieldValuesTree){
         it.second?.javaFieldValuesTree?.iterator()
     }
 /*

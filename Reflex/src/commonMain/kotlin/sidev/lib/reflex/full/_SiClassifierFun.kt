@@ -49,7 +49,7 @@ val SiClass<*>.extendingClassesTree: NestedSequence<SiClass<*>>
 /** Mirip dg [classesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 @get:JvmName("superclassesTree")
 val SiClass<*>.superclassesTree: NestedSequence<SiClass<*>>
-    get()= nestedSequenceSimple(superclasses.iterator()){ input: SiClass<*> -> input.superclasses.iterator() }
+    get()= nestedSequenceSimple(superclasses){ input: SiClass<*> -> input.superclasses.iterator() }
 
 /** Mirip dg [extendingClassesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 @get:JvmName("extendingSuperclassesTree")
@@ -70,7 +70,7 @@ val SiType.typesTree: NestedSequence<SiType>
 /** Mirip dg [typesTree], namun tidak menyertakan `this.extension` dalam sequence. */
 @get:JvmName("supertypesTree")
 val SiClass<*>.supertypesTree: NestedSequence<SiType>
-    get()= nestedSequenceSimple<SiType>(supertypes.iterator()){ it.classifier.asNotNullTo { cls: SiClass<*> -> cls.supertypes.iterator() } }
+    get()= nestedSequenceSimple<SiType>(supertypes.asSequence()){ it.classifier.asNotNullTo { cls: SiClass<*> -> cls.supertypes.iterator() } }
 
 /*
 /**

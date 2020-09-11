@@ -79,7 +79,7 @@ val <T: Any> T.implementedPropertyValuesTree: NestedSequence<Pair<SiProperty1<T,
     }
 @get:JvmName("implementedNestedPropertyValuesTree")
 val Any.implementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
-    get()= nestedSequenceSimple<Pair<SiProperty1<Any, *>, Any?>>(implementedPropertyValuesTree.iterator()){
+    get()= nestedSequenceSimple<Pair<SiProperty1<Any, *>, Any?>>(implementedPropertyValuesTree){
         it.second?.implementedPropertyValuesTree?.iterator()
     }
 /*

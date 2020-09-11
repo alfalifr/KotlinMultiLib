@@ -96,6 +96,6 @@ val <T: Any> T.fieldValuesTree: NestedSequence<Pair<SiField<T, *>, Any?>>
 
 @get:JvmName("nestedFieldValuesTree")
 val Any.nestedFieldValuesTree: NestedSequence<Pair<SiField<Any, *>, Any?>>
-    get()= nestedSequenceSimple<Pair<SiField<Any, *>, Any?>>(fieldValuesTree.iterator()){
+    get()= nestedSequenceSimple<Pair<SiField<Any, *>, Any?>>(fieldValuesTree){
         it.second?.fieldValuesTree?.iterator()
     }
