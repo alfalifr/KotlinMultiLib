@@ -9,7 +9,7 @@ import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.sequence.emptyNestedSequence
 import sidev.lib.exception.NoSuchMemberExc
 import sidev.lib.reflex.full.*
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 

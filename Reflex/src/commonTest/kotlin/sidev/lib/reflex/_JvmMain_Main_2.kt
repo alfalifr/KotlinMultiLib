@@ -8,8 +8,8 @@ import sidev.lib.reflex.comp.SiProperty1
 import sidev.lib.reflex.full.*
 import sidev.lib.reflex.comp.native.si
 import native.si
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.iterator.NestedIterator
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 

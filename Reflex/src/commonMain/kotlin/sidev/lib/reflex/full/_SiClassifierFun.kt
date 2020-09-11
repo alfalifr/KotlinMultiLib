@@ -2,13 +2,12 @@ package sidev.lib.reflex.full
 
 import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNullTo
-import sidev.lib.collection.iterator.iterator
 import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.sequence.emptyNestedSequence
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiType
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 
 

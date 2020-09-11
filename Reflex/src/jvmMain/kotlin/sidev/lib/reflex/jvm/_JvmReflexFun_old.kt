@@ -4,8 +4,8 @@ package sidev.lib.reflex.jvm
 import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.iterator.NestedIteratorSimple
 import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.iterator.NestedIterator
+import sidev.lib.collection.sequence.NestedSequence
 //import sidev.lib.android.siframe.model.FK_M
 import java.lang.reflect.Field
 import java.lang.reflect.Method

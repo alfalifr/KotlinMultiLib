@@ -2,8 +2,7 @@ package sidev.lib.collection.sequence
 
 import sidev.lib.collection.iterator.nestedIterator
 import sidev.lib.collection.iterator.nestedIteratorSimple
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.iterator.NestedIterator
 
 
 /*

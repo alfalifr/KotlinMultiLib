@@ -13,7 +13,7 @@ import sidev.lib.reflex.SiProperty1
 import sidev.lib.reflex.native_.getIsAccessible
 import sidev.lib.reflex.native_.setIsAccessible
 import sidev.lib.reflex.native_.si
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 
 

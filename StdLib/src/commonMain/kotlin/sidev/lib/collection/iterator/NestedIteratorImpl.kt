@@ -2,7 +2,6 @@ package sidev.lib.collection.iterator
 
 import sidev.lib.console.prind
 import sidev.lib.reflex.fullName
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
 
 
 /**

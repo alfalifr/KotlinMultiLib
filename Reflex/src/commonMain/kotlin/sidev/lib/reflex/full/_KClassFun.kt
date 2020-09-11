@@ -1,6 +1,6 @@
 package sidev.lib.reflex.full
 
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.reflect.KClass
 
 

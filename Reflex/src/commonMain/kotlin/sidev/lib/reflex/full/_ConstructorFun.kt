@@ -9,8 +9,8 @@ import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiProperty1
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.iterator.NestedIterator
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 

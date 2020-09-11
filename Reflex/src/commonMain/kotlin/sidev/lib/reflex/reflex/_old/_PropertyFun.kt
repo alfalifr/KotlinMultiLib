@@ -4,11 +4,11 @@ import sidev.lib.reflex.inner.declaredMemberProperties
 import sidev.lib.reflex.inner.declaredMembers
 import sidev.lib.reflex.inner.memberProperties
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
+import sidev.lib.collection.iterator.NestedIterator
 import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.iterator.NestedIteratorSimple
 import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1

@@ -1,7 +1,6 @@
 package sidev.lib.collection.iterator
 
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 
 
 fun <I, O> Iterator<I>.toOtherIterator(mapping: (I) -> O): Iterator<O>
@@ -68,7 +67,7 @@ fun <K, V> Iterator<K>.withValueIndexed(func: (index: Int, key: K) -> V): Iterat
 }
 
 /** [block] return `true` maka [O] akan dilewati. */
-fun <O> NestedSequence<O>.skip(block: (O) -> Boolean): NestedSequence<O> = object : NestedSequence<O>{
+fun <O> NestedSequence<O>.skip(block: (O) -> Boolean): NestedSequence<O> = object : NestedSequence<O> {
     override fun iterator(): NestedIterator<*, O> =
         (this@skip.iterator() as NestedIteratorImpl<*, O>).apply { skipBlock= block }
 }

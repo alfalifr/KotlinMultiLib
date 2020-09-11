@@ -1,7 +1,7 @@
-package sidev.lib.universal.structure.collection.sequence
+package sidev.lib.collection.sequence
 
 import sidev.lib.annotation.Interface
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
+import sidev.lib.collection.iterator.NestedIterator
 
 /**
  * Struktur data yg sama seperti [Sequence] namun juga menyertakan

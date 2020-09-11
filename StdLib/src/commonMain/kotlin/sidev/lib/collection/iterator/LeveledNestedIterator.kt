@@ -1,6 +1,5 @@
 package sidev.lib.collection.iterator
 
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
 import sidev.lib.structure.data.value.LeveledValue
 
 /** [NestedIterator] yg disertai dg level hirarki untuk setiap next. */

@@ -8,7 +8,7 @@ import sidev.lib.property.UNINITIALIZED_VALUE
 import sidev.lib.reflex.*
 //import sidev.lib.reflex.SiReflexImpl
 import sidev.lib.reflex.native_.si
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty

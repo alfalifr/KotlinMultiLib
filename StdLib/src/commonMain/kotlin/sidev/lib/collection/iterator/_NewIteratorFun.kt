@@ -1,8 +1,5 @@
 package sidev.lib.collection.iterator
 
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
-
 
 fun <I, O> iterator(vararg element: I, mapping: ((I) -> O)?= null): Iterator<O>{
     return if(mapping != null) element.iterator().toOtherIterator(mapping)

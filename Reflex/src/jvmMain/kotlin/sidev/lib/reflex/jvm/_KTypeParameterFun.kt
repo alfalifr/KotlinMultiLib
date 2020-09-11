@@ -5,8 +5,8 @@ package sidev.lib.reflex.jvm
 import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.structure.data.type.LinkedTypeParameter
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.iterator.NestedIterator
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter

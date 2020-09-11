@@ -1,7 +1,6 @@
 package sidev.lib.collection.iterator
 
 import sidev.lib.annotation.Interface
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
 
 /**
  * Digunakan untuk melakukan iterasi terhadap data yg memiliki banyak keturunan.

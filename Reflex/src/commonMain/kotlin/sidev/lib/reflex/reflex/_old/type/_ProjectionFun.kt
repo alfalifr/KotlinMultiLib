@@ -7,11 +7,11 @@ import sidev.lib.console.prine
 import sidev.lib.reflex.*
 import sidev.lib.reflex.inner.createType
 import sidev.lib.exception.UndefinedDeclarationExc
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
+import sidev.lib.collection.iterator.NestedIterator
 import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.iterator.NestedIteratorSimple
 import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import sidev.lib.structure.data.type.LinkedTypeParameter
 import kotlin.reflect.*
 

@@ -1,4 +1,4 @@
-package sidev.lib.universal.structure.collection.iterator
+package sidev.lib.collection.iterator
 
 
 /**

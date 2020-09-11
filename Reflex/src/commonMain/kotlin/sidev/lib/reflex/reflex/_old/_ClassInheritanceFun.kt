@@ -9,7 +9,7 @@ import sidev.lib.reflex.inner.superclasses
 import sidev.lib.reflex.type.inferredType
 import sidev.lib.collection.iterator.NestedIteratorSimple
 import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

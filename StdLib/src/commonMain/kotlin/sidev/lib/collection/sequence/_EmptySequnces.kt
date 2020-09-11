@@ -2,10 +2,9 @@ package sidev.lib.collection.sequence
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.iterator.emptyNestedIteratorSimple
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.iterator.NestedIterator
 
-object EmptyNestedSequence: NestedSequence<Any?>{
+object EmptyNestedSequence: NestedSequence<Any?> {
     override fun iterator(): NestedIterator<*, Any?> = emptyNestedIteratorSimple()
 }
 

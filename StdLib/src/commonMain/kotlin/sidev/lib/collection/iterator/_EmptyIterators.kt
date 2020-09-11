@@ -1,7 +1,6 @@
 package sidev.lib.collection.iterator
 
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
 
 
 object EmptyIterator : ListIterator<Nothing> {

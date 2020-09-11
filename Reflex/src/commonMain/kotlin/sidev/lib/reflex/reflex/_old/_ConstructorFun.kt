@@ -4,10 +4,10 @@ import sidev.lib.collection.lazy_list.asCached
 import sidev.lib.collection.string
 import sidev.lib.exception.NoSuchMemberExc
 import sidev.lib.reflex._ReflexConst.K_FUNCTION_CONSTRUCTOR_NAME_PREFIX
-import sidev.lib.universal.structure.collection.iterator.NestedIterator
+import sidev.lib.collection.iterator.NestedIterator
 import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.iterator.SkippableIteratorImpl
-import sidev.lib.universal.structure.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.NestedSequence
 import kotlin.reflect.*
 
 
