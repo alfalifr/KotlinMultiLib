@@ -149,7 +149,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
 //    prine("T.clone() clazz= $clazz")
 
 
-    val constr= try{
+    val constr= try {
         try{ clazz.primaryConstructor } //Agar property yg brupa val pada konstruktor pada di-copy value-nya dari instance lama.
         catch (e: Exception){ clazz.leastRequiredParamConstructor } //Karena terjadi kesalahan saat mengecek primaryConstr milik Array<T>
     } catch (e: Exception){

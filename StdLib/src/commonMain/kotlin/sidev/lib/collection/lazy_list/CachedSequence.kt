@@ -88,4 +88,16 @@ open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T
         override fun next(): T = get(index++) //if(index in initialIndices) get(index++) else getNext()!!.second
         override fun remove(){ removeAt(--index) }
     }
+
+    override fun isEmpty(): Boolean = arrayList.isEmpty() && !iteratorHasNext()
+
+    override fun toString(): String {
+        val containedStr= arrayList.toString()
+        return if(iteratorHasNext()){
+            var cachedStr= "...(lazyVal)]"
+            if(arrayList.isNotEmpty())
+                cachedStr= ", $cachedStr"
+            containedStr.substring(0, containedStr.length-1) +cachedStr
+        } else containedStr
+    }
 }

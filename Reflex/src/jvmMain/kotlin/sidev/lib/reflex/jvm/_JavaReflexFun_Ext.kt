@@ -1,11 +1,11 @@
 @file:JvmName("_JavaReflexFun_Ext")
-package sidev.lib.reflex.native_
+package sidev.lib.reflex.jvm
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.iterator.iteratorSimple
-import sidev.lib.collection.iterator.nestedSequence
-import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.nestedSequence
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.sequence.emptyNestedSequence
 import sidev.lib.exception.NoSuchMemberExc
 import sidev.lib.reflex.full.*

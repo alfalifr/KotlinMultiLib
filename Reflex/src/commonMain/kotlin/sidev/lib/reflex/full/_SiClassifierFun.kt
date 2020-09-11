@@ -4,7 +4,7 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.iterator.iterator
 import sidev.lib.collection.iterator.iteratorSimple
-import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.sequence.emptyNestedSequence
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiType

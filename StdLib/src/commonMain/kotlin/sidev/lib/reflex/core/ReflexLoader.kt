@@ -3,15 +3,10 @@ package sidev.lib.reflex.core
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.platform.setGlobalObject
-import sidev.lib.reflex.SiClass
-import sidev.lib.reflex.SiClassImpl
-import sidev.lib.reflex.SiFunction
-import sidev.lib.reflex.SiModifier
-import sidev.lib.reflex.SiMutableProperty1
-import sidev.lib.reflex.SiParameter
-import sidev.lib.reflex.SiParameterImplConst
-import sidev.lib.reflex.SiProperty1
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.reflex.*
+import sidev.lib.reflex.SiClassImpl
+import sidev.lib.reflex.SiParameterImplConst
 import sidev.lib.reflex.native_.*
 import sidev.lib.reflex.native_.getConstrCallBlock
 import sidev.lib.reflex.native_.getFuncDefaultCallBlock
@@ -131,6 +126,27 @@ object ReflexLoader{
         }
 
 
+    fun <T: Any> loadSiConstructors(siClass: SiClass<T>): Sequence<SiFunction<T>> {
+        return loadSiConstructors<T>(siClass.descriptor.native!!)
+            .apply { forEach { it.mutableHost= siClass } }
+    }
+    fun <T: Any> loadSiMember(siClass: SiClass<T>): Sequence<SiCallable<*>> {
+        val nativeClass= siClass.descriptor.native!!
+        val siProps= loadSiImmutableProperty<T>(nativeClass)
+        val siMutableProps= loadSiMutableProperty<T>(nativeClass)
+        val siFunctions= loadSiFunction(nativeClass)
+        return (siProps + siMutableProps + siFunctions).apply {
+            forEach { callable ->
+                callable.mutableHost= siClass
+                callable.parameters.forEach {
+                    if(it.name != SiParameterImplConst.receiver0.name)
+                        it.mutableHost= callable
+                }
+            }
+        }
+    }
+
+
 /*
     fun <T: Any> loadClass(native: T): SiClass<T>{
         return loadClass<T>(
@@ -159,7 +175,7 @@ object ReflexLoader{
                 @Suppress(SuppressLiteral.DEPRECATION)
                 setGlobalObject(siClass.qualifiedName!!, siClass.descriptor.native!!)
         }
-
+/*
         val siProps= loadSiImmutableProperty<T>(nativeClass)
 //            .apply { forEach { it.mutableHost= siClass } }
 
@@ -183,6 +199,7 @@ object ReflexLoader{
                     }
                 }
             }
+ */
 
         return siClass.also {
             ReflexLoaderManager.saveLoadedClass(it)

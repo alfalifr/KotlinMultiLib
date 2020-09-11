@@ -3,8 +3,8 @@ package sidev.lib.reflex.full
 import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
-import sidev.lib.collection.iterator.nestedSequence
-import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.nestedSequence
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiField
 import sidev.lib.reflex.SiMutableField

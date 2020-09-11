@@ -10,6 +10,7 @@ import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility
 import sidev.lib.reflex.inner.KotlinReflex
 import sidev.lib.reflex.jvm.JvmReflexConst
+import sidev.lib.reflex.jvm.si
 import sidev.lib.structure.data.value.Val
 import java.lang.reflect.*
 import kotlin.reflect.*
@@ -184,7 +185,7 @@ internal actual fun getVisibility(nativeReflexUnit: Any): SiVisibility = when(na
     else -> SiVisibility.PUBLIC
 }
 
-private val Int.siVisibility: SiVisibility get()= getVisibility(this)
+private val Int.siVisibility: SiVisibility get()= sidev.lib.reflex.jvm.getVisibility(this)
 
 internal actual fun getModifiers(nativeReflexUnit: Any): Int {
     val modifier= Val(0)

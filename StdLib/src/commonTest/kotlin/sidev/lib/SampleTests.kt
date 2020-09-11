@@ -118,6 +118,8 @@ class SampleTests {
         val lazySeq= CachedSequence<String>()
         lazySeq += "Halo"
         lazySeq += "Bro"
+
+        prin("lazySeq.size= ${lazySeq.size}")
         //lazySeq.addValues(strSeq)
         lazySeq .. strSeq .. strSeq2
 ///*
@@ -127,6 +129,7 @@ class SampleTests {
         val indexMau= lazySeq.indexOf("Mau")
         val indexKamu= lazySeq.indexOf("Kamu")
         val ke4= lazySeq[4]
+        prin("lazySeq.size= ${lazySeq.size}")
         prin("indexMau= $indexMau ke4= $ke4 containsAku= $containsAku containsKamu= $containsKamu containsDiaJelek= $containsDiaJelek indexKamu= $indexKamu")
 // * /
 
@@ -143,6 +146,8 @@ class SampleTests {
         lazyMap["Mau"]= 7
         lazyMap["Iya"]= 6
         lazyMap .. pairSeq .. pairSeq2
+
+        prin("lazyMap= $lazyMap")
 //        lazyMap.addIterator(pairSeq.iterator())
 
         println("\n============= BATAS LazyHashMap.iterator() ==============\n")
@@ -151,6 +156,7 @@ class SampleTests {
         }
 
         val valueMau= lazyMap["Mau"]
+        val containsKamuMap= lazyMap.containsKey("Kamu")
         val valueIya= lazyMap["Iya"]
         val valueKamu= lazyMap["Kamu"]
         val valueTidur= lazyMap["Tidur"]
@@ -158,6 +164,6 @@ class SampleTests {
         val contains0= lazyMap.containsValue(0)
         val contains4= lazyMap.containsValue(4)
 
-        prin("valueMau= $valueMau valueIya= $valueIya valueKamu= $valueKamu contains5= $contains5 contains0= $contains0 contains4= $contains4 valueTidur= $valueTidur")
+        prin("valueMau= $valueMau valueIya= $valueIya valueKamu= $valueKamu contains5= $contains5 contains0= $contains0 contains4= $contains4 valueTidur= $valueTidur containsKamuMap= $containsKamuMap")
     }
 }

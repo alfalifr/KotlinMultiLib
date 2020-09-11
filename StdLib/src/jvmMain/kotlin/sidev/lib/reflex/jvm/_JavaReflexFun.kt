@@ -1,5 +1,5 @@
 @file:JvmName("_JavaReflexFun")
-package sidev.lib.reflex.native_
+package sidev.lib.reflex.jvm
 
 import sidev.lib.reflex.SiVisibility
 import java.lang.reflect.Modifier

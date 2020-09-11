@@ -1,5 +1,5 @@
-@file:JvmName("_SiKotlinReflexFunJvm")
-package sidev.lib.reflex.native_
+@file:JvmName("_KotlinReflexFun")
+package sidev.lib.reflex.jvm
 
 import sidev.lib.check.asNotNullTo
 import sidev.lib.collection.findIndexed
@@ -9,6 +9,7 @@ import sidev.lib.reflex.core.ReflexFactory
 import sidev.lib.reflex.core.ReflexLoader
 import sidev.lib.reflex.core.createNativeWrapper
 import sidev.lib.reflex.core.createType
+import sidev.lib.reflex.native_.si
 import kotlin.reflect.*
 
 

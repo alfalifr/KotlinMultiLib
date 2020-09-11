@@ -7,6 +7,9 @@ import sidev.lib.console.prine
 import sidev.lib.exception.NonInstantiableTypeExc
 import sidev.lib.reflex.clazz
 import sidev.lib.reflex.defaultPrimitiveValue
+import sidev.lib.reflex.jvm.forceSet
+import sidev.lib.reflex.jvm.javaFieldValuesTree
+import sidev.lib.reflex.jvm.leastParamConstructor
 import sidev.lib.reflex.native_.*
 import java.lang.reflect.Field
 import kotlin.reflect.KClass

@@ -13,6 +13,7 @@ import sidev.lib.reflex.comp.native.si
 import sidev.lib.`val`.RoundingMode
 import sidev.lib.collection.common.arrayWrapperOf
 import sidev.lib.collection.common.getValue
+import sidev.lib.collection.sequence.nestedSequence
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.test.Test
@@ -28,6 +29,7 @@ class SampleTestsJVM {
     @Test
     fun cobTest(){
         listOf(1)::class.java.declaredFields.forEach(::println)
+//        nestedSequence()
     }
 /*
     @Test

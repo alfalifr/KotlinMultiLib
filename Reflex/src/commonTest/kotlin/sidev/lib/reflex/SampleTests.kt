@@ -34,6 +34,9 @@ class SampleTests {
         prin("siCls= $siCls")
         prine("timeTaken = $timeTaken")
 
+        prin("siCls.constructors= ${siCls.constructors}")
+        prin("siCls.constructors.isEmpty()= ${siCls.constructors.isEmpty()}")
+
         timeTaken = measureTime {
             prin("\n============ AC::class.si.members ================\n")
             for((i, member) in AC::class.si.members.withIndex()){

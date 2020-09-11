@@ -1,8 +1,10 @@
 package sidev.lib.reflex.core
 
+import sidev.lib.collection.lazy_list.asCached
 import sidev.lib.console.prine
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
+import sidev.lib.property.mutableLazy
 import sidev.lib.property.reevaluateLazy
 import sidev.lib.reflex.*
 import sidev.lib.reflex.SiCallableImpl
@@ -358,13 +360,17 @@ object ReflexFactory{
         override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
         override val qualifiedName: String? = nativeCounterpart.nativeFullName //nativeCounterpart.qualifiedNativeName
         override val simpleName: String? = nativeCounterpart.nativeSimpleName //ReflexFactoryHelper.getSimpleName(nativeCounterpart, qualifiedName)
-        override var members: Collection<SiCallable<*>> = members
-        override var constructors: List<SiFunction<T>> = constructors
+        override var members: Collection<SiCallable<*>> by mutableLazy {
+            if(members.isNotEmpty()) members else ReflexLoader.loadSiMember(this).asCached()
+        }
+        override var constructors: List<SiFunction<T>> by mutableLazy {
+            if(constructors.isNotEmpty()) constructors else ReflexLoader.loadSiConstructors(this).asCached()
+        }
         override val typeParameters: List<SiTypeParameter> by lazy {
             if(typeParameters.isNotEmpty()) typeParameters
             else ReflexFactoryHelper.getTypeParameter(this, nativeCounterpart.implementation)
         }
-        override val supertypes: List<SiType> by lazy{
+        override val supertypes: List<SiType> by lazy {
             ReflexFactoryHelper.getSupertypes(this, nativeCounterpart.implementation)
         }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)

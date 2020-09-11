@@ -76,6 +76,18 @@ open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
 
         override fun remove() { remove(nowKey) }
     }
+
+    override fun isEmpty(): Boolean = hashMap.isEmpty() && !iteratorHasNext()
+
+    override fun toString(): String {
+        val containedStr= hashMap.toString()
+        return if(iteratorHasNext()){
+            var cachedStr= "...(lazyVal)}"
+            if(hashMap.isNotEmpty())
+                cachedStr= ", $cachedStr"
+            containedStr.substring(0, containedStr.length-1) +cachedStr
+        } else containedStr
+    }
 }
 
 /*

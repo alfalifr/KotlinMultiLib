@@ -1,8 +1,8 @@
 package sidev.lib.reflex.full
 
 import sidev.lib.check.asNotNullTo
-import sidev.lib.collection.iterator.nestedSequence
-import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.nestedSequence
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.iterator.skip
 import sidev.lib.exception.TypeExc
 import sidev.lib.property.UNINITIALIZED_VALUE

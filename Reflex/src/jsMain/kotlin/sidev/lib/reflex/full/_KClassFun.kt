@@ -1,7 +1,7 @@
 package sidev.lib.reflex.full
 
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.reflex.js.JsPrimitiveType
 import sidev.lib.reflex.js.getSupertypes
 import sidev.lib.reflex.js.jsPureFunction

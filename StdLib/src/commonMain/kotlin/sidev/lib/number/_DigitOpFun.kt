@@ -1,7 +1,5 @@
 package sidev.lib.number
 
-import sidev.lib.console.prine
-
 /**
  * Mengambil angka pada digit [digitPlace]. Fungsi ini tidak mengambil angka di belakang koma.
  * [digitPlace] dihitung dari belakang, bkn dari depan. [digitPlace] dimulai dari 0.

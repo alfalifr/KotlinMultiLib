@@ -2,7 +2,7 @@
 
 package sidev.lib.reflex.full
 
-import sidev.lib.collection.iterator.nestedSequenceSimple
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.universal.structure.collection.sequence.NestedSequence
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
