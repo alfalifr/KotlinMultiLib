@@ -11,6 +11,7 @@ fun <I, O> iterator(vararg element: I, mapping: ((I) -> O)?= null): Iterator<O>{
 
 
 fun <T> iteratorSimple(vararg element: T): Iterator<T> = element.iterator()
+fun <T> iteratorSimpleNotNull(vararg element: T): Iterator<T> = element.filterNotNull().iterator()
 
 
 fun <I, O> nestedIterator(start: I, getInputBlock: ((output: O) -> Iterator<I>?)?= null, getOutputBlock: (input: I) -> Iterator<O>?)

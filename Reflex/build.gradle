@@ -13,6 +13,13 @@ repositories {
     mavenCentral()
 }
 
+println "Initializing :Reflex:build.gradle"
+task initFile{
+    doFirst {
+        println "Running :Reflex:build.gradle"
+    }
+}
+
 def GROUP_ID= 'sidev.lib.kotlin.multi'
 def ARTIFACT_ID= 'Reflex'
 def BINTRAY_REPOSITORY= 'SidevLib'
@@ -96,6 +103,23 @@ dependencies {
 Template Task
 ==================
  */
+/*
+task disableSources{
+    tasks.forEach{
+        if(it.name.endsWith("SourcesJar") /*&& it.name != "metadataSourcesJar"* /){
+/*
+            it.enabled= false
+            it.doFirst {
+                exclude("*")
+                println "$it is excluded"
+            }
+ * /
+            it.exclude("*")
+            println "$it is excluded"
+        }
+    }
+}
+*/
 
 afterEvaluate {
     project.publishing.publications.all {
@@ -106,6 +130,41 @@ afterEvaluate {
         } else {
             artifactId = "$ARTIFACT_ID-$name"
         }
+/*
+        println "publication= $it props= ${it.properties}"
+        for(prop in it.properties){
+            println "prop = $prop"
+        }
+        def removedArti= []
+        for(arti in it.artifacts){
+            if(arti.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated"){
+                removedArti.add(arti)
+                try{
+                    def file= (File) arti.file
+                    file.writable= true
+                    def pw= new PrintWriter(file)
+                    pw.println("blank")
+                    pw.close()
+                    println "artifact $arti file is changed"
+                } catch(e){
+                    println "artifact $arti file is changed ERROR"
+                }
+//                arti.file= new File("D:\\Data\\Pemrograman\\_Cob\\blank.txt")
+                arti
+            }
+            for(prop in arti.properties){
+                println "arti.prop = $prop"
+            }
+        }
+/*
+        for(arti in removedArti){
+            it.publishableArtifacts.remove(arti)
+            println "artifact $arti is removed"
+        }
+ * /
+        try{ println "artifacts props= " +it.artifacts.properties }
+        catch (e){}
+*/
     }
 }
 
@@ -158,6 +217,33 @@ bintrayUpload.doFirst {
     }
 }
 
+task modifySource{
+    doFirst {
+        project.publishing.publications.all {
+            for(arti in it.artifacts){
+                if(arti.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated"
+                        && arti.classifier == "sources"){
+                    def file= (File) arti.file
+                    println "artifact $arti file is about to be changed: file in ${file.path}"
+                    try{
+                        file.writable= true
+                        def pw= new PrintWriter(file)
+                        pw.println("blank")
+                        pw.close()
+                        println "artifact $arti file is changed: file in ${file.path}"
+                    } catch(e){
+                        println "ERROR: when modifying artifact $arti file: file in ${file.path}"
+                        println "  e= $e"
+                    }
+                }
+            }
+        }
+    }
+}
+// */
+
 //The task of bintrayUpload depends on publishToMavenLocal set in the previous section.
 // This will create maven artifacts when running bintrayUplaod's task.
+modifySource.dependsOn publishToMavenLocal
 bintrayUpload.dependsOn publishToMavenLocal
+bintrayUpload.dependsOn modifySource

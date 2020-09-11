@@ -13,6 +13,13 @@ repositories {
     mavenCentral()
 }
 
+println "Initializing :Math:build.gradle"
+task initFile{
+    doFirst {
+        println "Running :Math:build.gradle"
+    }
+}
+
 def GROUP_ID= 'sidev.lib.kotlin.multi'
 def ARTIFACT_ID= 'Math'
 def BINTRAY_REPOSITORY= 'SidevLib'
@@ -156,6 +163,33 @@ bintrayUpload.doFirst {
     }
 }
 
+task modifySource{
+    doFirst {
+        project.publishing.publications.all {
+            for(arti in it.artifacts){
+                if(arti.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated"
+                        && arti.classifier == "sources"){
+                    def file= (File) arti.file
+                    println "artifact $arti file is about to be changed: file in ${file.path}"
+                    try{
+                        file.writable= true
+                        def pw= new PrintWriter(file)
+                        pw.println("blank")
+                        pw.close()
+                        println "artifact $arti file is changed: file in ${file.path}"
+                    } catch(e){
+                        println "ERROR: when modifying artifact $arti file: file in ${file.path}"
+                        println "  e= $e"
+                    }
+                }
+            }
+        }
+    }
+}
+// */
+
 //The task of bintrayUpload depends on publishToMavenLocal set in the previous section.
 // This will create maven artifacts when running bintrayUplaod's task.
+modifySource.dependsOn publishToMavenLocal
 bintrayUpload.dependsOn publishToMavenLocal
+bintrayUpload.dependsOn modifySource

@@ -5,6 +5,7 @@ import sidev.lib.collection.common.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.lazy_list.rangeTo
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.number.*
