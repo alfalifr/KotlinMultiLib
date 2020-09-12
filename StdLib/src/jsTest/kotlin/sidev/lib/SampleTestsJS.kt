@@ -1,6 +1,8 @@
 package sidev.lib
 
 import sidev.lib.console.prin
+import sidev.lib.reflex.js.jsConstructor
+import sidev.lib.reflex.native_.jsClass
 import kotlin.js.Date
 import kotlin.test.Test
 import kotlin.test.assertTrue

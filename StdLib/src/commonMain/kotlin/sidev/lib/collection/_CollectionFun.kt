@@ -1,6 +1,6 @@
 package sidev.lib.collection
 
-import sidev.lib.collection.lazy_list.toOtherSequence
+import sidev.lib.collection.sequence.toOtherSequence
 
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
@@ -216,3 +216,5 @@ operator fun <L: MutableList<T>, T> L.times(factor: Int): L{
     this.growTimely(factor)
     return this
 }
+
+

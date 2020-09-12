@@ -4,6 +4,8 @@ import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.platform.setGlobalObject
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.collection.lazy_list.asCached
+import sidev.lib.console.prine
 import sidev.lib.reflex.*
 import sidev.lib.reflex.SiClassImpl
 import sidev.lib.reflex.SiParameterImplConst
@@ -59,12 +61,15 @@ object ReflexLoader{
         getNativeConstructors(nativeClass).map { nativeConstr ->
             ReflexFactory.createFunctionLazyly(
                 createNativeWrapper(nativeConstr), null, //getReturnType(nativeConstr),
-                loadSiParam(nativeConstr).toList(), callBlock = getConstrCallBlock<T>(nativeClass, nativeConstr),
-                defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeConstr),
+                callBlock = getConstrCallBlock<T>(nativeClass, nativeConstr), //loadSiParam(nativeConstr).toList()
+                //defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeConstr),
                 modifier = getModifiers(nativeConstr)
-            )
-        }.toList().apply { forEach { func -> func.parameters.forEach { it.mutableHost= func } } }
+            ) //.also { func -> func.parameters.forEach { it.mutableHost= func } }
+        }
+                /*
+            .toList().apply { forEach { func -> func.parameters.forEach { it.mutableHost= func } } }
             .asSequence()
+                 */
 /*
             .apply {
                 forEach { func ->
@@ -79,8 +84,8 @@ object ReflexLoader{
         getNativeFunctions(nativeClass).map { nativeFunc ->
             ReflexFactory.createFunctionLazyly(
                 createNativeWrapper(nativeFunc), null, //getReturnType(nativeFunc),
-                loadSiParam(nativeFunc).toList(), callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc),
-                defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeFunc),
+                callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc), //loadSiParam(nativeFunc).toList()
+                //defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeFunc),
                 modifier = getModifiers(nativeFunc)
             )
         }
@@ -128,21 +133,22 @@ object ReflexLoader{
 
     fun <T: Any> loadSiConstructors(siClass: SiClass<T>): Sequence<SiFunction<T>> {
         return loadSiConstructors<T>(siClass.descriptor.native!!)
-            .apply { forEach { it.mutableHost= siClass } }
+            .map { it.mutableHost= siClass; it }
     }
     fun <T: Any> loadSiMember(siClass: SiClass<T>): Sequence<SiCallable<*>> {
         val nativeClass= siClass.descriptor.native!!
         val siProps= loadSiImmutableProperty<T>(nativeClass)
         val siMutableProps= loadSiMutableProperty<T>(nativeClass)
         val siFunctions= loadSiFunction(nativeClass)
-        return (siProps + siMutableProps + siFunctions).apply {
-            forEach { callable ->
-                callable.mutableHost= siClass
-                callable.parameters.forEach {
-                    if(it.name != SiParameterImplConst.receiver0.name)
-                        it.mutableHost= callable
-                }
+        return (siProps + siMutableProps + siFunctions).map { callable ->
+            callable.mutableHost= siClass
+/*
+            callable.parameters.forEach {
+                if(it.name != SiParameterImplConst.receiver0.name)
+                    it.mutableHost= callable
             }
+ */
+            callable
         }
     }
 

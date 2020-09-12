@@ -12,7 +12,9 @@ import sidev.lib.reflex.core.createNativeWrapper
 import sidev.lib.reflex.js.*
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.console.log
+import sidev.lib.console.prine
 import sidev.lib.reflex.core.createType
 import kotlin.reflect.KClass
 import sidev.lib.reflex.js.isFunction
@@ -95,13 +97,24 @@ internal actual fun getNativeMembers(nativeClass: Any): Sequence<Any>
         = getNativeMutableProperties(nativeClass) + getNativeFunctions(nativeClass)
 
 //TODO <16 Agustus 2020> => untuk smtr konstruktor hanya bisa didapatkan 1.
-internal actual fun getNativeConstructors(nativeClass: Any): Sequence<Any> = object : Sequence<JsCallable<Any>>{
+internal actual fun getNativeConstructors(nativeClass: Any): Sequence<Any>
+        = Sequence { iteratorSimple(JsCallableImpl<Any>(jsConstructor(nativeClass.jsClass) as Any)) }
+/*
+        = object : Sequence<JsCallable<Any>>{
     override fun iterator(): Iterator<JsCallable<Any>> = object : Iterator<JsCallable<Any>>{
         var index= 0
-        override fun hasNext(): Boolean = index++ < 1
-        override fun next(): JsCallable<Any> = JsCallableImpl(jsConstructor(nativeClass.jsClass) as Any)
+        override fun hasNext(): Boolean{
+            prine("js getNativeConstructors() this= $this index= $index")
+            return index++ < 1
+        }
+        override fun next(): JsCallable<Any> = JsCallableImpl<Any>(jsConstructor(nativeClass.jsClass) as Any)
+            .also{
+                prine("js getNativeConstructors() this= $this index= $index next= $it")
+                log(it)
+            }
     }
 }
+ */
 
 
 /** Biasanya `this` merupakan fungsi yg punya paramter. */

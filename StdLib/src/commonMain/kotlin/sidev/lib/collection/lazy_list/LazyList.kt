@@ -7,5 +7,7 @@ package sidev.lib.collection.lazy_list
 interface LazyList<T>{
     /** Digunakan untuk mengambil iterator yg berfungsi sbg pengisi [LazyList] ini. */
     val builderIterator: Iterator<T>
+    val size: Int
     fun iteratorHasNext(): Boolean = builderIterator.hasNext()
+    fun isEmpty(): Boolean
 }

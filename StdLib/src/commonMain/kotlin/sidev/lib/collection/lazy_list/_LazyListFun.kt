@@ -1,5 +1,8 @@
 package sidev.lib.collection.lazy_list
 
+import sidev.lib.collection.toMapEntry
+import sidev.lib.collection.toMutableMapEntry
+
 
 fun <T> cachedSequenceOf(vararg elements: T): CachedSequence<T> = CachedSequence(elements.iterator())
 fun <K, V> lazyMapOf(vararg elements: Pair<K, V>): LazyHashMap<K, V> = LazyHashMap(elements.iterator())
@@ -7,6 +10,51 @@ fun <K, V> lazyMapOf(vararg elements: Pair<K, V>): LazyHashMap<K, V> = LazyHashM
 fun <T> Sequence<T>.asCached(): CachedSequence<T> = CachedSequence(this)
 fun <T> Iterator<T>.asCached(): CachedSequence<T> = CachedSequence(this)
 
+
+fun <T> IndexedCachedLazyList<T>.first(): T{
+    return if(!isEmpty()) this[0]
+    else throw IndexOutOfBoundsException("IndexedCachedLazyList: ${this::class.simpleName} kosong.")
+}
+fun <T> IndexedCachedLazyList<T>.last(): T{
+    return if(!isEmpty()) {
+        if(iteratorHasNext()){
+            var res: T?= null
+            var i= lastIndex +1
+            while(iteratorHasNext()){
+                res= this[i++]
+            }
+            res!!
+        } else{
+            this[lastIndex]
+        }
+    }
+    else throw IndexOutOfBoundsException("IndexedCachedLazyList: ${this::class.simpleName} kosong.")
+}
+
+fun <K, V> MappedCachedLazyList<K, V>.iterator(): Iterator<Map.Entry<K, V>> = entries.iterator()
+fun <K, V> MutableMappedCachedLazyList<K, V>.iterator(): MutableIterator<MutableMap.MutableEntry<K, V>> = entries.iterator()
+
+fun <K, V> MappedCachedLazyList<K, V>.first(): Map.Entry<K, V>{
+    return if(!isEmpty()) {
+        if(size > 0) entries.elementAt(0)
+        else getNext()!!.toMapEntry()
+    }
+    else throw IndexOutOfBoundsException("MappedCachedLazyList: ${this::class.simpleName} kosong.")
+}
+fun <K, V> MappedCachedLazyList<K, V>.last(): Map.Entry<K, V>{
+    return if(!isEmpty()) {
+        if(iteratorHasNext()){
+            var res: Pair<K, V>?= null
+            while(iteratorHasNext()){
+                res= getNext()!!
+            }
+            res!!.toMapEntry()
+        } else{
+            entries.last()
+        }
+    }
+    else throw IndexOutOfBoundsException("CachedSequence: ${this::class.simpleName} kosong.")
+}
 
 /*
 ==============================

@@ -2,7 +2,6 @@ package sidev.lib.collection.sequence
 
 import sidev.lib.collection.iterator.*
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.universal.structure.collection.iterator.*
 import sidev.lib.structure.data.value.LeveledValue
 
 

@@ -2,7 +2,7 @@ package sidev.lib.reflex.full.types
 
 import sidev.lib.check.notNull
 import sidev.lib.collection.findIndexed
-import sidev.lib.collection.lazy_list.flattenToNested
+import sidev.lib.collection.sequence.flattenToNested
 import sidev.lib.console.prine
 import sidev.lib.exception.UndefinedDeclarationExc
 import sidev.lib.collection.iterator.NestedIterator

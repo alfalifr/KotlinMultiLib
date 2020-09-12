@@ -2,7 +2,11 @@ package sidev.lib.collection.lazy_list
 
 import sidev.lib.collection.iterator.emptyIterator
 import sidev.lib.collection.iterator.withKeyIndexed
+import sidev.lib.console.prine
 import sidev.lib.number.isNegative
+import sidev.lib.reflex.SiCallable
+import sidev.lib.reflex.SiDescriptorContainer
+import sidev.lib.reflex.SiParameter
 
 /**
  * Mirip dg[ArrayList], [CachedSequence] memiliki sumber data yg berasal dari sequence sehingga
@@ -82,10 +86,11 @@ open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T
     override fun iterator(): MutableIterator<T>
         = object : MutableIterator<T>{
         var index= 0
-        val initialIndices= 0 until size
-
-        override fun hasNext(): Boolean = index in initialIndices || iteratorHasNext()
+//        val initialIndices= 0 until size
+        override fun hasNext(): Boolean = index < arrayList.size || iteratorHasNext()
+//            .also { prine("CachedSeq.iterator().next() index= $index arrayList.size= ${arrayList.size} iteratorHasNext()= ${iteratorHasNext()}") }
         override fun next(): T = get(index++) //if(index in initialIndices) get(index++) else getNext()!!.second
+            //.also { prine("CachedSeq.iterator().next() index= $index it::class= ${it!!::class}") }
         override fun remove(){ removeAt(--index) }
     }
 
@@ -100,4 +105,32 @@ open class CachedSequence<T>(private val arrayList: ArrayList<T>): MutableList<T
             containedStr.substring(0, containedStr.length-1) +cachedStr
         } else containedStr
     }
+/*
+    /*
+    ===============================
+    Rooted-Extension agar saat fungsi ekstensi dipanggil, fungsional khusus kelas CachedSequence berjalan.
+    ===============================
+     */
+    fun first(): T{
+        prine("CachedSeq.first()")
+        return if(!isEmpty()) this[0]
+        else throw IndexOutOfBoundsException("IndexedCachedLazyList: ${this::class.simpleName} kosong.")
+    }
+
+    fun last(): T{
+        return if(!isEmpty()) {
+            if(iteratorHasNext()){
+                var res: T?= null
+                var i= lastIndex +1
+                while(iteratorHasNext()){
+                    res= this[i++]
+                }
+                res!!
+            } else{
+                this[lastIndex]
+            }
+        }
+        else throw IndexOutOfBoundsException("IndexedCachedLazyList: ${this::class.simpleName} kosong.")
+    }
+ */
 }

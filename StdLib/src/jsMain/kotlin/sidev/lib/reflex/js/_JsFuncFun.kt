@@ -40,8 +40,14 @@ fun getDeclaredFunction(any: Any): List<JsCallable<*>>{
                             try{ eval("newFun = $newNamedFunStr") }
                             catch (e: Throwable){ eval("temp = ${funReturningFun(funName, newNamedFunStr)}") }
  */
-                        val isMemberFunc= isFunMember(blockStr)
-                        val newFun= createFunWrapper(funName, paramStr, func, isMemberFunc)
+                        val newFun = try {
+                            val newNamedFunStr= createNativeFunStr(funName, paramStr, blockStr, false) //"function $funName($paramStr) { try{ $blockStr } catch(e){ if(!(e instanceof ReferenceError)) throw e; else console.log('Terjadi ReferenceError dalam $funName: ' +e) } }"
+                            val temp= null
+                            eval("temp = $newNamedFunStr")
+                        } catch (e: Throwable){
+                            val isMemberFunc= isFunMember(blockStr)
+                            createFunWrapper(funName, paramStr, func, isMemberFunc)
+                        }
 
                         func= newFun
 

@@ -33,7 +33,7 @@ fun <R> SiCallable<R>.callBySafely(args: Map<SiParameter, Any?>): R{
     val newArgs= HashMap<SiParameter, Any?>()
     for(param in parameters){
         var value= args[param]
-        prine("SiCallable<R>.callBySafely() param= $param value= $value")
+//        prine("SiCallable<R>.callBySafely() param= $param value= $value")
         if(value == null){
             if(param.isOptional) continue
             if(!param.type.isMarkedNullable)

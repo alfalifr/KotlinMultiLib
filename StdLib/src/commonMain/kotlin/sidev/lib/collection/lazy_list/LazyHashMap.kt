@@ -1,6 +1,7 @@
 package sidev.lib.collection.lazy_list
 
 import sidev.lib.collection.iterator.emptyIterator
+import sidev.lib.collection.toMapEntry
 import sidev.lib.collection.toMutableMapEntry
 
 
@@ -10,7 +11,7 @@ import sidev.lib.collection.toMutableMapEntry
  */
 open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
     : MutableMap<K, V> by hashMap,
-    MutableCachedLazyList<K, V>, MutableLazyList<Pair<K, V>>, //by MutableLazyListImpl_Internal<Pair<K, V>>(),
+    MutableMappedCachedLazyList<K, V>, //by MutableLazyListImpl_Internal<Pair<K, V>>(),
     MutableIterable<MutableMap.MutableEntry<K, V>> {
     constructor(): this(HashMap())
     constructor(iterator: Iterator<Pair<K, V>>): this(HashMap()){
@@ -61,14 +62,14 @@ open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
     override fun iterator(): MutableIterator<MutableMap.MutableEntry<K, V>>
         = object : MutableIterator<MutableMap.MutableEntry<K, V>>{
         var index= 0
-        val initialIndices= 0 until size
+//        val initialIndices= 0 until size
         val existingKeys= keys
         var nowKey: K?= null
 
-        override fun hasNext(): Boolean = index in initialIndices || iteratorHasNext()
+        override fun hasNext(): Boolean = index < hashMap.size || iteratorHasNext()
 
         override fun next(): MutableMap.MutableEntry<K, V>{
-            val next= if(index in initialIndices) entries.find { it.key == existingKeys.elementAt(index).also { nowKey= it } }!!
+            val next= if(index < hashMap.size) entries.find { it.key == existingKeys.elementAt(index).also { nowKey= it } }!!
                 else getNext()!!.toMutableMapEntry()
             index++
             return next
@@ -88,6 +89,35 @@ open class LazyHashMap<K, V>(private val hashMap: HashMap<K, V>)
             containedStr.substring(0, containedStr.length-1) +cachedStr
         } else containedStr
     }
+
+/*
+    /*
+    ===============================
+    Rooted-Extension agar saat fungsi ekstensi dipanggil, fungsional khusus kelas LazyHashMap berjalan.
+    ===============================
+     */
+    fun first(): Map.Entry<K, V>{
+        return if(!isEmpty()) {
+            if(size > 0) entries.elementAt(0)
+            else getNext()!!.toMapEntry()
+        }
+        else throw IndexOutOfBoundsException("MappedCachedLazyList: ${this::class.simpleName} kosong.")
+    }
+    fun last(): Map.Entry<K, V>{
+        return if(!isEmpty()) {
+            if(iteratorHasNext()){
+                var res: Pair<K, V>?= null
+                while(iteratorHasNext()){
+                    res= getNext()!!
+                }
+                res!!.toMapEntry()
+            } else{
+                entries.last()
+            }
+        }
+        else throw IndexOutOfBoundsException("CachedSequence: ${this::class.simpleName} kosong.")
+    }
+ */
 }
 
 /*

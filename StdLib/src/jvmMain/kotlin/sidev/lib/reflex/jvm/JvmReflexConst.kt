@@ -5,6 +5,7 @@ import sidev.lib.console.prine
 import sidev.lib.reflex.inner.KotlinReflex
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
+import java.lang.reflect.Parameter
 import kotlin.math.ceil
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
@@ -16,6 +17,8 @@ object JvmReflexConst{
     const val K_FUNCTION_CONSTRUCTOR_NAME_PREFIX= "fun <init>"
     const val K_FUNCTION_CONSTRUCTOR_NAME= "<init>"
     const val K_DEFAULT_FUNCTION_NAME_SUFFIX= "\$default"
+    const val K_CONSTRUCTOR_PARAM_DEFAULT_NAME_PATTERN= "arg(?:[0-9]+)"
+    val K_CONSTRUCTOR_PARAM_DEFAULT_NAME_REGEX by lazy{ K_CONSTRUCTOR_PARAM_DEFAULT_NAME_PATTERN.toRegex() }
     val K_PROPERTY_ARRAY_SIZE_STRING= Array<Any>::size.toString()
     val K_CLASS_ENUM_STRING= Enum::class
     val K_ARRAY_CLASS_STRING: String = Array<Any>::class.toString()
@@ -33,7 +36,7 @@ object JvmReflexConst{
         val bool= isNameMatched
                 && javaMethod.isSynthetic
                 && javaMethod.parameterCount == (kotlinParam.size + maskParamCount + 1) //+1 digunakan untuk tambahan param marker pada fungsi default di kotlin.
-                && {
+                && run {
                     var isTypeSame= true
                     javaMethod.parameterTypes.forEachIndexed { i, javaType ->
                         if(i >= kotlinParam.size)
@@ -43,8 +46,8 @@ object JvmReflexConst{
                             return@forEachIndexed
                     } }
                     isTypeSame
-                }()
-        prine("isDefaultOfFun() javaMethod= $javaMethod kotlinFun= $kotlinFun bool= $bool")
+                }
+//        prine("isDefaultOfFun() javaMethod= $javaMethod kotlinFun= $kotlinFun bool= $bool")
         return bool
 //                && javaMethod.parameterTypes.last() == java.lang.Object::class //Gak bisa dicek tipe data parameter yg trahir kalau constructor
     }
@@ -84,6 +87,9 @@ object JvmReflexConst{
                 && paramTypes[1].kotlin.isSubclassOf(KProperty::class)
                 && propClass.isAssignableFrom(paramTypes.last())
     }
+
+    fun isParamDefault(javaParam: Parameter): Boolean
+            = javaParam.name.matches(K_CONSTRUCTOR_PARAM_DEFAULT_NAME_REGEX)
 
 /*
     fun <T> isDefaultOfConst(javaConstr: Constructor<T>, kotlinFun: KCallable<T>): Boolean{

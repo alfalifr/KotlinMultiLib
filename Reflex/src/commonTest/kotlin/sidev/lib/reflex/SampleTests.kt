@@ -41,7 +41,9 @@ class SampleTests {
         timeTaken = measureTime {
             prin("\n============ AC::class.si.members ================\n")
             for((i, member) in AC::class.si.members.withIndex()){
-                prin("i= $i member= $member")
+                prin("i= $i member= $member host= ${member.descriptor.host} native= ${member.descriptor.native}")
+                for((u, param) in member.parameters.withIndex())
+                    prin("--u= $u param= $param default= ${param.defaultValue} native= ${param.descriptor.native}")
             }
         }
         prine("timeTaken = $timeTaken")
@@ -101,6 +103,11 @@ class SampleTests {
         for((i, cls) in Number::class.si.classesTree.withIndex()){
             prin("i= $i cls= $cls")
         }
+    }
+
+    @Test
+    fun constrTest(){
+        prin(AC::class.si.primaryConstructor)
     }
 
     @ExperimentalTime
@@ -226,12 +233,20 @@ class SampleTests {
         prin("list1[0].poin.y= ${list1[0].poin.y} list1[1].poin.y= ${list1[1].poin.y}")
     }
 
+    @ExperimentalTime
+    @Test
+    fun newTest(){
+        data class Point(var x: Int, var y: Int= 198)
+        measureTime { prin(Poin::class.si) }.also { prine("timeTaken= $it") }
+        measureTime { prin(new(Point::class.si)) }.also { prine("timeTaken= $it") }
+    }
+
+    @ExperimentalTime
     @Test
     fun nativeNewTest(){
         data class Point(var x: Int, var y: Int= 198)
-        prin(Poin::class)
-        val poin = nativeNew(Point::class.si.kotlin)
-        prin(poin)
+        measureTime { prin(Poin::class) }.also { prine("timeTaken= $it") }
+        measureTime { prin(nativeNew(Point::class)) }.also { prine("timeTaken= $it") }
     }
 
     @Test
@@ -381,7 +396,7 @@ class SampleTests {
 
     @Test
     fun renameTest(){
-        val poin= Poin()
+        val poin= Poin(y=101)
         if(platform == Platform.JS){
             poin::class.si.annotateMember("aa_diPoin", SiRename("aa_aa_diPoin"))
         }

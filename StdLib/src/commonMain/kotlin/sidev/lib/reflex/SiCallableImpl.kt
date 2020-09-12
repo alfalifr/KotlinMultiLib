@@ -92,3 +92,11 @@ internal abstract class SiCallableImpl<out R>
         }
     }
 }
+
+/**
+ * Digunakan untuk instansiasi pada ReflexFactory.
+ * Kelas ini hanya sbg delegate, sehingga tidak menjadi parent dari SiCallable lainnya.
+ */
+internal abstract class SiCallableImplDelegate<out R>: SiCallableImpl<R>(){
+    abstract override var descriptor: SiDescriptor
+}

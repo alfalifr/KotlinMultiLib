@@ -1,7 +1,9 @@
 package sidev.lib.reflex.core
 
+import sidev.lib.check.notNullTo
 import sidev.lib.collection.lazy_list.asCached
 import sidev.lib.console.prine
+import sidev.lib.exception.IllegalStateExc
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.property.mutableLazy
@@ -155,19 +157,26 @@ object ReflexFactory{
         modifier: Int= 0,
         defaultCallBlock: ((args: Array<out Any?>) -> R)?= null,
         callBlock: (args: Array<out Any?>) -> R
-    ): SiCallable<R> = object : SiCallableImpl<R>(){
+    ): SiCallable<R> = object : SiCallableImplDelegate<R>(){
         override val annotations: MutableList<Annotation> by lazy {
             getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
         }
         override val callBlock: (args: Array<out Any?>) -> R = callBlock
         override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
-        override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
+        override var descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
+            set(v){
+                if(v.owner !is SiCallable<*>)
+                    throw IllegalStateExc(stateOwner = this::class,
+                        currentState = "descriptor.owner !is SiCallable<*>",
+                        expectedState = "descriptor.owner is SiCallable<*>")
+                field= v
+            }
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType = returnType
         override val parameters: List<SiParameter> = parameters
         override val typeParameters: List<SiTypeParameter> by lazy{
             if(typeParameters.isNotEmpty()) typeParameters
-            else ReflexFactoryHelper.getTypeParameter(descriptor.host as? SiClass<*>, this, nativeCounterpart.implementation)
+            else ReflexFactoryHelper.getTypeParameter(descriptor.host as? SiClass<*>, descriptor.owner as SiCallable<*>, nativeCounterpart.implementation)
         }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
@@ -182,23 +191,42 @@ object ReflexFactory{
         modifier: Int= 0,
         defaultCallBlock: ((args: Array<out Any?>) -> R)?= null,
         callBlock: (args: Array<out Any?>) -> R
-    ): SiCallable<R> = object : SiCallableImpl<R>(){
+    ): SiCallable<R> = object : SiCallableImplDelegate<R>(){
         override val annotations: MutableList<Annotation> by lazy {
             getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
         }
         override val callBlock: (args: Array<out Any?>) -> R = callBlock
-        override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
-        override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
+        override val defaultCallBlock: ((args: Array<out Any?>) -> R)? by lazy {
+            defaultCallBlock ?: run {
+                val nativeClass= (descriptor.host as? SiClass<*>)?.descriptor?.native
+                val nativeFunc= descriptor.native
+                if(nativeClass != null && nativeFunc != null)
+                    getFuncDefaultCallBlock(nativeClass, nativeFunc)
+                else null
+            }
+        }
+        override var descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier)
+            set(v){
+                if(v.owner !is SiCallable<*>)
+                    throw IllegalStateExc(stateOwner = this::class,
+                        currentState = "descriptor.owner !is SiCallable<*>",
+                        expectedState = "descriptor.owner is SiCallable<*>")
+                field= v
+            }
         override val name: String = nativeCounterpart.qualifiedNativeName
         override val returnType: SiType by reevaluateLazy {
             val type= getReturnType(nativeCounterpart.implementation)
             it.value= platform != Platform.JS || isTypeFinal(type.descriptor.native!!)
             type
         }
-        override val parameters: List<SiParameter> = parameters
-        override val typeParameters: List<SiTypeParameter> by lazy{
+        override val parameters: List<SiParameter> by lazy {
+//            prine("crateCallableLazyli() parameters.isNotEmpty() || descriptor.native == null= ${parameters.isNotEmpty() || descriptor.native == null} this= $this")
+            if(parameters.isNotEmpty() || descriptor.native == null) parameters
+            else ReflexLoader.loadSiParam(descriptor.native!!).map { it.mutableHost= descriptor.owner; it }.asCached()
+        }
+        override val typeParameters: List<SiTypeParameter> by lazy {
             if(typeParameters.isNotEmpty()) typeParameters
-            else ReflexFactoryHelper.getTypeParameter(descriptor.host as? SiClass<*>, this, nativeCounterpart.implementation)
+            else ReflexFactoryHelper.getTypeParameter(descriptor.host as? SiClass<*>, descriptor.owner as SiCallable<*>, nativeCounterpart.implementation)
         }
         override val visibility: SiVisibility = getVisibility(nativeCounterpart.implementation)
         override val isAbstract: Boolean = SiModifier.isAbstract(this)
@@ -217,11 +245,14 @@ object ReflexFactory{
     ): SiFunction<R> {
         val callable= createCallable(
             nativeCounterpart, host, returnType, parameters, typeParameters, modifier, defaultCallBlock, callBlock
-        ) as SiCallableImpl
+        ) as SiCallableImplDelegate
         return object : SiFunctionImpl<R>(), SiCallable<R> by callable{
             override val annotations: MutableList<Annotation>
                 get() = callable.annotations
             override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier) //Agar ownernya jadi SiFunction
+            init{
+                callable.descriptor= this.descriptor
+            }
             override val callBlock: (args: Array<out Any?>) -> R = callBlock
             override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
         }
@@ -239,11 +270,14 @@ object ReflexFactory{
     ): SiFunction<R> {
         val callable= createCallableLazyly(
             nativeCounterpart, host, parameters, typeParameters, modifier, defaultCallBlock, callBlock
-        ) as SiCallableImpl
+        ) as SiCallableImplDelegate
         return object : SiFunctionImpl<R>(), SiCallable<R> by callable{
             override val annotations: MutableList<Annotation>
                 get() = callable.annotations
             override val descriptor: SiDescriptor = createDescriptor(host, nativeCounterpart, modifier) //Agar ownernya jadi SiFunction
+            init{
+                callable.descriptor= this.descriptor
+            }
             override val callBlock: (args: Array<out Any?>) -> R = callBlock
             override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
         }

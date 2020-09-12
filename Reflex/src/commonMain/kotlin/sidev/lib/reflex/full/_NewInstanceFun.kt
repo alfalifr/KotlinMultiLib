@@ -9,6 +9,7 @@ import sidev.lib.reflex.*
 import sidev.lib.reflex.native_.si
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.takeLast
+import sidev.lib.console.str
 import sidev.lib.reflex.native_.SiNativeParameter
 import sidev.lib.reflex.native_.isDynamicEnabled
 import kotlin.reflect.KClass
@@ -24,11 +25,37 @@ New Instance - Native
  * Fungsi ini melakukan clone sama sprti fungsi [clone], namun dilakukan dg menggunakan refleksi native
  * sehingga tidak me-load dulu komponen [SiReflex].
  *
+ * Fungsi ini hanya sbg manajemen dan tidak melakukan operasi nativeClone sebenarnya.
+ * Operasi nativeClone sebenarnya dilakukan oleh fungsi [nativeCloneOp].
+ *
  * <29 Agustus 2020> => Fungsi ini melakukan clone sederhana sehingga tidak mengecek apakah kelas dari `this.extension` [T]
  *   merupakan shallowAnonymous tidak, mengingat properti [isShallowAnonymous] hanya dimiliki oleh [SiClass].
  *   Kemungkinan ke depannya akan disediakan properti [isShallowAnonymous] untuk native dg receiver adalah [KClass].
  */
-expect fun <T: Any> T.nativeClone(isDeepClone: Boolean= true, constructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): T
+fun <T: Any> T.nativeClone(isDeepClone: Boolean= true, constructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): T{
+    val clonedObjOriginStack= ArrayList<Any>()
+    val clonedObjStack= ArrayList<Any>()
+/*
+    val clonedObjStackList= ArrayList<List<Any>>()
+    clonedObjStackList += clonedObjOriginStack
+    clonedObjStackList += clonedObjStack
+ */
+    return nativeCloneOp(clonedObjOriginStack, clonedObjStack, isDeepClone, constructorParamValFunc)
+}
+
+/**
+ * Fungsi yg berisi operasi nativeClone yg sebenarnya yg dipanggial oleh fungsi [nativeClone].
+ *
+ * @param [clonedObjOriginStack] merupakan stack yg berisi objek asli yg di-clone.
+ * @param [clonedObjStack] merupakan stack yg berisi objek hasil clone.
+ * [clonedObjOriginStack] dan [clonedObjStack] berguna saat terjadi property yg kepemilikannya cyclic.
+ */
+expect fun <T: Any> T.nativeCloneOp(
+    clonedObjOriginStack: MutableList<Any>, clonedObjStack: MutableList<Any>,
+    isDeepClone: Boolean= true, constructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null
+): T
+
+
 expect fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?= null): T?
 
 /** Kode implementasi sama dg [arrayClone], namun menggunakan [nativeClone] sbg fungsi clone. */
@@ -96,12 +123,29 @@ New Instance - Common
 fun <T: Any> Any.anyClone(isDeepClone: Boolean= true, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): T{
     return clone(isDeepClone, constructorParamValFunc) as T
 }
+
+//@Suppress(SuppressLiteral.UNCHECKED_CAST)
+/*
+private var clonedObjOriginStack: MutableList<Any>?= null
+private var clonedObjStack: MutableList<Any>?= null
+
+/**
+ * Berisi 2 stack:
+ *   0. stack untuk objek asli yg di-clone
+ *   1. stack untuk objek hasil clone
+ */
+private var cloneStack: MutableList<List<Any>>?= null
+ */
+
 /**
  * Digunakan untuk meng-clone object `this.extension` [T] sehingga menciptakan instance baru dg
  * nilai properti yg sama.
  *
  * Fungsi ini dapat meng-clone instance yg merupakan [isShallowAnonymous], namun tidak menjamin
  * attribut overriding maupun attribut tambahan yg ada di dalamnya.
+ *
+ * Fungsi ini hanya sbg manajemen dan tidak melakukan operasi clone sebenarnya.
+ * Operasi clone sebenarnya dilakukan oleh fungsi [cloneOp].
  *
  * @param [isDeepClone] `true` jika seluruh nilai properti yg berupa `object` di-instantiate
  *   menjadi `instance` yg baru. Operasi deep-clone juga berlaku terhadap properti yg dimiliki properti.
@@ -114,14 +158,34 @@ fun <T: Any> Any.anyClone(isDeepClone: Boolean= true, constructorParamValFunc: (
  *   -> throw [NonInstantiableTypeExc] jika tipe yg di-clone tidak memiliki kontruktor karena
  *   berupa interface, abstract, atau anonymous class.
  */
-//@Suppress(SuppressLiteral.UNCHECKED_CAST)
-private var clonedObjOriginStack: MutableList<Any>?= null
-private var clonedObjStack: MutableList<Any>?= null
 fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null): T{
-    if(clonedObjOriginStack != null) {
-        val ind= clonedObjOriginStack!!.indexOf(this)
+//    if(cloneStack == null)
+//        cloneStack= ArrayList()
+
+    val clonedObjOriginStack= ArrayList<Any>()
+    val clonedObjStack= ArrayList<Any>()
+/*
+    val clonedObjStackList= ArrayList<List<Any>>()
+    clonedObjStackList += clonedObjOriginStack
+    clonedObjStackList += clonedObjStack
+ */
+    return cloneOp(clonedObjOriginStack, clonedObjStack, isDeepClone, constructorParamValFunc)
+}
+
+/**
+ * Fungsi yg berisi operasi clone yg sebenarnya yg dipanggial oleh fungsi [clone].
+ *
+ * @param [clonedObjOriginStack] merupakan stack yg berisi objek asli yg di-clone.
+ * @param [clonedObjStack] merupakan stack yg berisi objek hasil clone.
+ * [clonedObjOriginStack] dan [clonedObjStack] berguna saat terjadi property yg kepemilikannya cyclic.
+ */
+private fun <T: Any> T.cloneOp(
+    clonedObjOriginStack: MutableList<Any>, clonedObjStack: MutableList<Any>,
+    isDeepClone: Boolean= true, constructorParamValFunc: ((SiClass<*>, SiParameter) -> Any?)?= null
+): T{
+    clonedObjOriginStack.indexOf(this).also { ind ->
         if(ind >= 0)
-            return clonedObjStack!![ind] as T
+            return clonedObjStack[ind] as T
     }
 
     /**
@@ -129,15 +193,10 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
      */
     fun T.preReturnObj(): T{
 //        clonedObjStack!!.add(this)
-        clonedObjOriginStack!!.takeLast()
+        clonedObjOriginStack.takeLast()
         return this
     }
-
-    if(clonedObjOriginStack == null)
-        clonedObjOriginStack= ArrayList()
-    if(clonedObjStack == null)
-        clonedObjStack= ArrayList()
-    clonedObjOriginStack!!.add(this)
+    clonedObjOriginStack.add(this)
 
     if(isReflexUnit || isUninitializedValue) return this.preReturnObj()
     var clazz= this::class.si.also { if(it.isCopySafe) return this.preReturnObj() }
@@ -163,16 +222,17 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
     }
 
     val constructorPropertyList= mutableListOf<SiField<T, *>>()
-            //Digunakan untuk menampung Pair dari valueMapTree yg property-nya ada di konstruktor,
-            // sehingga saat di loop for di bawah property yg sama tidak disalin karena
-            // udah di-clone di fungsi [newInsConstrParamValFunc].
+    //Digunakan untuk menampung Pair dari valueMapTree yg property-nya ada di konstruktor,
+    // sehingga saat di loop for di bawah property yg sama tidak disalin karena
+    // udah di-clone di fungsi [newInsConstrParamValFunc].
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->
+//        prine("clone() param= $param constr.parameters= ${constr.parameters}")
         if(constr.parameters.find { it == param } != null){
             valueMapTree.find { valueMap -> param.isPropertyLike(valueMap.first.property) }
                 .notNullTo {
                     constructorPropertyList.add(it.first) //Agar loop for di bawah gak usah menyalin lagi property yg udah di-clone di konstruktor.
                     if(!isDeepClone) it.second
-                    else it.second?.clone(true, constructorParamValFunc)
+                    else it.second?.cloneOp(clonedObjOriginStack, clonedObjStack, true, constructorParamValFunc)
                 }
         } else null
     }
@@ -202,7 +262,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
                 msg = "Tidak tersedia nilai default untuk di-pass ke konstruktor.")
     }
 
-    clonedObjStack!!.add(newInstance)
+    clonedObjStack.add(newInstance)
 
 
     for((field, value) in valueMapTree.filter { it.first !in constructorPropertyList }){
@@ -228,7 +288,7 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
 //                        mutableField.forcedSetTyped(newInstance, value.withType(mutableField.returnType))
             } else{
 //                    mutableField.forcedSetTyped<T, Any?>(newInstance, value.clone(true, constructorParamValFunc).withType(mutableField.returnType))
-                mutableField.forceSet(newInstance, value.clone(true, constructorParamValFunc))
+                mutableField.forceSet(newInstance, value.cloneOp(clonedObjOriginStack, clonedObjStack, true, constructorParamValFunc))
             }
         }
 //        }
@@ -237,15 +297,10 @@ fun <T: Any> T.clone(/*valueSource: T?= null, */isDeepClone: Boolean= true, cons
     if(newInstance::class.si.isExclusivelySuperclassOf(this::class.si))
         prine("Kelas yg di-clone: \"${this::class}\" merupakan shallow-anonymous, newInstance yg di-return adalah superclass: \"${newInstance::class}\".")
 
-    clonedObjOriginStack!!.takeLast()
-    clonedObjStack!!.takeLast()
+    clonedObjOriginStack.takeLast()
+    clonedObjStack.takeLast()
 //    prine("clone() clonedObjOriginStack.size= ${clonedObjOriginStack?.size} clonedObjStack.size= ${clonedObjStack?.size}")
 //    prine("clone() clonedObjOriginStack= $clonedObjOriginStack clonedObjStack= $clonedObjStack")
-    if(clonedObjOriginStack!!.isEmpty()){
-        clonedObjOriginStack= null
-        clonedObjStack= null
-//        prine("clone() clonedObjStack == null => ${clonedObjStack == null} clonedObjOriginStack == null => ${clonedObjOriginStack == null}")
-    }
 
     return newInstance
 }
@@ -428,7 +483,12 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
     val defParamVal= mutableMapOf<SiParameter, Any?>()
 
 //    prine("new() clazz= $clazz usedClazz= $usedClazz constr= $constr param.size= ${params.size}")
-
+//    prine("new() constr= $constr")
+/*
+    constr.parameters.forEach {
+        prine("new() foreach param= $it")
+    }
+// */
     for(param in params){
         val type= param.type
 //        prine("new() param= $param type= $type type.classifier= ${type.classifier} native= ${type.classifier?.descriptor?.native}")
@@ -441,6 +501,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
                 vals!!
             } //Yg diprioritaskan pertama adalah definisi value dari programmer.
             catch (e: Exception) { //Jika programmer tidak mendefinisikan, coba cari nilai default.
+//                prine("new() defaParamVal param= $param error= $e")
                 if(param.isOptional) continue //Tapi sebelum ke nilai default, cek apakah param opsional.
                 //Jika opsional, maka artinya programmer udah memberikan definisi sendiri untuk param itu.
                 // Maka gak perlu ditambahkan ke konstruktor.
@@ -457,7 +518,7 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
             if(type.isMarkedNullable)
                 defParamVal[param]= null
             else if(!param.isOptional){ //Harusnya bisa langsung else, tapi biar readable aja.
-                prine("""Kelas: "$clazz" tidak dapat di-instantiate karena tidak tersedianya argumen untuk param: "$param".""")
+//                prine("""Kelas: "$clazz" tidak dapat di-instantiate karena tidak tersedianya argumen untuk param: "$param".""")
                 return null //Karena class udah gak bisa di-instantiate.
             }
         }

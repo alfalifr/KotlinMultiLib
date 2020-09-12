@@ -1,12 +1,12 @@
 package sidev.lib.reflex.full.types
 
 import sidev.lib.check.contentEquals
-import sidev.lib.collection.lazy_list.flattenToNested
-import sidev.lib.collection.leveledIterator
+import sidev.lib.collection.sequence.flattenToNested
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.collection.toArrayOfNotNul
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.intersect
+import sidev.lib.collection.leveledIterator
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiTypeProjection

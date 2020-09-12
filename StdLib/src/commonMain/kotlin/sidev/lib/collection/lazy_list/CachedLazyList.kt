@@ -1,5 +1,7 @@
 package sidev.lib.collection.lazy_list
 
+import sidev.lib.console.prine
+
 
 /**
  * [LazyList] yg menyimpan data dari [Iterator.next].
@@ -44,7 +46,7 @@ interface CachedLazyList<K, V> : LazyList<Pair<K, V>> {
      *   null jika operasi [addNext] mengembalikan `false`.
      */
     fun getNext(): Pair<K, V>?{
-        val added= builderIterator.next()
+        val added= builderIterator.next() //TODO <12 Sep 2020> => operasi .next() tidak aman.
 //        prine("getNext() added.first= ${added.first} added.second= ${added.second}")
 //        val key= extractKeyFrom(added)
         return if(addNext(added.first, added.second)) added
@@ -54,12 +56,13 @@ interface CachedLazyList<K, V> : LazyList<Pair<K, V>> {
     /** Mengambil dari [MutableCollection] jika sudah ada, jika belum maka mengambil dari [builderIterator]. */
     fun findNext(key: K): V?{
         var existing= getExisting(key)
-//        prine("findNext() existing $existing existing == null && iteratorHasNext() = ${existing == null && iteratorHasNext()}")
+//        prine("findNext() existing $existing existing == null && iteratorHasNext() => ${existing == null && iteratorHasNext()}")
+//        prine("findNext() existing == null && iteratorHasNext() => ${existing == null && iteratorHasNext()}")
         if(existing == null && iteratorHasNext()){
             do{
                 val next= getNext()
                 existing= next?.second
-//                prine("findNext() while existing $existing")
+//                prine("findNext() while existing $existing size= $size key= $key")
             } while((existing == null || !isNextMatched(next!!.first, existing)) && iteratorHasNext())
         }
 /*
