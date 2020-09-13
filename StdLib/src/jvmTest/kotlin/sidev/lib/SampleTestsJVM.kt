@@ -43,6 +43,15 @@ class SampleTestsJVM {
             prin("cls = $cls")
         }
     }
+
+    @Test
+    fun arrayTest(){
+        val arr= sidev.lib.collection.array.arrayOf(2, 1,3,4)
+        prin(arr::class.java)
+        arr[0]= 1
+        prin(arr[0].inc())
+        prin(arrayOf(1,3,4)::class.java)
+    }
 /*
     @Test
     fun reflexTypeTest(){

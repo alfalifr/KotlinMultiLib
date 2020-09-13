@@ -269,14 +269,14 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
         return true
     }
 
-    @Unsafe("[index] diabaikan.")
-    @Deprecated("Tidak aman karena [index] diabaikan.", ReplaceWith("put(key, element)"))
+    @Unsafe("`index` diabaikan.")
+    @Deprecated("Tidak aman karena `index` diabaikan.", ReplaceWith("put(key, element)"))
     override fun add(index: Int, element: V) {
         add(element)
     }
 
-    @Unsafe("[index] diabaikan.")
-    @Deprecated("Tidak aman karena [index] diabaikan.", ReplaceWith("putAll(from)"))
+    @Unsafe("`index` diabaikan.")
+    @Deprecated("Tidak aman karena `index` diabaikan.", ReplaceWith("putAll(from)"))
     override fun addAll(index: Int, elements: Collection<V>): Boolean = addAll(elements)
 
     @Unsafe("Nilai key baru dapat berupa apa saja.")
