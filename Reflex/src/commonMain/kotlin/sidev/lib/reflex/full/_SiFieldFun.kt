@@ -12,7 +12,7 @@ import sidev.lib.reflex.SiMutableProperty1
 import sidev.lib.reflex.SiProperty1
 import sidev.lib.reflex.native_.getIsAccessible
 import sidev.lib.reflex.native_.setIsAccessible
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 

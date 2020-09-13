@@ -12,7 +12,7 @@ import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiTypeProjection
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.core.createType
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.jvm.JvmName
 import kotlin.reflect.KType
 

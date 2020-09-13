@@ -19,12 +19,6 @@ actual val SiClass<*>.isObjectArray: Boolean
 
 actual val SiClass<*>.isPrimitiveArray: Boolean get()= false
 
-actual val Any.isNativeReflexUnit: Boolean
-    get()= this is JsReflex
-
-//TODO <23 Agustus 2020> => Pengecekan pada Js hanya dilakukan pada pengecekan tipe kelass, bkn adanya method getValue() / setValue().
-internal actual val Any.isNativeDelegate: Boolean get()= false
-
 //TODO <23 Agustus 2020> => Untuk Js, implementasi seperti default karena belum diketahui pengecekan interface.
 internal actual val SiClass<*>.isNativeInterface: Boolean get()= isAbstract && !isInstantiable
 

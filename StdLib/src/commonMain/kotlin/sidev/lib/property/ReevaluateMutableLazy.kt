@@ -16,14 +16,14 @@ interface ReevaluateMutableLazy<T> : ReevaluateLazy<T>, MutableLazy<Any?, T>
  */
 internal open class ReevaluateMutableLazyImpl<T>(init: (evaluationBox: Val<Boolean>) -> T) : ReevaluateMutableLazy<T>{
     private var init: ((evaluationBox: Val<Boolean>) -> T)? = init
-    private var _value: Any? = UNINITIALIZED_VALUE
+    private var _value: Any? = SI_UNINITIALIZED_VALUE
     override var isEvaluationDone: Boolean = true
 
     override var value: T
         set(v){ _value= v }
         get() {
             val v1= _value
-            if(isEvaluationDone && v1 !== UNINITIALIZED_VALUE){
+            if(isEvaluationDone && v1 !== SI_UNINITIALIZED_VALUE){
                 init= null
                 @Suppress(SuppressLiteral.UNCHECKED_CAST)
                 return v1 as T

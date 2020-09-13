@@ -36,7 +36,11 @@ internal actual fun <T: Any> getKClass(nativeClass: Any): KClass<T> = when(nativ
 } as KClass<T>
 
 /** `this.extension` dapat berupa apa saja. */
-internal actual fun getNativeClass(any: Any): Any = if(any is KClass<*>) any else any::class
+internal actual fun getNativeClass(any: Any): Any = when(any){
+    is KClass<*> -> any
+    is Class<*> -> any.kotlin
+    else -> any::class
+}
 
 /** `this.extension` yg dimaksud adalah native class. */
 internal actual fun getNativeFunctions(nativeClass: Any): Sequence<Any> =

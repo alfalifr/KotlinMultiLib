@@ -6,7 +6,7 @@ import sidev.lib.reflex.SiVariance
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.isArray
 import sidev.lib.reflex.full.isObjectArray
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.jvm.JvmName
 
 

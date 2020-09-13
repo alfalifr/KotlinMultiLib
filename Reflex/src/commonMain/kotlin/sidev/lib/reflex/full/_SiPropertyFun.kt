@@ -5,11 +5,11 @@ import sidev.lib.collection.sequence.nestedSequence
 import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.iterator.skip
 import sidev.lib.exception.TypeExc
-import sidev.lib.property.UNINITIALIZED_VALUE
+import sidev.lib.property.SI_UNINITIALIZED_VALUE
 import sidev.lib.reflex.*
 import sidev.lib.reflex.full.types.TypedValue
 import sidev.lib.reflex.full.types.isAssignableFrom
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
@@ -137,7 +137,7 @@ val SiClass<*>.declaredMemberFunctionsTree: NestedSequence<SiFunction<*>>
 
 /**
  * Memaksa [SiProperty1] untuk melakukan operasi get terhadap value pada field.
- * @return nilai [V] dari property, atau [UNINITIALIZED_VALUE] jika terjadi error karena
+ * @return nilai [V] dari property, atau [SI_UNINITIALIZED_VALUE] jika terjadi error karena
  * akses `lateinit var` yg blum di-init.
  */
 fun <T, V> SiProperty1<T, V>.forceGet(receiver: T): V{

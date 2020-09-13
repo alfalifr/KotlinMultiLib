@@ -2,11 +2,11 @@ package sidev.lib.reflex
 
 import sidev.lib.annotation.SiRename
 import sidev.lib.annotation.renamedName
-import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.log
 import sidev.lib.console.prin
 import sidev.lib.console.prine
+import sidev.lib.console.prinp
 import sidev.lib.number.*
 import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
@@ -14,8 +14,9 @@ import sidev.lib.reflex.annotation.callAnnotatedFunction
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.*
 import sidev.lib.reflex.full.types.*
-import sidev.lib.reflex.native_.si
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -23,13 +24,14 @@ import kotlin.time.measureTime
 class SampleTests {
     @Test
     fun testMe() {
+        prinp("\n==== testMe() Mulai ==== \n")
         assertTrue(Sample().checkMe() > 0)
     }
 
     @ExperimentalTime
     @Test
     fun reflexTest(){
-        prin("reflexTest() Mulai ==== ")
+        prinp("\n==== reflexTest() Mulai ==== \n")
         val siCls: SiClass<AC<*>>
         var timeTaken = measureTime { siCls = AC::class.si }
         prin("siCls= $siCls")
@@ -51,6 +53,7 @@ class SampleTests {
 
     @Test
     fun reflexTypeTest(){
+        prinp("\n==== reflexTypeTest() Mulai ==== \n")
         val singletonList= listOf("bla")
         val array5= arrayOf("bli")
         prin("singletonList::class.si.isCollection= ${singletonList::class.si.isCollection}")
@@ -107,17 +110,30 @@ class SampleTests {
 
     @Test
     fun constrTest(){
+        prinp("\n==== constrTest() Mulai ==== \n")
         prin(AC::class.si.primaryConstructor)
     }
 
     @ExperimentalTime
     @Test
     fun cloneTest(){
+        prinp("\n==== cloneTest() Mulai ==== \n")
         val ac= AC<BlaBla2>(Poin(y = 199))
-        prin("cloneTest() Mulai ====")
         val ac2: AC<BlaBla2>
         var timeTaken = measureTime { ac2 = ac.clone() }
         prine("timeTaken= $timeTaken")
+
+        assertEquals(ac.acStr3, ac2.acStr3)
+        assertEquals(ac.acStr1, ac2.acStr1)
+        assertEquals(ac.acStr2, ac2.acStr2)
+        assertEquals(ac.poin.x, ac2.poin.x)
+        assertEquals(ac.ab_abs, ac2.ab_abs)
+        assertEquals(ac.dDariAA.d, ac2.dDariAA.d)
+
+        val acPoinX_before= ac.poin.x
+        val acDDariAAD_before= ac.dDariAA.d
+        val acAcStr1_before= ac.acStr1
+        val ac2AcStr2_before= ac2.acStr2
 //        js("class;a")
 
         prin("\n============= Clone =============\n")
@@ -131,6 +147,17 @@ class SampleTests {
         ac.dDariAA.d= 19
         ac.acStr1= "bbb1"
         ac2.acStr2= "bbb2"
+
+        assertEquals(ac2.poin.x, acPoinX_before)
+        assertEquals(ac2.dDariAA.d, acDDariAAD_before)
+        assertEquals(ac2.acStr1, acAcStr1_before)
+        assertEquals(ac.acStr2, ac2AcStr2_before)
+
+        assertNotEquals(ac.poin.x, ac2.poin.x)
+        assertNotEquals(ac.dDariAA.d, ac2.dDariAA.d)
+        assertNotEquals(ac.acStr1, ac2.acStr1)
+        assertNotEquals(ac.acStr2, ac2.acStr2)
+
         prin("ac.acStr3= ${ac.acStr3} ac2.acStr3= ${ac2.acStr3}")
         prin("ac.acStr1= ${ac.acStr1} ac2.acStr1= ${ac2.acStr1}")
         prin("ac.acStr2= ${ac.acStr2} ac2.acStr2= ${ac2.acStr2}")
@@ -173,12 +200,24 @@ class SampleTests {
     @ExperimentalTime
     @Test
     fun nativeCloneTest(){
+        prinp("\n==== nativeCloneTest() Mulai ==== \n")
         val ac= AC<BlaBla2>(Poin(y = 199))
-        prin("nativeCloneTest() Mulai ====")
         val ac2: AC<BlaBla2>
         var timeTaken = measureTime { ac2 = ac.nativeClone() }
         prine("timeTaken= $timeTaken")
 //        js("class;a")
+
+        assertEquals(ac.acStr3, ac2.acStr3)
+        assertEquals(ac.acStr1, ac2.acStr1)
+        assertEquals(ac.acStr2, ac2.acStr2)
+        assertEquals(ac.poin.x, ac2.poin.x)
+        assertEquals(ac.ab_abs, ac2.ab_abs)
+        assertEquals(ac.dDariAA.d, ac2.dDariAA.d)
+
+        val acPoinX_before= ac.poin.x
+        val acDDariAAD_before= ac.dDariAA.d
+        val acAcStr1_before= ac.acStr1
+        val ac2AcStr2_before= ac2.acStr2
 
         prin("\n============= Clone =============\n")
         prin("ac.acStr3= ${ac.acStr3} ac2.acStr3= ${ac2.acStr3}")
@@ -191,6 +230,10 @@ class SampleTests {
         ac.dDariAA.d= 19
         ac.acStr1= "bbb1"
         ac2.acStr2= "bbb2"
+        assertEquals(ac2.poin.x, acPoinX_before)
+        assertEquals(ac2.dDariAA.d, acDDariAAD_before)
+        assertEquals(ac2.acStr1, acAcStr1_before)
+        assertEquals(ac.acStr2, ac2AcStr2_before)
         prin("ac.acStr3= ${ac.acStr3} ac2.acStr3= ${ac2.acStr3}")
         prin("ac.acStr1= ${ac.acStr1} ac2.acStr1= ${ac2.acStr1}")
         prin("ac.acStr2= ${ac.acStr2} ac2.acStr2= ${ac2.acStr2}")
@@ -236,6 +279,7 @@ class SampleTests {
     @ExperimentalTime
     @Test
     fun newTest(){
+        prinp("\n==== newTest() Mulai ==== \n")
         data class Point(var x: Int, var y: Int= 198)
         measureTime { prin(Poin::class.si) }.also { prine("timeTaken= $it") }
         measureTime { prin(new(Point::class.si)) }.also { prine("timeTaken= $it") }
@@ -244,6 +288,7 @@ class SampleTests {
     @ExperimentalTime
     @Test
     fun nativeNewTest(){
+        prinp("\n==== nativeNewTest() Mulai ==== \n")
         data class Point(var x: Int, var y: Int= 198)
         measureTime { prin(Poin::class) }.also { prine("timeTaken= $it") }
         measureTime { prin(nativeNew(Point::class)) }.also { prine("timeTaken= $it") }
@@ -251,6 +296,7 @@ class SampleTests {
 
     @Test
     fun typeAssignableTest(){
+        prinp("\n==== typeAssignableTest() Mulai ==== \n")
         val everyone= Everyone()
         val american= American()
 
@@ -280,6 +326,7 @@ class SampleTests {
 
     @Test
     fun enumTest(){
+        prinp("\n==== enumTest() Mulai ==== \n")
         prin("Enum::class.si= ${Enum::class.si}")
         prin("Comparable::class.si= ${Comparable::class.si}")
         prin("Enum::class.si.typeParameters.first().upperBounds= ${Enum::class.si.typeParameters.firstOrNull()?.upperBounds}")
@@ -306,6 +353,13 @@ class SampleTests {
 
     @Test
     fun annotationTest(){
+        prinp("\n==== annotationTest() Mulai ==== \n")
+        prinp("\n==== annotationTest() Perantara Mulai ==== \n")
+        for((i, member) in AC::class.si.members.withIndex()){
+            prin("i= $i member= $member")
+        }
+        prinp("\n==== annotationTest() Perantara Selesai ==== \n")
+
         prin("\n============= Anotasi::class.si.members ===============\n")
         for((i, member) in Anotasi::class.si.members.withIndex()){
             prin("i= $i member= $member")
@@ -331,6 +385,7 @@ class SampleTests {
     @ExperimentalTime
     @Test
     fun annotationCallTest(){
+        prinp("\n==== annotationCallTest() Mulai ==== \n")
         val ac= AC<BlaBla2>()
         if(platform == Platform.JS){
             val funAnot = nativeNew(FunAnot::class)!!
@@ -396,6 +451,7 @@ class SampleTests {
 
     @Test
     fun renameTest(){
+        prinp("\n==== renameTest() Mulai ==== \n")
         val poin= Poin(y=101)
         if(platform == Platform.JS){
             poin::class.si.annotateMember("aa_diPoin", SiRename("aa_aa_diPoin"))

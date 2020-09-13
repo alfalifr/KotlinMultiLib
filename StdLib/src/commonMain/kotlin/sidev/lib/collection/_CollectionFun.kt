@@ -1,6 +1,8 @@
 package sidev.lib.collection
 
 import sidev.lib.collection.sequence.toOtherSequence
+import sidev.lib.console.log
+import sidev.lib.console.prine
 
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
@@ -47,6 +49,8 @@ fun <T> MutableList<T>.removeLast(element: T): Boolean{ //= if(isEmpty()) throw 
  * Fungsi ini menggunakan standard equals().
  */
 inline fun <T> MutableList<T>.addIfAbsent(element: T, chekcFun: ((existingElement: T) -> Boolean)= {true}): Boolean{
+    prine("MutableList<T>.addIfAbsent() this::class= ${this::class} this= $this")
+    log(this)
     val existingElementIndex= indexOf(element)
     val canAdd= existingElementIndex < 0 || !chekcFun(this[existingElementIndex])
     if(canAdd)

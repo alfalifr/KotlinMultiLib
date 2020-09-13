@@ -1,6 +1,5 @@
 package sidev.lib.reflex.js
 
-import sidev.lib.console.prine
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 
 /**
@@ -40,15 +39,18 @@ fun getDeclaredFunction(any: Any): List<JsCallable<*>>{
                             try{ eval("newFun = $newNamedFunStr") }
                             catch (e: Throwable){ eval("temp = ${funReturningFun(funName, newNamedFunStr)}") }
  */
+/*
                         val newFun = try {
-                            val newNamedFunStr= createNativeFunStr(funName, paramStr, blockStr, false) //"function $funName($paramStr) { try{ $blockStr } catch(e){ if(!(e instanceof ReferenceError)) throw e; else console.log('Terjadi ReferenceError dalam $funName: ' +e) } }"
+                            val newNamedFunStr= createNativeFunStr(func, funName, paramStr, blockStr) //"function $funName($paramStr) { try{ $blockStr } catch(e){ if(!(e instanceof ReferenceError)) throw e; else console.log('Terjadi ReferenceError dalam $funName: ' +e) } }"
                             val temp= null
                             eval("temp = $newNamedFunStr")
                         } catch (e: Throwable){
                             val isMemberFunc= isFunMember(blockStr)
-                            createFunWrapper(funName, paramStr, func, isMemberFunc)
+                            createFunWrapper(func, funName, paramStr, isMemberFunc)
                         }
-
+ */
+                        val isMemberFunc= isFunMember(blockStr)
+                        val newFun = createFunWrapper(func, funName, paramStr, isMemberFunc)
                         func= newFun
 
                         //TODO <24 Agustus 2020> => setProperty(any.prototype, prop.first, func) dapat merubah fungsi yg semula gak terjadi ReferenceError jadi ada.
@@ -84,12 +86,20 @@ fun funReturningFun(funName: String, returnedFunName: String): dynamic{
 |}""".trimMargin())
 }
 
-fun createNativeFunStr(name: String, paramStr: String, blockStr: String, withRefErrorSafety: Boolean= true): String{
+fun createNativeFunStr(fromFunc: dynamic, name: String, paramStr: String, blockStr: String, withRefErrorSafety: Boolean= true): String{
+    val isMember= isFunMember(blockStr)
     val reformedBlockStr= if(withRefErrorSafety) """
 |try{ $blockStr } 
 |catch(e){ 
 |   if(!(e instanceof ReferenceError)) throw e; 
-|   else console.error('Terjadi ReferenceError dalam $name: ' +e) 
+|   else try{
+|     var temp= null
+|     var func= (temp = ${createFunWrapperStr(fromFunc, name, paramStr, "", isMember, false)})
+|     return ${createFunCallStr("func", paramStr, isMember)}
+|   } catch(e){
+|      if(!(e instanceof ReferenceError)) throw e;
+|      console.error('Terjadi ReferenceError dalam $name($paramStr): ' +e) 
+|   } 
 |}""".trimMargin()
     else blockStr
 
@@ -101,16 +111,11 @@ fun createNativeFunStr(name: String, paramStr: String, blockStr: String, withRef
  * Fungsi pembungkus ini berguna untuk fungsi yg didalamnya memiliki deklarasi internal
  * sehingga tidak bisa dipanggil di luar fungsi asli [func].
  */
-fun createFunWrapper(name: String, paramStr: String, func: dynamic, isMemberFunc: Boolean= true): dynamic{
-    val funcCallStr= if(isMemberFunc) "func.call(this${ if(paramStr.isNotBlank()) ", $paramStr" else "" })"
-        else "func($paramStr)"
+fun createFunWrapper(fromFunc: dynamic, name: String, paramStr: String, isMemberFunc: Boolean= true, isNamedFun: Boolean= true): dynamic{
     val temp= null
-//    prine("createFunWrapper() paramStr= $paramStr funcCallStr= $funcCallStr func= $func isimember= $isMemberFunc")
-    return eval("""
-        temp = function $name($paramStr){
-            return $funcCallStr
-        }
-    """.trimIndent())
+    val funStr= createFunWrapperStr(fromFunc, name, paramStr,
+        "", isMemberFunc, isNamedFun)
+    return eval("temp = $funStr")
     /*
             try{ return $funcCallStr }
             catch(e){
@@ -118,6 +123,39 @@ fun createFunWrapper(name: String, paramStr: String, func: dynamic, isMemberFunc
                 return func
             }
      */
+}
+
+/**
+ * Membungkus fungsi [func] dg fungsi baru dg nama [name].
+ * Fungsi pembungkus ini berguna untuk fungsi yg didalamnya memiliki deklarasi internal
+ * sehingga tidak bisa dipanggil di luar fungsi asli [func].
+ */
+fun createFunWrapperStr(
+    fromFunc: dynamic, name: String, paramStr: String, additionalBlockStr: String= "",
+    isMemberFunc: Boolean= true, isNamedFun: Boolean= true
+): String{
+    val funcCallStr= createFunCallStr("fromFunc", paramStr, isMemberFunc)
+    val funName= if(isNamedFun) name else ""
+
+//    prine("createFunWrapper() paramStr= $paramStr funcCallStr= $funcCallStr func= $func isimember= $isMemberFunc")
+    return """
+        function $funName($paramStr){
+            $additionalBlockStr
+            return $funcCallStr
+        }
+    """.trimIndent()
+    /*
+            try{ return $funcCallStr }
+            catch(e){
+                console.warn("Tidak dapat memanggil fungsi asli, return func= " +func +"\n  e= " +e)
+                return func
+            }
+     */
+}
+
+fun createFunCallStr(callableName: String, paramStr: String, isMemberFunc: Boolean= true): String{
+    return if(isMemberFunc) "$callableName.call(this${ if(paramStr.isNotBlank()) ", $paramStr" else "" })"
+    else "$callableName($paramStr)"
 }
 
 fun isFunMember(blockStr: String): Boolean = blockStr.contains("this.[\\S]".toRegex())

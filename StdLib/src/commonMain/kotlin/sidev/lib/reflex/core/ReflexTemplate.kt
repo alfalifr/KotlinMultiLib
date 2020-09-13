@@ -2,7 +2,7 @@ package sidev.lib.reflex.core
 
 import sidev.lib.reflex.native_.SiKClassifier
 import sidev.lib.reflex.SiType
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.reflect.KClassifier
 
 object ReflexTemplate{

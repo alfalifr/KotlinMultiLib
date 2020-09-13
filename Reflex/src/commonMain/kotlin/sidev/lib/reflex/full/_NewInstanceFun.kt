@@ -6,10 +6,9 @@ import sidev.lib.console.prine
 import sidev.lib.exception.ClassCastExc
 import sidev.lib.exception.NonInstantiableTypeExc
 import sidev.lib.reflex.*
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.takeLast
-import sidev.lib.console.str
 import sidev.lib.reflex.native_.SiNativeParameter
 import sidev.lib.reflex.native_.isDynamicEnabled
 import kotlin.reflect.KClass
@@ -544,5 +543,6 @@ fun <T: Any> new(clazz: SiClass<out T>, constructorParamClass: Array<SiClass<*>>
 //    prine("new() resNew= $resNew")
 //    prine("new() defParamVal= $defParamVal")
     return constr.forceCallBy(defParamVal)
+//        .also{ prine("new() result= $it constr.native= ${constr.descriptor.native}") }
 }
 

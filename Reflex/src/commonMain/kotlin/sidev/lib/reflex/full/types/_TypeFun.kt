@@ -7,7 +7,7 @@ import sidev.lib.reflex.full.classesTree
 import sidev.lib.reflex.full.isObjectArray
 import sidev.lib.reflex.full.isPrimitiveArray
 import sidev.lib.reflex.full.typesTree
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.reflect.KType
 
 //TODO <28 Agustus 2020> => Pengecekan typeParam pada Js msh blum bisa karena Kotlin/Js msh blum bisa refleksi.

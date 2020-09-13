@@ -98,7 +98,7 @@ internal actual fun getNativeMembers(nativeClass: Any): Sequence<Any>
 
 //TODO <16 Agustus 2020> => untuk smtr konstruktor hanya bisa didapatkan 1.
 internal actual fun getNativeConstructors(nativeClass: Any): Sequence<Any>
-        = Sequence { iteratorSimple(JsCallableImpl<Any>(jsConstructor(nativeClass.jsClass) as Any)) }
+        = Sequence { iteratorSimple(JsConstructorImpl<Any>(jsConstructor(nativeClass.jsClass) as Any)) }
 /*
         = object : Sequence<JsCallable<Any>>{
     override fun iterator(): Iterator<JsCallable<Any>> = object : Iterator<JsCallable<Any>>{

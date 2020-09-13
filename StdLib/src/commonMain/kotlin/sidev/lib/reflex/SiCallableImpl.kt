@@ -66,7 +66,7 @@ internal abstract class SiCallableImpl<out R>
         // Mungkin marker, misalkan DefaultConstructorMarker dan Object pada fungsi biasa.
         passedArgs.add(null)
 
-//        prine("callBy: passedArgs= $passedArgs")
+//        prine("callBy: fun= $name passedArgs= $passedArgs")
 
         return defaultCallBlock!!(passedArgs.toTypedArray())
     }
@@ -88,6 +88,7 @@ internal abstract class SiCallableImpl<out R>
             for(i in processedArgs.size until parameters.size){
                 if(parameters[i].isOptional.not())
                     throw IllegalArgumentException("""Fungsi: "$this" butuh ${parameters.size}, argumen yg tersedia sebanyak ${processedArgs.size} tidak dapat mencukupi paramater wajib.""")
+//                        .also { prine("validateArgs(): fun= $name error= $it") }
             }
         }
     }

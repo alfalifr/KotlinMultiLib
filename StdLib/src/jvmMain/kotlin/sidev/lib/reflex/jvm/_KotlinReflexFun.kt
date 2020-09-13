@@ -5,7 +5,6 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.collection.findIndexed
 import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.collection.sequence.NestedSequence
-import sidev.lib.collection.sequence.nestedSequence
 import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.reflex.*
 //import sidev.lib.reflex.comp.SiType
@@ -13,7 +12,7 @@ import sidev.lib.reflex.core.ReflexFactory
 import sidev.lib.reflex.core.ReflexLoader
 import sidev.lib.reflex.core.createNativeWrapper
 import sidev.lib.reflex.core.createType
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.reflect.*
 import kotlin.reflect.full.superclasses
 

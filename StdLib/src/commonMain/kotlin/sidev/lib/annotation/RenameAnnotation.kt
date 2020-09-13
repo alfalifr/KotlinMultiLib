@@ -1,7 +1,6 @@
 package sidev.lib.annotation
 
 import sidev.lib.reflex.*
-import sidev.lib.reflex.native_.si
 
 /**
  * Digunakan untuk menandai bahwa element yg ditandai dg anotasi ini memiliki nama yg berbeda

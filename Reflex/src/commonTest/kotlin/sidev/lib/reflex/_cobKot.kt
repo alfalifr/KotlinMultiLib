@@ -3,7 +3,6 @@ package sidev.lib.reflex
 import sidev.lib.collection.lazy_list.cachedSequenceOf
 import sidev.lib.console.prin
 import sidev.lib.reflex.full.primaryConstructor
-import sidev.lib.reflex.native_.si
 import kotlin.test.Test
 
 fun afa(){

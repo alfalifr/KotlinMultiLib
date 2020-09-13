@@ -30,4 +30,9 @@ class SampleTestsJS {
         prin(jsConstructor(Poin::class.jsClass))
         prin(jsConstructor(Poin::class.jsClass))
     }
+
+    @Test
+    fun cobTest(){
+        log(AC::class.si)
+    }
 }

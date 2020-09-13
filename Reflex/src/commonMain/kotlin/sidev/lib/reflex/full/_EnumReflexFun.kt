@@ -1,7 +1,7 @@
 package sidev.lib.reflex.full
 
 import sidev.lib.reflex.SiProperty1
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.jvm.JvmName
 
 /** Mengambil semua enum anggota `this.extension` [Enum] [Enum.ordinal] dan [Enum.name]. */

@@ -3,7 +3,6 @@ package sidev.lib.reflex.full
 import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
-import sidev.lib.console.prine
 import sidev.lib.reflex.SiCallable
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiParameter
@@ -11,7 +10,7 @@ import sidev.lib.reflex.core.ReflexTemplate
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.native_.getIsAccessible
 import sidev.lib.reflex.native_.setIsAccessible
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.jvm.JvmName
 import kotlin.reflect.KCallable
 

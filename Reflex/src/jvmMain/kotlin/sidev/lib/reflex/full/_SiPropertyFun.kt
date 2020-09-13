@@ -2,7 +2,7 @@
 
 package sidev.lib.reflex.full
 
-import sidev.lib.property.UNINITIALIZED_VALUE
+import sidev.lib.property.SI_UNINITIALIZED_VALUE
 import sidev.lib.reflex.SiProperty1
 import java.lang.Error
 import java.lang.reflect.InvocationTargetException
@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException
 
 internal actual fun <T, V> SiProperty1<T, V>.handleNativeForceGet(receiver: T, exceptionFromCommon: Throwable): V = when(exceptionFromCommon){
     is InvocationTargetException -> when(exceptionFromCommon.cause){
-        is UninitializedPropertyAccessException -> UNINITIALIZED_VALUE
+        is UninitializedPropertyAccessException -> SI_UNINITIALIZED_VALUE
         else -> throw exceptionFromCommon
     } as V
     is Error -> when(exceptionFromCommon.message){

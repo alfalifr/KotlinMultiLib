@@ -6,7 +6,7 @@ import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.inner.KotlinReflexConst
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.reflex.jvm.JvmReflexConst
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Type
@@ -42,27 +42,6 @@ actual val SiClass<*>.isPrimitiveArray: Boolean get()= when(val native= descript
     }
     is Class<*> -> native.isArray && native.componentType?.isPrimitive == true
     else -> throw ReflexComponentExc(currentReflexedUnit = native ?: "<null>", detMsg = "`this` bkn merupakan golongan Class.")
-}
-
-@get:JvmName("isNativeReflexUnit")
-actual val Any.isNativeReflexUnit: Boolean get()= when(this){
-    is KParameter -> true
-    is KCallable<*> -> true
-    is KClass<*> -> true
-    is KType -> true
-    is KTypeParameter -> true
-    is KClassifier -> true
-
-    is AccessibleObject -> true
-    is Type -> true
-
-    else -> false
-}
-
-@get:JvmName("isNativeDelegate")
-internal actual val Any.isNativeDelegate: Boolean get(){
-    return this::class.java.methods.find { JvmReflexConst.isDelegateGetValueMethod(it, this::class.java) } != null
-            || this::class.java.methods.find { JvmReflexConst.isDelegateSetValueMethod(it, this::class.java) } != null
 }
 
 @get:JvmName("isNativeInterface")

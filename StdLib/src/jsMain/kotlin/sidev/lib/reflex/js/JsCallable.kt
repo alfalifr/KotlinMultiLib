@@ -58,7 +58,7 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
     enum class CallKind{ CALL, NEW }
 
 
-    private var isPureJsFunction: Boolean= true //hanya boleh diubah pada constructor.
+    protected var isPureJsFunction: Boolean= true //hanya boleh diubah pada constructor.
 
     override val innerName: String
         get() = jsNativeName(func)

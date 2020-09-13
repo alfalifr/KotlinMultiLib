@@ -8,7 +8,7 @@ import sidev.lib.reflex.full.callBySafely
 import sidev.lib.reflex.full.declaredMemberFunctions
 import sidev.lib.reflex.full.implementedPropertyValuesTree
 import sidev.lib.reflex.full.isSuperclassOf
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.reflex.realAnnotation
 
 interface AnnotatedFunctionClass {

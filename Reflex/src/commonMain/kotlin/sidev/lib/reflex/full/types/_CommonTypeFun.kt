@@ -13,7 +13,7 @@ import sidev.lib.reflex.SiTypeProjection
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.classesTree
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)

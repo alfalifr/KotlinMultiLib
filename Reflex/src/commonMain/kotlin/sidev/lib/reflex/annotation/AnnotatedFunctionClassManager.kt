@@ -5,7 +5,7 @@ import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.full.callBySafely
 import sidev.lib.reflex.full.isSuperclassOf
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.reflex.realAnnotation
 
 /** Implemtasi dari [AnnotatedFunctionClass], disertai cache. */

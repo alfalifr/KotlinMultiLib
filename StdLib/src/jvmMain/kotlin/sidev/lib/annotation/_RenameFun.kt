@@ -2,7 +2,7 @@
 package sidev.lib.annotation
 
 import sidev.lib.reflex.*
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import kotlin.reflect.*
 import kotlin.reflect.full.findAnnotation
 

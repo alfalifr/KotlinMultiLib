@@ -4,7 +4,7 @@ import sidev.lib.platform.Platform
 import sidev.lib.platform.platform
 import sidev.lib.platform.putInternalObjectOnGlobal
 import sidev.lib.reflex.core.createType
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 
 /**
  * Tipe data yg digunakan untuk menunjukan tipe null.

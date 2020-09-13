@@ -4,10 +4,10 @@ import sidev.lib.check.notNullTo
 import sidev.lib.collection.iterator.NestedIteratorSimple
 import sidev.lib.collection.iterator.NestedIteratorSimpleImpl
 import sidev.lib.collection.iterator.skip
-import sidev.lib.property.UNINITIALIZED_VALUE
+import sidev.lib.property.SI_UNINITIALIZED_VALUE
 import sidev.lib.reflex.*
 //import sidev.lib.reflex.SiReflexImpl
-import sidev.lib.reflex.native_.si
+import sidev.lib.reflex.si
 import sidev.lib.collection.sequence.NestedSequence
 import kotlin.jvm.JvmName
 import kotlin.properties.ReadOnlyProperty
@@ -23,9 +23,6 @@ internal expect val SiClass<*>.isNativeInterface: Boolean
 expect val <T: Any> SiClass<T>.primaryConstructor: SiFunction<T>
 expect val SiClass<*>.sealedSubclasses: Sequence<SiClass<*>>
 expect val SiClass<*>.isAnonymous: Boolean
-
-internal expect val Any.isNativeReflexUnit: Boolean
-internal expect val Any.isNativeDelegate: Boolean
 
 /*
 val <T: Any> SiClass<T>.kotlin: KClass<T>
@@ -54,23 +51,6 @@ val SiClass<*>.isCollection: Boolean
 val SiClass<*>.isMap: Boolean
     get()= isSubclassOf(Map::class.si)
 
-
-@get:JvmName("isReflexUnit")
-val Any.isReflexUnit: Boolean
-    get()= this is SiReflex || this is SiDescriptor
-            || isNativeReflexUnit
-
-@get:JvmName("isUninitializedValue")
-val Any.isUninitializedValue: Boolean
-    get()= this == UNINITIALIZED_VALUE //this::class == UNINITIALIZED_VALUE::class
-
-@get:JvmName("isDelegate")
-val Any.isDelegate: Boolean get()= when(this){
-//    is Lazy<*> -> true //Gak semua Lazy adalah delegate. Hal teresebut dikarenakan Lazy gak punya fungsi getValue() sbg instance member.
-    is ReadOnlyProperty<*, *> -> true
-    is ReadWriteProperty<*, *> -> true
-    else -> isNativeDelegate.let { if(!it) this is Lazy<*> else it } //Ternyata ada built-in delegate yaitu lazy yg gak punya fungsi getValue() / setValue().
-}
 
 //<23 Agustus 2020> => implementasi diganti menjadi [isNativeInterface], karena jika isAbstract && !isInstantiable,
 // belum tentu merupakan interface. Bisa jadi itu adalah abstract kelas yg hanya bisa di-instansiasi lewat builder di dalamnya.
