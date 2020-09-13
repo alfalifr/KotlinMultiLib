@@ -8,7 +8,7 @@ import sidev.lib.reflex.SiModifier
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility
-import sidev.lib.reflex.inner.KotlinReflex
+import sidev.lib.reflex.inner.KotlinReflexConst
 import sidev.lib.reflex.jvm.JvmReflexConst
 import sidev.lib.reflex.jvm.si
 import sidev.lib.structure.data.value.Val
@@ -124,7 +124,7 @@ internal actual fun <T> getFuncDefaultCallBlock(nativeFuncHost: Any, nativeFunc:
     val funcName= when(nativeFunc){
         is KFunction<*> -> {
             nativeFunc.name.also {
-                isConstructor= it == KotlinReflex.K_FUNCTION_CONSTRUCTOR_NAME
+                isConstructor= it == KotlinReflexConst.K_FUNCTION_CONSTRUCTOR_NAME
             }
         }
 /*

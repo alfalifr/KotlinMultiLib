@@ -61,7 +61,7 @@ object ReflexLoader{
         getNativeConstructors(nativeClass).map { nativeConstr ->
             ReflexFactory.createFunctionLazyly(
                 createNativeWrapper(nativeConstr), null, //getReturnType(nativeConstr),
-                callBlock = getConstrCallBlock<T>(nativeClass, nativeConstr), //loadSiParam(nativeConstr).toList()
+                //callBlock = getConstrCallBlock<T>(nativeClass, nativeConstr), //loadSiParam(nativeConstr).toList()
                 //defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeConstr),
                 modifier = getModifiers(nativeConstr)
             ) //.also { func -> func.parameters.forEach { it.mutableHost= func } }
@@ -82,9 +82,9 @@ object ReflexLoader{
 
     fun loadSiFunction(nativeClass: Any): Sequence<SiFunction<*>> =
         getNativeFunctions(nativeClass).map { nativeFunc ->
-            ReflexFactory.createFunctionLazyly(
+            ReflexFactory.createFunctionLazyly<Any?>(
                 createNativeWrapper(nativeFunc), null, //getReturnType(nativeFunc),
-                callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc), //loadSiParam(nativeFunc).toList()
+                //callBlock = getFuncCallBlock<Any?>(nativeClass, nativeFunc), //loadSiParam(nativeFunc).toList()
                 //defaultCallBlock = getFuncDefaultCallBlock(nativeClass, nativeFunc),
                 modifier = getModifiers(nativeFunc)
             )

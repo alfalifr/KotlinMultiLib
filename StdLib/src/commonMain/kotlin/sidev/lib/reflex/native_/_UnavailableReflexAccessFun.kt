@@ -1,6 +1,7 @@
 package sidev.lib.reflex.native_
 
 import sidev.lib.console.prine
+import sidev.lib.exception.ReflexStateExc
 import sidev.lib.platform.platform
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
@@ -24,6 +25,11 @@ internal fun <T> unavailableReflexAcces_list(callerFunName: String, fromUnit: An
 internal fun unavailableReflexAcces_any(callerFunName: String, fromUnit: Any, getUnit: String): Any?{
     printUnavailableReflexWarning(callerFunName, fromUnit, getUnit, "null")
     return null
+}
+internal fun unavailableReflexAcces_throw(callerFunName: String, fromUnit: Any, getUnit: String): Nothing{
+    printUnavailableReflexWarning(callerFunName, fromUnit, getUnit, "throw")
+    throw ReflexStateExc(relatedReflexUnit = fromUnit, currentState = "Platform == \"${platform.name}\"",
+    detMsg = "Reflex belum tersedia pada platform: \"${platform.name}\"")
 }
 internal fun unavailableReflexAcces_siType(callerFunName: String, fromUnit: Any): SiType {
     printUnavailableReflexWarning(callerFunName, fromUnit, "`SiType`", ReflexTemplate.typeDynamic.toString())

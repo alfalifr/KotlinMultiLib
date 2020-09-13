@@ -1,8 +1,7 @@
 package sidev.lib.reflex.jvm
 
 import sidev.lib.check.asNotNullTo
-import sidev.lib.console.prine
-import sidev.lib.reflex.inner.KotlinReflex
+import sidev.lib.reflex.inner.KotlinReflexConst
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -54,7 +53,7 @@ object JvmReflexConst{
 
     fun isDelegateGetValueMethodOf(javaMethod: Method, property: KProperty<*>): Boolean{
         val paramTypes= javaMethod.parameterTypes
-        return javaMethod.name == KotlinReflex.K_DELEGATE_GET_VALUE_FUNCTION_NAME
+        return javaMethod.name == KotlinReflexConst.K_DELEGATE_GET_VALUE_FUNCTION_NAME
                 && paramTypes.size == 2
                 && paramTypes.last().kotlin.isSubclassOf(KProperty::class)
                 && property.returnType.classifier.asNotNullTo { cls: KClass<*> ->
@@ -64,7 +63,7 @@ object JvmReflexConst{
 
     fun isDelegateSetValueMethodOf(javaMethod: Method, property: KProperty<*>): Boolean{
         val paramTypes= javaMethod.parameterTypes
-        return javaMethod.name == KotlinReflex.K_DELEGATE_SET_VALUE_FUNCTION_NAME
+        return javaMethod.name == KotlinReflexConst.K_DELEGATE_SET_VALUE_FUNCTION_NAME
                 && paramTypes.size == 3
                 && paramTypes[1].kotlin.isSubclassOf(KProperty::class)
                 && property.returnType.classifier.asNotNullTo { cls: KClass<*> ->
@@ -74,7 +73,7 @@ object JvmReflexConst{
 
     fun isDelegateGetValueMethod(javaMethod: Method, propClass: Class<*>): Boolean{
         val paramTypes= javaMethod.parameterTypes
-        return javaMethod.name == KotlinReflex.K_DELEGATE_GET_VALUE_FUNCTION_NAME
+        return javaMethod.name == KotlinReflexConst.K_DELEGATE_GET_VALUE_FUNCTION_NAME
                 && paramTypes.size == 2
                 && paramTypes.last().kotlin.isSubclassOf(KProperty::class)
                 && propClass.isAssignableFrom(javaMethod.returnType)
@@ -82,7 +81,7 @@ object JvmReflexConst{
 
     fun isDelegateSetValueMethod(javaMethod: Method, propClass: Class<*>): Boolean{
         val paramTypes= javaMethod.parameterTypes
-        return javaMethod.name == KotlinReflex.K_DELEGATE_SET_VALUE_FUNCTION_NAME
+        return javaMethod.name == KotlinReflexConst.K_DELEGATE_SET_VALUE_FUNCTION_NAME
                 && paramTypes.size == 3
                 && paramTypes[1].kotlin.isSubclassOf(KProperty::class)
                 && propClass.isAssignableFrom(paramTypes.last())

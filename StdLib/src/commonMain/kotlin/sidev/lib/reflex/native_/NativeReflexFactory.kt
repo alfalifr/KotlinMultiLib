@@ -1,6 +1,5 @@
 package sidev.lib.reflex.native_
-/*
-Untuk smtr gak dipake karena ada di modul Reflex agar fungsi _createNativeParameter bisa memanggil fungsi getSiNativeParameter
+
 import kotlin.reflect.KClass
 
 object NativeReflexFactory {
@@ -16,8 +15,10 @@ object NativeReflexFactory {
         override val isGeneric: Boolean = isGeneric
     }
 
-    internal fun _createNativeParameter(
+    /**
+     * Fungsi ini dkhususkan untuk penggunaan internal dalam library.
+     */
+    /*internal */fun _createNativeParameter(
         nativeParameter: Any
     ): SiNativeParameter = getSiNativeParameter(nativeParameter)
 }
- */

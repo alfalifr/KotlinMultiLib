@@ -8,6 +8,9 @@ import kotlin.sequences.SequencesKt;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import sidev.lib.collection.lazy_list._LazyListFunKt;
+import sidev.lib.number._ArithmethicFunKt;
+import sidev.lib.number._NumberFunKt;
+
 import static kotlin.collections.CollectionsKt.*;
 import java.util.Iterator;
 import java.util.Optional;
@@ -19,6 +22,7 @@ import static sidev.lib.check._CheckFunKt.*;
 
 import static kotlin.sequences.SequencesKt.*;
 import static kotlin.TuplesKt.*;
+import static sidev.lib.console._ConsoleFunJvm.prin;
 
 public class SampleTestJava {
     class AA{
@@ -66,5 +70,13 @@ public class SampleTestJava {
 
     <T, O> O ad(T a){
         return (O) a;
+    }
+
+    @Test
+    public void cob(){
+        prin(_NumberFunKt.isNegative(1));
+        prin(_NumberFunKt.asNumber(1).floatValue());
+        prin(_ArithmethicFunKt.pow(2, 3));
+        Number n= 1;
     }
 }

@@ -22,5 +22,7 @@ object KotlinJsConst{
     const val K_FUNCTION_NAME_PREFIX = "Function"
     const val LAZY_DELEGATE_NAME= "UnsafeLazyImpl"
     const val LAZY_DELEGATE_INITIALIZER_NAME= "initializer_0"
+
+    const val KOTLIN_JS_NOT_SUPPORT_ANNOTATION_YET_MSG= "Kotlin/Js belum support anotasi pada runtime"
 //    const val FUNCTION_DEFAULT_PARAMETER_PATTERN_VALUE_ASSIGNMENT = "$ = "
 }

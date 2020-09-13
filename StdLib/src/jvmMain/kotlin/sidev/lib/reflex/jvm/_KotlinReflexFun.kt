@@ -3,6 +3,10 @@ package sidev.lib.reflex.jvm
 
 import sidev.lib.check.asNotNullTo
 import sidev.lib.collection.findIndexed
+import sidev.lib.collection.iterator.iteratorSimple
+import sidev.lib.collection.sequence.NestedSequence
+import sidev.lib.collection.sequence.nestedSequence
+import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.reflex.*
 //import sidev.lib.reflex.comp.SiType
 import sidev.lib.reflex.core.ReflexFactory
@@ -11,6 +15,7 @@ import sidev.lib.reflex.core.createNativeWrapper
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.native_.si
 import kotlin.reflect.*
+import kotlin.reflect.full.superclasses
 
 
 internal val KType.si: SiType get()= ReflexFactory.createType(
@@ -81,3 +86,19 @@ internal val KVisibility.si: SiVisibility get()= when(this){
     KVisibility.INTERNAL -> SiVisibility.INTERNAL
     KVisibility.PRIVATE -> SiVisibility.PRIVATE
 }
+
+@get:JvmName("isInterface")
+val KClass<*>.isInterface: Boolean
+    get()= isAbstract && constructors.isEmpty()
+
+@get:JvmName("classesTree")
+val KClass<*>.classesTree: NestedSequence<KClass<*>>
+    get()= nestedSequenceSimple(this){
+        it.superclasses.iterator()
+    }
+
+@get:JvmName("extendingClassesTree")
+val KClass<*>.extendingClassesTree: NestedSequence<KClass<*>>
+    get()= nestedSequenceSimple(this){
+        it.superclasses.find { !it.isInterface }?.let { iteratorSimple(it) }
+    }

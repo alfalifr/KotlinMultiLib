@@ -88,7 +88,7 @@ open class AC<T>(val poinConstr: Poin): Z, Y, X, AB(), AnnotatedFunctionClass
         where T: BlaBla, T: BlaBlaInt{
     constructor(): this(Poin(1, 3))
 
-    override val manager: AnnotatedFunctionClassManager? = AnnotatedFunctionClassManager(owner)
+    override val annotatedFunctionClassManager: AnnotatedFunctionClassManager? = AnnotatedFunctionClassManager(annotatedFunctionClassOwner)
 
     val ac= "ppop"
     private var acPriv= "aaa"

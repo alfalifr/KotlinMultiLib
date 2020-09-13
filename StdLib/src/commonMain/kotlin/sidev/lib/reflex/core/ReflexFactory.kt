@@ -190,12 +190,14 @@ object ReflexFactory{
         typeParameters: List<SiTypeParameter> = emptyList(),
         modifier: Int= 0,
         defaultCallBlock: ((args: Array<out Any?>) -> R)?= null,
-        callBlock: (args: Array<out Any?>) -> R
+        callBlock: ((args: Array<out Any?>) -> R)?= null
     ): SiCallable<R> = object : SiCallableImplDelegate<R>(){
         override val annotations: MutableList<Annotation> by lazy {
             getNativeAnnotations(nativeCounterpart.implementation).toMutableList()
         }
-        override val callBlock: (args: Array<out Any?>) -> R = callBlock
+        override val callBlock: (args: Array<out Any?>) -> R by lazy {
+            callBlock ?: getFuncCallBlock<R>((descriptor.host as SiClass<*>).descriptor.native!!, descriptor.native!!)
+        }
         override val defaultCallBlock: ((args: Array<out Any?>) -> R)? by lazy {
             defaultCallBlock ?: run {
                 val nativeClass= (descriptor.host as? SiClass<*>)?.descriptor?.native
@@ -255,6 +257,8 @@ object ReflexFactory{
             }
             override val callBlock: (args: Array<out Any?>) -> R = callBlock
             override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
+            override fun call(vararg args: Any?): R = callable.call(*args)
+            override fun callBy(args: Map<SiParameter, Any?>): R = callable.callBy(args)
         }
     }
 
@@ -266,7 +270,7 @@ object ReflexFactory{
         typeParameters: List<SiTypeParameter> = emptyList(),
         modifier: Int= 0,
         defaultCallBlock: ((args: Array<out Any?>) -> R)?= null,
-        callBlock: (args: Array<out Any?>) -> R
+        callBlock: ((args: Array<out Any?>) -> R)?= null
     ): SiFunction<R> {
         val callable= createCallableLazyly(
             nativeCounterpart, host, parameters, typeParameters, modifier, defaultCallBlock, callBlock
@@ -278,8 +282,20 @@ object ReflexFactory{
             init{
                 callable.descriptor= this.descriptor
             }
-            override val callBlock: (args: Array<out Any?>) -> R = callBlock
-            override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = defaultCallBlock
+            override val callBlock: (args: Array<out Any?>) -> R by lazy {
+                callBlock ?: getFuncCallBlock<R>((descriptor.host as SiClass<*>).descriptor.native!!, descriptor.native!!)
+            }
+            override val defaultCallBlock: ((args: Array<out Any?>) -> R)? by lazy {
+                defaultCallBlock ?: run {
+                    val nativeClass= (descriptor.host as? SiClass<*>)?.descriptor?.native
+                    val nativeFunc= descriptor.native
+                    if(nativeClass != null && nativeFunc != null)
+                        getFuncDefaultCallBlock(nativeClass, nativeFunc)
+                    else null
+                }
+            }
+            override fun call(vararg args: Any?): R = callable.call(*args)
+            override fun callBy(args: Map<SiParameter, Any?>): R = callable.callBy(args)
         }
     }
 

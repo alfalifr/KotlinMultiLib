@@ -2,7 +2,7 @@ package sidev.lib.reflex;
 
 import org.junit.Test;
 import static sidev.lib.console._ConsoleFunJvm.*;
-import static sidev.lib.reflex.full._NewInstanceFunJvm.*;
+import static sidev.lib.reflex.full._NewInstanceFunKt.*;
 
 
 public class SampleTestJvmJ {

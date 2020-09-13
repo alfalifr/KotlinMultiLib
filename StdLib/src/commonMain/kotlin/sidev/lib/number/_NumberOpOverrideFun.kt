@@ -1,6 +1,5 @@
 package sidev.lib.number
 
-//import sidev.lib.reflex.clazz
 import sidev.lib.reflex.clazz
 import sidev.lib.exception.UndefinedDeclarationExc
 

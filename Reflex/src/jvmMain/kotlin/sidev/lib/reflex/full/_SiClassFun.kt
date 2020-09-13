@@ -5,7 +5,7 @@ package sidev.lib.reflex.full
 import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiFunction
-import sidev.lib.reflex.inner.KotlinReflex
+import sidev.lib.reflex.inner.KotlinReflexConst
 import sidev.lib.reflex.native_.si
 import sidev.lib.reflex.jvm.JvmReflexConst
 import java.lang.reflect.AccessibleObject
@@ -22,7 +22,7 @@ actual val SiClass<*>.isPrimitive: Boolean get()= when(val native= descriptor.na
 
 @get:JvmName("isObjectArray")
 actual val SiClass<*>.isObjectArray: Boolean get()= when(val native= descriptor.native){
-    is KClass<*> -> native.toString() == KotlinReflex.K_ARRAY_CLASS_STRING
+    is KClass<*> -> native.toString() == KotlinReflexConst.K_ARRAY_CLASS_STRING
     is Class<*> -> native.isArray && native.componentType?.isPrimitive?.not() == true
     else -> throw ReflexComponentExc(currentReflexedUnit = native ?: "<null>", detMsg = "`this` bkn merupakan golongan Class.")
 }

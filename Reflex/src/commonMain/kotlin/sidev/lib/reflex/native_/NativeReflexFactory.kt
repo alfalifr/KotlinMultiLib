@@ -1,5 +1,5 @@
 package sidev.lib.reflex.native_
-
+/*
 import kotlin.reflect.KClass
 
 object NativeReflexFactory {
@@ -19,3 +19,5 @@ object NativeReflexFactory {
         nativeParameter: Any
     ): SiNativeParameter = getSiNativeParameter(nativeParameter)
 }
+
+ */
