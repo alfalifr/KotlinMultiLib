@@ -1,9 +1,7 @@
 package sidev.lib.reflex.full
 
-import sidev.lib.check.asNotNullTo
 import sidev.lib.collection.sequence.nestedSequence
 import sidev.lib.collection.sequence.nestedSequenceSimple
-import sidev.lib.collection.iterator.skip
 import sidev.lib.exception.TypeExc
 import sidev.lib.property.SI_UNINITIALIZED_VALUE
 import sidev.lib.reflex.*
@@ -24,35 +22,6 @@ val SiClass<*>.memberFunctions: Sequence<SiFunction<*>>
 val <T: Any> SiClass<T>.memberProperties: Sequence<SiProperty1<T, *>>
     get()= members.asSequence().filter { it is SiProperty1<*, *> } as Sequence<SiProperty1<T, *>>
  */
-
-@get:JvmName("declaredMemberFunctions")
-val SiClass<*>.declaredMemberFunctions: Sequence<SiFunction<*>>
-    get()= members.asSequence().filter { it is SiFunction<*> } as Sequence<SiFunction<*>>
-
-@get:JvmName("declaredMemberProperties")
-val <T: Any> SiClass<T>.declaredMemberProperties: Sequence<SiProperty1<T, *>>
-    get()= members.asSequence().filter { it is SiProperty1<*, *> } as Sequence<SiProperty1<T, *>>
-
-
-@get:JvmName("declaredMemberPropertiesTree")
-val <T: Any> SiClass<T>.declaredMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
-    get()= nestedSequence(classesTree){ cls: SiClass<*> -> cls.declaredMemberProperties.iterator() }
-            as NestedSequence<SiProperty1<T, *>>
-
-@get:JvmName("nestedDeclaredMemberPropertiesTree")
-val SiClass<*>.nestedDeclaredMemberPropertiesTree: NestedSequence<SiProperty1<Any, *>>
-    get()= nestedSequence<SiClass<*>, SiProperty1<Any, *>>(classesTree, {
-        it.returnType.classifier.asNotNullTo { cls: SiClass<*> -> cls.classesTree.iterator() }
-    })
-    { cls: SiClass<*> -> cls.declaredMemberProperties.iterator() as Iterator<SiProperty1<Any, *>> } //as NestedSequence<SiProperty1<T, *>>
-
-@get:JvmName("implementedMemberPropertiesTree")
-val <T: Any> SiClass<T>.implementedMemberPropertiesTree: NestedSequence<SiProperty1<T, *>>
-    get()= declaredMemberPropertiesTree.skip { it.isAbstract }
-
-@get:JvmName("implementedNestedMemberPropertiesTree")
-val SiClass<*>.implementedNestedMemberPropertiesTree: NestedSequence<SiProperty1<Any, *>>
-    get()= nestedDeclaredMemberPropertiesTree.skip { it.isAbstract }
 
 
 @get:JvmName("implementedPropertyValues")
@@ -128,11 +97,6 @@ val <T: Any> T.implementedAccesiblePropertyValuesTree: Sequence<Pair<SiProperty1
         }
     }
  */
-
-
-@get:JvmName("declaredMemberFunctionsTree")
-val SiClass<*>.declaredMemberFunctionsTree: NestedSequence<SiFunction<*>>
-    get()= nestedSequence(classesTree){ cls: SiClass<*> -> cls.declaredMemberFunctions.iterator() }
 
 
 /**
