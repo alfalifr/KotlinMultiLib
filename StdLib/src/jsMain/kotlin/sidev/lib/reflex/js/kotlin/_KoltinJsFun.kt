@@ -1,6 +1,7 @@
 package sidev.lib.reflex.js.kotlin
 
 import sidev.lib.reflex.js.*
+import kotlin.reflect.KClass
 
 /** Untuk mengambil supertype yg disuntikan pada metadata oleh Kotlin Js. */
 fun kotlinSupertypes(func: Any): List<dynamic> = jsConstructor(func).unsafeCast<Any>().kotlinMetadata.interfaces
@@ -15,7 +16,8 @@ fun kotlinFun(func: Any): KotlinJsFunction{
 val Any.kotlinMetadata: KotlinJsMetadata
     get(){
         jsNotNull(this)
-        val meta= this.asDynamic().`$metadata$`
+        val metaOwner= if(this is KClass<*>) this.asDynamic().`jClass_1ppatx$_0` else this
+        val meta= metaOwner.`$metadata$`
         val ints= (meta.interfaces as Array<dynamic>).toList()
         return try{ KotlinJsMetadata(meta.kind, meta.simpleName, ints, meta.`$kClass$`) }
         catch (e: Throwable){ throw IllegalStateException("Objek: \"${str(this)}\" bkn merupakan kotlinFun dan gak punya metadata.") }

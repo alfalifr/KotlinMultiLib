@@ -192,6 +192,31 @@ fun <T> Array<T>.filterIndexed(predicate: (IndexedValue<T>) -> Boolean): List<In
 }
 
 
+fun <T> Array<T>.filterContainedIn(array: Array<T>): List<T> {
+    val out= ArrayList<T>()
+    for(e in this)
+        if(e in array)
+            out.add(e)
+    return out
+}
+fun <T> Iterable<T>.filterContainedIn(array: Array<T>): List<T> {
+    val out= ArrayList<T>()
+    for(e in this)
+        if(e in array)
+            out.add(e)
+    return out
+}
+
+
+fun CharSequence.filterContainedIn(array: Array<String>): List<String> {
+    val out= ArrayList<String>()
+    for(e in array)
+        if(e in this)
+            out.add(e)
+    return out
+}
+
+
 /*
 ================================
 Operator Overriding

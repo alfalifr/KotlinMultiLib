@@ -35,4 +35,11 @@ class SampleTestsJS {
     fun cobTest(){
         log(AC::class.si)
     }
+
+    @Test
+    fun intTest(){
+        prin(BlaBlaInt::class)
+        log(BlaBlaInt::class)
+        log(BlaBlaInt::class.asDynamic().`jClass_1ppatx$_0`)
+    }
 }

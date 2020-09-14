@@ -458,4 +458,10 @@ class SampleTests {
         }
         prin(poin::class.si.members.find { it.name == "aa_diPoin" }?.renamedName)
     }
+
+    @Test
+    fun interfaceTest(){
+        prin("BlaBlaInt::class.isInterface= ${BlaBlaInt::class.isInterface}")
+        prin("AC::class.isInterface= ${AC::class.isInterface}")
+    }
 }

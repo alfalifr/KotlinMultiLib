@@ -30,3 +30,11 @@ actual val KClass<*>.isCollection: Boolean
 @get:JvmName("classesTree")
 actual val KClass<*>.classesTree: NestedSequence<KClass<*>>
     get()= nestedSequenceSimple(this){ it.superclasses.iterator() }
+
+@get:JvmName("isInterface")
+actual val KClass<*>.isInterface: Boolean
+    get()= java.isInterface
+
+@get:JvmName("isCommonSealed")
+actual val KClass<*>.isCommonSealed: Boolean
+    get()= isSealed

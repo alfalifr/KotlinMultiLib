@@ -207,6 +207,8 @@ internal actual fun getModifiers(nativeReflexUnit: Any): Int {
                 modifier or SiModifier.ABSTRACT.id
             if(nativeReflexUnit.isOpen)
                 modifier or SiModifier.OPEN.id
+            if(nativeReflexUnit.isSealed)
+                modifier or SiModifier.SEALED.id
         }
         is KParameter -> {
             if(nativeReflexUnit.isOptional)

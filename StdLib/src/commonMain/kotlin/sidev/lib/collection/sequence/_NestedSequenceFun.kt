@@ -12,6 +12,31 @@ fun <O> NestedSequence<O>.withLevel(): Sequence<LeveledValue<O>>
     override fun iterator(): Iterator<LeveledValue<O>>
             = this@withLevel.iterator().withLevel()
 }
+fun <O> NestedSequence<O>.skip(func: (now: O) -> Boolean): Sequence<O>
+        = object : Sequence<O>{
+    override fun iterator(): Iterator<O>
+            = this@skip.iterator().skip(func)
+}
+
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <I, O> NestedIterator<I, O>.skip(func: (now: O) -> Boolean): SkippableIterator<O> {
+    val startInputItr= if(this is NestedIteratorImpl) startInputIterator else null
+    val start= if(this is NestedIteratorImpl) start else null
+
+    return if(this is NestedIteratorSimple<*>){
+        object : NestedIteratorSimpleImpl<O>(startInputItr as? Iterator<O>){
+            init{ this.start= start as? O }
+            override fun getOutputIterator(nowInput: O): Iterator<O>? = this@skip.getOutputIterator(nowInput as I)
+            override fun skip(now: O): Boolean = func(now)
+        }
+    } else object : NestedIteratorImpl<I, O>(startInputItr){
+        init{ this.start= start }
+        override fun getOutputIterator(nowInput: I): Iterator<O>? = this@skip.getOutputIterator(nowInput)
+        override fun getInputIterator(nowOutput: O): Iterator<I>? = this@skip.getInputIterator(nowOutput)
+        override fun skip(now: O): Boolean = func(now)
+    }
+}
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <I, O> NestedIterator<I, O>.withLevel(): LeveledNestedIterator<I, O> {
@@ -20,8 +45,7 @@ fun <I, O> NestedIterator<I, O>.withLevel(): LeveledNestedIterator<I, O> {
 
     return if(this is NestedIteratorSimple<*>){
         object : LeveledNestedIteratorSimpleImpl<O>(startInputItr as? Iterator<O>){
-            init{ this.start= start?.withLevel() as? LeveledValue<O>
-            }
+            init{ this.start= start?.withLevel() as? LeveledValue<O> }
 
             override fun getOutputValueIterator(nowInput: O): Iterator<O>?
                     = this@withLevel.getOutputIterator(nowInput as I)

@@ -6,6 +6,7 @@ import sidev.lib.reflex.js.JsPrimitiveType
 import sidev.lib.reflex.js.getSupertypes
 import sidev.lib.reflex.js.jsPureFunction
 import sidev.lib.collection.sequence.NestedSequence
+import sidev.lib.reflex.js.kotlin.kotlinMetadata
 import kotlin.reflect.KClass
 
 
@@ -38,3 +39,12 @@ actual val KClass<*>.classesTree: NestedSequence<KClass<*>>
             }
             .iterator()
     }
+
+
+actual val KClass<*>.isInterface: Boolean
+    get() {
+        return kotlinMetadata.kind == "interface"
+    }
+
+actual val KClass<*>.isCommonSealed: Boolean
+    get()= false //TODO <14 Sep 2020> => Karena Kotlin/Js blum bisa mengakses informasi sealed.
