@@ -12,6 +12,7 @@ import sidev.lib.reflex.full.*
 import sidev.lib.collection.sequence.NestedSequence
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 @get:JvmName("leastParamConstructor")
 val <T: Any> Class<T>.leastParamConstructor: Constructor<T>
@@ -81,6 +82,11 @@ val Class<*>.nestedDeclaredMemberPropertiesTree: NestedSequence<Field>
     })
     { cls: Class<*> -> cls.declaredFields.iterator() } //as NestedSequence<SiProperty1<T, *>>
 
+
+inline fun <reified T: Any> Class<*>.getFieldOf(name: String= ""): Field? = getFieldOf(T::class.java, name)
+fun <T: Any> Class<*>.getFieldOf(clazz: Class<T>, name: String= ""): Field?
+    = clazz.declaredFieldsTree.find { clazz.isAssignableFrom(it.type) && (name.isBlank() || it.name == name) }
+
 fun <T> Field.forceGet(receiver: Any): T{
     val initAccessible= isAccessible
     isAccessible= true
@@ -93,6 +99,15 @@ fun <T> Field.forceSet(receiver: Any, value: T){
     isAccessible= true
     set(receiver, value) // } catch (e: Throwable){ UNINITIALIZED_VALUE as V }
     isAccessible= initAccessible
+}
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Method.forceCall(receiver: Any, vararg args: Any?): T{
+    val initAccessible= isAccessible
+    isAccessible= true
+    val vals= invoke(receiver, *args) // } catch (e: Throwable){ UNINITIALIZED_VALUE as V }
+    isAccessible= initAccessible
+    return vals as T
 }
 
 @get:JvmName("javaFieldValues")

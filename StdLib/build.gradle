@@ -112,6 +112,16 @@ afterEvaluate {
         } else {
             artifactId = "$ARTIFACT_ID-$name"
         }
+
+        pom {
+            developers {
+                developer {
+                    id = "alfalifr"
+                    name = "Aliffiro" //"Aliaksandr Rasolka"
+                    email = "fathf48@gmail.com"
+                }
+            }
+        }
 /*
         for(arti in it.artifacts){
             if(arti.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated"

@@ -7,7 +7,10 @@ import sidev.lib.collection.sequence.nestedSequence
 import sidev.lib.reflex.SiClass
 import sidev.lib.reflex.SiFunction
 import sidev.lib.reflex.SiProperty1
+import sidev.lib.reflex.si
 import kotlin.jvm.JvmName
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 
 @get:JvmName("declaredMemberFunctions")
@@ -42,3 +45,13 @@ val <T: Any> SiClass<T>.implementedMemberPropertiesTree: NestedSequence<SiProper
 @get:JvmName("implementedNestedMemberPropertiesTree")
 val SiClass<*>.implementedNestedMemberPropertiesTree: NestedSequence<SiProperty1<Any, *>>
     get()= nestedDeclaredMemberPropertiesTree.skip { it.isAbstract }
+
+
+inline fun <T: Any, reified R: Any> SiClass<T>.getProperty(name: String= ""): SiProperty1<T, R>? = getProperty(R::class.si, name)
+fun <T: Any, R: Any> SiClass<T>.getProperty(clazz: SiClass<R>, name: String= ""): SiProperty1<T, R>?
+        = clazz.declaredMemberPropertiesTree.find {
+    (it.returnType.classifier.asNotNullTo { cls: SiClass<*> ->
+        clazz.isAssignableFrom(cls)
+    } ?: false)
+            && (name.isBlank() || it.name == name)
+} as? SiProperty1<T, R>

@@ -5,6 +5,8 @@ import sidev.lib.number.isZero
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.number.inc
 import sidev.lib.reflex.nativeSimpleNew
+import kotlin.js.JsName
+import kotlin.jvm.JvmName
 
 /*
 ===============
@@ -121,6 +123,8 @@ toString
  */
 
 val Map<*, *>.string: String
+    @JvmName("string")
+    @JsName("mapString")
     get(){
 //        return if(!this::class.si.isInstantiable){
         var res= "{"
@@ -133,9 +137,13 @@ val Map<*, *>.string: String
 //        else toString()
     }
 val Map<*, *>.namedString: String
+    @JvmName("namedString")
+    @JsName("mapNamedString")
     get()= "${this::class.simpleName}$string"
 
 val Collection<*>.string: String
+    @JvmName("string")
+    @JsName("collectionString")
     get(){
 //        return if(!this::class.si.isInstantiable){
         var res= "["
@@ -149,11 +157,15 @@ val Collection<*>.string: String
     }
 
 val Collection<*>.namedString: String
+    @JvmName("namedString")
+    @JsName("collectionNamedString")
     get()= "${this::class.simpleName}$string"
 
 
 
 val Array<*>.string: String
+    @JvmName("string")
+    @JsName("arrayString")
     get(){
         var str= "${this::class.simpleName}["
         for(e in this){
@@ -175,6 +187,8 @@ val Collection<*>.string: String
  */
 
 val IntArray.string: String
+    @JvmName("string")
+    @JsName("intArrayString")
     get(){
         var str= "${this::class.simpleName}["
         for(e in this){
@@ -184,6 +198,8 @@ val IntArray.string: String
         return "$str]"
     }
 val LongArray.string: String
+    @JvmName("string")
+    @JsName("longArrayString")
     get(){
         var str= "${this::class.simpleName}["
         for(e in this){
@@ -193,6 +209,8 @@ val LongArray.string: String
         return "$str]"
     }
 val DoubleArray.string: String
+    @JvmName("string")
+    @JsName("doubleArrayString")
     get(){
         var str= "${this::class.simpleName}["
         for(e in this){
@@ -202,6 +220,8 @@ val DoubleArray.string: String
         return "$str]"
     }
 val FloatArray.string: String
+    @JvmName("string")
+    @JsName("floatArrayString")
     get(){
         var str= "${this::class.simpleName}["
         for(e in this){

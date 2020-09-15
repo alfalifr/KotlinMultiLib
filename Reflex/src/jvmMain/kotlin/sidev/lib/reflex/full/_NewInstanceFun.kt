@@ -17,6 +17,7 @@ import sidev.lib.reflex.native_.*
 import java.lang.reflect.Field
 import java.lang.reflect.Parameter
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
 
 
 /*
@@ -107,6 +108,12 @@ actual fun <T: Any> T.nativeCloneOp(
     return newInstance
 }
 
+fun <T: Any> nativeNewK(clazz: KClass<T>, defParamValFunc: ((param: KParameter) -> Any?)?= null): T? = nativeNew(
+    clazz,
+    if(defParamValFunc != null) { it: SiNativeParameter ->
+        defParamValFunc(it.implementation as KParameter)
+    } else null
+)
 actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
     val javaClass= clazz.java
     val constr =  try{ javaClass.leastParamConstructor }

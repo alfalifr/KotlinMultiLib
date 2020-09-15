@@ -130,6 +130,16 @@ afterEvaluate {
         } else {
             artifactId = "$ARTIFACT_ID-$name"
         }
+
+        pom {
+            developers {
+                developer {
+                    id = "alfalifr"
+                    name = "Aliffiro"
+                    email = "fathf48@gmail.com"
+                }
+            }
+        }
 /*
         println "publication= $it props= ${it.properties}"
         for(prop in it.properties){
