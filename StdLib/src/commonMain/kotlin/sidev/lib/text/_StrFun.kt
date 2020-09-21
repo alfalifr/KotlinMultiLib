@@ -1,5 +1,8 @@
 package sidev.lib.text
 
+import kotlin.js.JsName
+import kotlin.jvm.JvmName
+
 //TODO <29 Juli 2020> => Buat validator angka (menghilangkan 0 di depan angka).
 fun <T> T.toString(func: (obj: T) -> String): String{
     return func(this)
@@ -87,3 +90,20 @@ fun String.shorten(maxLen: Int, strInMid: String= " ... "): String{
 
     return strPrefix +strInMid +strSuffix
 }
+
+/**
+ * Mengambil jumlah int code dari semua char yg ada di `this.extension`.
+ * Hasil yg di-return berupa `Long` agar dapat mengakomodasi string yg panjang.
+ *
+ * `Long` yg dihasilkan juga menambahkan elemen index agar string dg komposisi sama
+ * namun index berbeda menghasilkan Long yg berbeda. Contoh: "abc" berbeda dg "bac".
+ */
+@get:JvmName("getCharCodeSum")
+@get:JsName("getCharCodeSum")
+val CharSequence.charCodeSum: Long
+    get(){
+        var res= 0L
+        for((i, c) in this.withIndex())
+            res += c.toInt() +i //Penambahan index `i` agar string dg komposisi sama namun dg index beda menghasilkan long yg berbeda.
+        return res
+    }

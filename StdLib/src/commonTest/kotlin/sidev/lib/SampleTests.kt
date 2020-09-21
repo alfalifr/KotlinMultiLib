@@ -8,7 +8,9 @@ import sidev.lib.collection.lazy_list.rangeTo
 import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.console.prin
 import sidev.lib.console.prine
+import sidev.lib.date.Date
 import sidev.lib.number.*
+import sidev.lib.util.Locale
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.test.Test
@@ -166,5 +168,20 @@ class SampleTests {
         val contains4= lazyMap.containsValue(4)
 
         prin("valueMau= $valueMau valueIya= $valueIya valueKamu= $valueKamu contains5= $contains5 contains0= $contains0 contains4= $contains4 valueTidur= $valueTidur containsKamuMap= $containsKamuMap")
+    }
+
+    @Test
+    fun dateTest(){
+        val date= Date()
+        val locale= Locale("id-ID") //"ar-SA"
+        prin("Date().time= ${date.time}")
+        prin("Date().toFormatString()= ${date.toFormatString(locale = locale)}")
+///*
+        prin("locale.country= ${locale.country}")
+        prin("locale.language= ${locale.language}")
+        prin("locale.displayName= ${locale.displayName}")
+        prin("locale.script= ${locale.script}")
+        prin("locale.qualifiedId= ${locale.qualifiedId}")
+// */
     }
 }
