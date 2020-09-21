@@ -339,11 +339,26 @@ class SampleTests {
         for((i, cls) in En::class.si.classesTree.withIndex()){
             prin("i= $i cls= $cls")
         }
+        prin("\n============= En::class.si.members =============\n")
+        for((i, member) in En::class.si.members.withIndex()){
+            prin("i= $i member= $member")
+        }
+
+        prin("\n============= En.A::class.si.members =============\n")
+        for((i, member) in En.A::class.si.members.withIndex()){
+            prin("i= $i member= $member")
+        }
+
+        prin("\n============= En.A.enumValues =============\n")
+        for((i, enu) in En.A.enumValues.withIndex()){
+            prin("i= $i enum= $enu")
+        }
 
         prin("\n============= String::class.si.classesTree =============\n")
         for((i, cls) in String::class.si.classesTree.withIndex()){
             prin("i= $i cls= $cls")
         }
+
 
         prin("En::class.si.isCopySafe= ${En::class.si.isCopySafe}")
         prin("En.A::class.si.isCopySafe= ${En.A::class.si.isCopySafe}")

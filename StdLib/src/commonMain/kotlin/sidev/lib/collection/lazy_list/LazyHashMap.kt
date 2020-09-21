@@ -1,7 +1,5 @@
 package sidev.lib.collection.lazy_list
 
-import sidev.lib.collection.iterator.emptyIterator
-import sidev.lib.collection.toMapEntry
 import sidev.lib.collection.toMutableMapEntry
 
 

@@ -4,6 +4,11 @@ import sidev.lib.reflex.SiProperty1
 import sidev.lib.reflex.si
 import kotlin.jvm.JvmName
 
+expect val <E: Enum<E>> E.enumValues: Array<E>
+
+inline fun <reified E: Enum<E>> getNames(): List<String> = enumValues<E>().map { it.name }
+inline fun <reified E: Enum<E>> getOrdinals(): List<Int> = enumValues<E>().map { it.ordinal }
+
 /** Mengambil semua enum anggota `this.extension` [Enum] [Enum.ordinal] dan [Enum.name]. */
 inline fun <reified E: Enum<E>> ordinalNamePairs(): Array<Pair<Int, String>>{
     val vals= enumValues<E>()
