@@ -1,7 +1,9 @@
 @file:JvmName("_JavaReflexFun_Ext")
 package sidev.lib.reflex.jvm
 
+import sidev.lib._config_.SidevLibConfig
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.annotation.ChangeLog
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.collection.sequence.nestedSequence
@@ -10,10 +12,13 @@ import sidev.lib.collection.sequence.emptyNestedSequence
 import sidev.lib.exception.NoSuchMemberExc
 import sidev.lib.reflex.full.*
 import sidev.lib.collection.sequence.NestedSequence
+import sidev.lib.reflex.native_.CompatibilityUtil
 import java.lang.reflect.Constructor
+import java.lang.reflect.Executable
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
+@ChangeLog("Senin, 28 Sep 2020", "Penambahan kompatibilitas untuk Java 7")
 @get:JvmName("leastParamConstructor")
 val <T: Any> Class<T>.leastParamConstructor: Constructor<T>
     get(){
@@ -24,12 +29,16 @@ val <T: Any> Class<T>.leastParamConstructor: Constructor<T>
             )
         }
         var constrRes= constrs.first()
-        var paramCount= constrRes.parameterCount
+        var paramCount= if(SidevLibConfig.java7SupportEnabled) CompatibilityUtil.Java7.getParameterCount(constrRes)
+            else constrRes.parameterCount
+
         for(i in 1 until constrs.size){
             val constr= constrs[i]
-            if(constr.parameterCount < paramCount){
+            val paramCountItr= if(SidevLibConfig.java7SupportEnabled) CompatibilityUtil.Java7.getParameterCount(constr)
+                else constr.parameterCount
+            if(paramCountItr < paramCount){
                 constrRes= constr
-                paramCount= constr.parameterCount
+                paramCount= paramCountItr //constr.parameterCount
                 if(paramCount == 0) break //Karena gakda yg lebih sedikit dari 0
             }
         }

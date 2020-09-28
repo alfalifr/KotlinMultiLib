@@ -3,8 +3,11 @@
 package sidev.lib.reflex.native_
 
 import sidev.lib.check.asNotNull
+import sidev.lib.check.asNotNullTo
 import sidev.lib.exception.ReflexComponentExc
 import java.lang.reflect.Parameter
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.TypeVariable
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
@@ -14,7 +17,7 @@ internal actual fun getSiNativeParameter(nativeParameter: Any): SiNativeParamete
     val name= when(nativeParameter){
         is Parameter -> {
             clazz= nativeParameter.type.kotlin
-            isGeneric= clazz == Any::class //Anggapannya jika tipenya merupakan Object, maka langsung generic.
+            isGeneric= nativeParameter.parameterizedType is TypeVariable<*>
             nativeParameter.name
         }
         is KParameter -> {

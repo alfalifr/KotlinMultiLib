@@ -1,7 +1,10 @@
 package sidev.lib.reflex.jvm
 
+import sidev.lib.annotation.ChangeLog
+import sidev.lib._config_.CodeModification
 import sidev.lib.check.asNotNullTo
 import sidev.lib.reflex.inner.KotlinReflexConst
+import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -23,18 +26,26 @@ object JvmReflexConst{
     val K_ARRAY_CLASS_STRING: String = Array<Any>::class.toString()
 
 
+    @ChangeLog("Senin, 28 Sep 2020", "Penambahan cek komptabilitas untuk Java 7")
     fun isDefaultOfFun(javaMethod: Executable, kotlinFun: KCallable<*>): Boolean{
         val kotlinParam= kotlinFun.parameters
         val kotlinOptionalParam= kotlinParam.filter { it.isOptional }
             .also { if(it.isEmpty()) return false } //Karena method yg gak punya param opsional brarti gak punya fungsi default.
 
-        val maskParamCount= ceil(kotlinOptionalParam.size / 32.0).toInt()
+        val maskParamCount= ceil(kotlinOptionalParam.size / 32.0 /*Int.SIZE_BITS*/).toInt()
+          // Dibagi 32 karena ukuran Int sebanyak 32 bit. Selain itu, mask menggunakan tiap bit yg ada pada Int untuk tiap
+          //  param opsionalnya.
         val isNameMatched= if(javaMethod is Method) javaMethod.name.endsWith(K_DEFAULT_FUNCTION_NAME_SUFFIX)
             else true
 
+        // Untuk kompatibilitas Java 7
+        @ChangeLog("Senin, 28 Sep 2020", "Penambahan cek komptabilitas untuk Java 7", CodeModification.ADDED)
+        val paramCount= if(javaMethod is Method) javaMethod.parameterCount_
+            else (javaMethod as Constructor<*>).parameterCount_
+
         val bool= isNameMatched
                 && javaMethod.isSynthetic
-                && javaMethod.parameterCount == (kotlinParam.size + maskParamCount + 1) //+1 digunakan untuk tambahan param marker pada fungsi default di kotlin.
+                && paramCount == (kotlinParam.size + maskParamCount + 1) //+1 digunakan untuk tambahan param marker pada fungsi default di kotlin.
                 && run {
                     var isTypeSame= true
                     javaMethod.parameterTypes.forEachIndexed { i, javaType ->

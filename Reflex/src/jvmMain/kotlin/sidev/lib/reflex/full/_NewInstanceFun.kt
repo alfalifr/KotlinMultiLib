@@ -2,6 +2,9 @@
 
 package sidev.lib.reflex.full
 
+import sidev.lib._config_.SidevLibConfig
+import sidev.lib.annotation.ChangeLog
+import sidev.lib.annotation.Modified
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.takeLast
@@ -25,6 +28,8 @@ import kotlin.reflect.KParameter
 New Instance - Native
 ==========================
  */
+
+@ChangeLog("Senin, 28 Sep 2020", "Penambahan cek komptabilitas untuk Java 7")
 actual fun <T: Any> T.nativeCloneOp(
     clonedObjOriginStack: MutableList<Any>, clonedObjStack: MutableList<Any>,
     isDeepClone: Boolean, constructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?
@@ -58,7 +63,7 @@ actual fun <T: Any> T.nativeCloneOp(
         valueMapTree.find { (field, value) ->
 //            prine("nativeClone() clazz= $clazz field= $field value= $value param.type.java.isAssignableFrom(value::class.java) => ${value?.clazz?.java.notNullTo { param.type.java.isAssignableFrom(it) }}")
 //            prine("nativeClone() clazz= $clazz param.name= ${param.name} field.name= ${field.name}")
-            (param.name == field.name || JvmReflexConst.isParamDefault(param.implementation as Parameter))
+            (param.name == field.name || (SidevLibConfig.java7SupportEnabled.not() /*Added*/ && JvmReflexConst.isParamDefault(param.implementation as Parameter)))
                     && ((value == null && param.type.java == Object::class.java)
                             || (value != null && param.type.java.isAssignableFrom(value::class.java))
                     ) }
@@ -114,6 +119,7 @@ fun <T: Any> nativeNewK(clazz: KClass<T>, defParamValFunc: ((param: KParameter) 
         defParamValFunc(it.implementation as KParameter)
     } else null
 )
+@ChangeLog("Senin, 28 Sep 2020", "Penambahan cek komptabilitas untuk Java 7")
 actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
     val javaClass= clazz.java
     val constr =  try{ javaClass.leastParamConstructor }
@@ -123,11 +129,19 @@ actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNati
     }
     val args= arrayListOf<Any?>()
 
-    for(param in constr.parameters){
-        args.add(
-            defParamValFunc?.invoke(NativeReflexFactory._createNativeParameter(param))
-                ?: param.type.notNullTo { defaultPrimitiveValue(it.kotlin) }
-        )
+    if(SidevLibConfig.java7SupportEnabled){
+        for(param in CompatibilityUtil.Java7.getParameters(constr)){
+            args.add(
+                defParamValFunc?.invoke(param) ?: param.type.notNullTo { defaultPrimitiveValue(it) }
+            )
+        }
+    } else {
+        for(param in constr.parameters){
+            args.add(
+                defParamValFunc?.invoke(NativeReflexFactory._createNativeParameter(param))
+                    ?: param.type.notNullTo { defaultPrimitiveValue(it.kotlin) }
+            )
+        }
     }
 
     return try{
