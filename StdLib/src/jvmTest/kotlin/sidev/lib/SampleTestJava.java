@@ -7,6 +7,7 @@ import kotlin.jvm.functions.Function1;
 import kotlin.sequences.SequencesKt;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import sidev.lib.annotation.ChangeLog;
 import sidev.lib.collection.lazy_list._LazyListFunKt;
 import sidev.lib.number._ArithmethicFunKt;
 import sidev.lib.number._NumberFunKt;
@@ -33,6 +34,7 @@ public class SampleTestJava {
     class AB{}
     @Test
     public void lazyListTest(){
+        @ChangeLog(date ="a", log= "")
         var lazi1 = _LazyListFunKt.<String, Integer>lazyMapOf();
         var seq1 = sequenceOf(to("Kamu",1), to("Dia",10), to("Makan",5));
 

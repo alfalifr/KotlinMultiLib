@@ -484,8 +484,7 @@ class SampleTests {
         prin("AC::class.isInterface= ${AC::class.isInterface}")
     }
 
-    object Simulation{
-    }
+    //======Simulation===========
 
     @Test
     fun boundClone(){
