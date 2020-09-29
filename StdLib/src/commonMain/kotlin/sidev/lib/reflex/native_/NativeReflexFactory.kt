@@ -6,11 +6,13 @@ object NativeReflexFactory {
     fun createNativeParameter(
         nativeParameter: Any,
         name: String,
+        index: Int,
         type: KClass<*>,
         isGeneric: Boolean
     ): SiNativeParameter = object : SiNativeParameter{
         override val implementation: Any = nativeParameter
         override val name: String = name
+        override val index: Int = index
         override val type: KClass<*> = type
         override val isGeneric: Boolean = isGeneric
     }

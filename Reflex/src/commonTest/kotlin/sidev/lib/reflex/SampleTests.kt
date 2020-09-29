@@ -1,5 +1,9 @@
 package sidev.lib.reflex
 
+import com.sigudang.android._Dummy.inboundList_created
+import com.sigudang.android._Dummy.productList_full
+import com.sigudang.android.models.Bound
+import sidev.lib._config_.SidevLibConfig
 import sidev.lib.annotation.SiRename
 import sidev.lib.annotation.renamedName
 import sidev.lib.collection.sequence.withLevel
@@ -478,5 +482,32 @@ class SampleTests {
     fun interfaceTest(){
         prin("BlaBlaInt::class.isInterface= ${BlaBlaInt::class.isInterface}")
         prin("AC::class.isInterface= ${AC::class.isInterface}")
+    }
+
+    object Simulation{
+    }
+
+    @Test
+    fun boundClone(){
+        val bound= inboundList_created[0] //Bound(1, "invoice", "date")
+        val product= productList_full[0]
+        val productList= productList_full.toList()
+        val boundProd= bound.productList ?: ArrayList()
+        prin(bound.nativeClone())
+        prin(product.nativeClone())
+        prin(productList.nativeClone())
+        prin(boundProd.nativeClone())
+    }
+
+    @Test
+    fun boundProperty(){
+        SidevLibConfig.java7SupportEnabled= false
+        val boundProd= inboundList_created[0].productList ?: ArrayList()
+        prin("boundProd::class.isCollection= ${boundProd::class.isCollection}")
+        for((i, prop) in boundProd.fieldValuesTree.withIndex()){
+            prin("i= $i prop= $prop")
+        }
+        prin(boundProd.nativeClone())
+//        prin(boundProd.first().nativeClone())
     }
 }

@@ -1,5 +1,6 @@
 package sidev.lib.reflex.full
 
+import sidev.lib.annotation.ChangeLog
 import sidev.lib.check.asNotNull
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.takeLast
@@ -46,7 +47,7 @@ actual fun <T: Any> T.nativeCloneOp(
     val constructorPropertyList= mutableListOf<JsProperty<T, *>>()
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->
         valueMapTree.find { (field, value) ->
-            param.name == field.name && (
+            (param.name == null || param.name == field.name) && (
                     (value == null && param.type == Any::class)
                             || (value != null && param.type.simpleName == field.returnType.classifier?.name)
                     ) }
@@ -61,8 +62,13 @@ actual fun <T: Any> T.nativeCloneOp(
     }
 
     val newInstance= when{
-        clazz.isArray -> return nativeArrayClone(isDeepClone, newInsConstrParamValFunc).preReturnObj() //as T
-        clazz.isCollection -> return ((this as Collection<T>).nativeDeepClone(isDeepClone, newInsConstrParamValFunc) as T).preReturnObj()
+        @ChangeLog(
+            "Selasa, 29 Sep 2020",
+            """newInsConstrParamValFunc -> constructorParamValFunc agar valueMapTree induk tidak ikut,
+                misal untuk kasus ArrayList, di mana valueMapTree-nya milik ArrayList, bkn elemennya"""
+        )
+        clazz.isArray -> return nativeArrayClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc).preReturnObj() //as T
+        clazz.isCollection -> return ((this as Collection<T>).nativeDeepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
         else -> nativeNew(clazz, newInsConstrParamValFuncWrapper)
             ?: if(isDelegate) {
                 prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")
@@ -99,6 +105,9 @@ actual fun <T: Any> T.nativeCloneOp(
 }
 
 actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
+    if(clazz.isCopySafe)
+        return defaultPrimitiveValue(clazz)
+
     val constr= try{ clazz.jsClass }
     catch (e: ReflexComponentExc){
         prine("""nativeNew(): Tidak dapat meng-instansiasi kelas "$clazz" karena tidak tersedia fungsi konstruktor, return `null`.""")

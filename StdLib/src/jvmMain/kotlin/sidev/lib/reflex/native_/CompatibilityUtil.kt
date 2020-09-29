@@ -1,5 +1,6 @@
 package sidev.lib.reflex.native_
 
+import sidev.lib.console.prine
 import sidev.lib.exception.ReflexComponentExc
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -14,7 +15,8 @@ object CompatibilityUtil {
         fun getParameterCount(contr: Constructor<*>): Int = contr.parameterTypes.size
         fun getParameters(method: Method): List<SiNativeParameter> = method.genericParameterTypes.mapIndexed { i, type ->
             object : SiNativeParameter{
-                override val name: String = "arg$i"
+                override val name: String? = null
+                override val index: Int = i
                 override val type: KClass<*> = when(type){
                     is Class<*> -> type
                     is ParameterizedType -> type.rawType as Class<*>
@@ -25,8 +27,10 @@ object CompatibilityUtil {
             }
         }
         fun getParameters(constr: Constructor<*>): List<SiNativeParameter> = constr.genericParameterTypes.mapIndexed { i, type ->
+//            prine("CompatibilityUtil.Java7.getParameters() i= $i type= $type")
             object : SiNativeParameter{
-                override val name: String = "arg$i"
+                override val name: String? = null
+                override val index: Int = i
                 override val type: KClass<*> = when(type){
                     is Class<*> -> type
                     is ParameterizedType -> type.rawType as Class<*>
@@ -34,7 +38,9 @@ object CompatibilityUtil {
                 }.kotlin
                 override val isGeneric: Boolean = type is TypeVariable<*>
                 override val implementation: Any = type
+                override fun toString(): String = "SiNativeParam $name [$i] $type generic= $isGeneric"
             }
+//            prine("CompatibilityUtil.Java7.getParameters() i= $i type= $type param= $a ==Akhir==")
         }
 /*
         fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{

@@ -13,7 +13,8 @@ internal actual fun getSiNativeParameter(nativeParameter: Any): SiNativeParamete
 
     return object : SiNativeParameter {
         override val implementation: Any = nativeParameter
-        override val name: String = nativeParameter.name ?: NativeReflexConst.TEMPLATE_NATIVE_NAME
+        override val name: String? = nativeParameter.name //?: NativeReflexConst.TEMPLATE_NATIVE_NAME
+        override val index: Int= nativeParameter.index
         override val type: KClass<*> by reevaluateLazy {
             try{
                 val cls=

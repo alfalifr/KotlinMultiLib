@@ -8,6 +8,7 @@ import sidev.lib.exception.NonInstantiableTypeExc
 import sidev.lib.reflex.*
 import sidev.lib.reflex.si
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.annotation.ChangeLog
 import sidev.lib.collection.takeLast
 import sidev.lib.reflex.native_.SiNativeParameter
 import sidev.lib.reflex.native_.isDynamicEnabled
@@ -242,9 +243,14 @@ private fun <T: Any> T.cloneOp(
 //    prine("clone() clazz= $clazz ke new this= $this")
 
     val newInstance= if(continueCreateNewInstance) when{
-        clazz.isArray -> return arrayClone(isDeepClone, newInsConstrParamValFunc).preReturnObj() //as T
-        clazz.isCollection -> return ((this as Collection<T>).deepClone(isDeepClone, newInsConstrParamValFunc) as T).preReturnObj()
-        clazz.isMap -> return ((this as Map<*, T>).deepClone(isDeepClone, newInsConstrParamValFunc) as T).preReturnObj()
+        @ChangeLog(
+            "Selasa, 29 Sep 2020",
+            """newInsConstrParamValFunc -> constructorParamValFunc agar valueMapTree induk tidak ikut,
+                misal untuk kasus ArrayList, di mana valueMapTree-nya milik ArrayList, bkn elemennya"""
+        )
+        clazz.isArray -> return arrayClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc).preReturnObj() //as T
+        clazz.isCollection -> return ((this as Collection<T>).deepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
+        clazz.isMap -> return ((this as Map<*, T>).deepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
         else -> new(clazz, constructor = constr, defParamValFunc = newInsConstrParamValFuncWrapper)
             ?: if(isDelegate) {
                 prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")
