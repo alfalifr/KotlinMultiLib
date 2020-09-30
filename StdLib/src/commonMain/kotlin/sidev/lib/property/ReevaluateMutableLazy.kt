@@ -2,6 +2,8 @@ package sidev.lib.property
 
 import sidev.lib.structure.data.value.Val
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.check.isNull
+import sidev.lib.check.notNull
 import kotlin.reflect.KProperty
 
 /**
@@ -18,6 +20,8 @@ internal open class ReevaluateMutableLazyImpl<T>(init: (evaluationBox: Val<Boole
     private var init: ((evaluationBox: Val<Boolean>) -> T)? = init
     private var _value: Any? = SI_UNINITIALIZED_VALUE
     override var isEvaluationDone: Boolean = true
+    override var setter: ((value: T) -> Unit)?= null
+    override var getter: (() -> T)?= null
 
     override var value: T
         set(v){ _value= v }
@@ -36,9 +40,9 @@ internal open class ReevaluateMutableLazyImpl<T>(init: (evaluationBox: Val<Boole
             isEvaluationDone= evaluationBox.value!!
             return res
         }
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T = getter?.invoke() ?: value
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        this.value= value
+        setter?.invoke(value) ?: run { this.value= value }
     }
 
     override fun isInitialized(): Boolean = isEvaluationDone

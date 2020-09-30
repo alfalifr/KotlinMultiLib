@@ -1,22 +1,15 @@
 package sidev.lib.property
 
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.annotation.ChangeLog
-import sidev.lib.check.isNull
-import sidev.lib.check.notNull
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-@ChangeLog("Rabu, 30 Sep 2020", "Penambahan custom setter dan getter")
-interface MutableLazy<in R, T>: ReadWriteProperty<R, T>, Lazy<T>{
-    var setter: ((value: T) -> Unit)?
+interface Lazy_<T>: Lazy<T>{
     var getter: (() -> T)?
 }
 
-internal open class MutableLazyImpl<in R, T>(init: () -> T): MutableLazy<R, T>{
+internal open class LazyImpl<T>(init: () -> T): Lazy_<T>{
     private var init: (() -> T)? = init
     private var _value: Any? = SI_UNINITIALIZED_VALUE
-    override var setter: ((value: T) -> Unit)? = null
     override var getter: (() -> T)? = null
 
     override var value: T
@@ -33,10 +26,7 @@ internal open class MutableLazyImpl<in R, T>(init: () -> T): MutableLazy<R, T>{
             return res
         }
 
-    override fun getValue(thisRef: R, property: KProperty<*>): T = getter?.invoke() ?: value
-    override fun setValue(thisRef: R, property: KProperty<*>, value: T) {
-        setter?.invoke(value) ?: run { this.value= value }
-    }
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = getter?.invoke() ?: value
 
     override fun isInitialized(): Boolean = _value !== SI_UNINITIALIZED_VALUE
     override fun toString(): String = if(isInitialized()) value.toString() else "MutableLazy belum siap."
