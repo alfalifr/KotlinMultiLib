@@ -141,6 +141,12 @@ class AD(val a: Int= 2, val b: Int= 15): AD_(a, 9){
     val aa: Int= 1
 }
 
+data class ParamTest(val a: Int, val b: String, val c: Int= 0){
+    var ab= 10
+    var z= 101
+    var ac= "afa"
+}
+
 class Asal{
     var a: Int= 10
     var b= 0

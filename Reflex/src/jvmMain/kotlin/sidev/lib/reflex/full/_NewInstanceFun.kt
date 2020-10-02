@@ -6,8 +6,10 @@ import sidev.lib._config_.SidevLibConfig
 import sidev.lib.`val`.StringLiteral
 import sidev.lib.annotation.ChangeLog
 import sidev.lib.annotation.Modified
+import sidev.lib.check.asNotNullTo
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
+import sidev.lib.collection.findIndexed
 import sidev.lib.collection.takeLast
 import sidev.lib.console.prin
 import sidev.lib.console.prine
@@ -69,16 +71,23 @@ actual fun <T: Any> T.nativeCloneOp(
         valueMapTree.find { (field, value) ->
 //            prine("nativeClone() clazz= $clazz field= $field value= $value param.type.java.isAssignableFrom(value::class.java) => ${value?.clazz?.java.notNullTo { param.type.java.isAssignableFrom(it) }}")
 //            prine("nativeClone() clazz= $clazz param.name= ${param.name} field.name= ${field.name}")
-            ((param.name == null || param.name == field.name)
-                    || (SidevLibConfig.java7SupportEnabled.not() /*Added*/ && JvmReflexConst.isParamDefault(param.implementation as Parameter)))
-                    && ( //(value == null && param.type.java == Object::class.java /*&& param.isGeneric*/) ||
-                            (value != null && param.type.java.isAssignableFrom(value::class.java))
-                    ) }
-            .notNullTo {
-                constructorPropertyList.add(it.first) //Agar loop for di bawah gak usah menyalin lagi property yg udah di-clone di konstruktor.
-                if(!isDeepClone) it.second
-                else it.second?.nativeCloneOp(clonedObjOriginStack, clonedObjStack, true, constructorParamValFunc)
+            @ChangeLog("Jumat, 2 Okt 2020", "Penambahan cek untuk KParameter, karena refleksi diganti jadi Kotlin Reflection untuk named param")
+            if(param.implementation is KParameter) {
+                param.name == field.name
+                        && (value != null || (param.implementation as KParameter).type.isMarkedNullable)
+                        && param.type.java.isAssignableFrom(field.type)
+            } else {
+                ((param.name == null || param.name == field.name)
+                        || (SidevLibConfig.java7SupportEnabled.not() /*Added*/ && JvmReflexConst.isParamDefault(param.implementation as Parameter)))
+                        && ( //(value == null && param.type.java == Object::class.java /*&& param.isGeneric*/) ||
+                        (value != null && param.type.java.isAssignableFrom(value::class.java))
+                        )
             }
+        }.notNullTo { (field, value) ->
+            constructorPropertyList.add(field) //Agar loop for di bawah gak usah menyalin lagi property yg udah di-clone di konstruktor.
+            if(!isDeepClone) value
+            else value?.nativeCloneOp(clonedObjOriginStack, clonedObjStack, true, constructorParamValFunc)
+        }
     }
     val newInsConstrParamValFuncWrapper= { paramOfNew: SiNativeParameter ->
         newInsConstrParamValFunc.invoke(clazz, paramOfNew)
@@ -141,6 +150,43 @@ fun <T: Any> nativeNewK(clazz: KClass<T>, defParamValFunc: ((param: KParameter) 
         defParamValFunc(it.implementation as KParameter)
     } else null
 )
+
+///*
+@ChangeLog("Senin, 28 Sep 2020", "Penambahan cek komptabilitas untuk Java 7")
+@ChangeLog("Jumat, 2 Okt 2020", "Java -> Kotlin Reflection, untuk mengakomodasi named param agar tidak tertukar dg property lain")
+actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
+    if(clazz.isCopySafe)
+        return defaultPrimitiveValue(clazz)
+
+//    val javaClass= clazz.java
+    val constr =  try{ clazz.leastParamConstructor }
+    catch (e: Exception){
+        prine("""nativeNew(): Tidak dapat meng-instansiasi kelas: "$clazz" karena tidak punya konstruktor publik, return `null`.""")
+        return null
+    }
+    val args= mutableMapOf<KParameter, Any?>()
+
+    for(param in constr.parameters){
+        if(param.isOptional) continue
+        args[param] = if(param.type.isMarkedNullable) null
+            else defParamValFunc?.invoke(NativeReflexFactory._createNativeParameter(param))
+                ?: param.type.classifier.asNotNullTo { cls: KClass<*> -> defaultPrimitiveValue(cls) }
+    }
+
+//    prine("jvmMain nativeNew() clazz= $clazz args= $args params= $paramNames")
+
+    return try{
+        constr.callBy(args)
+    } catch (e: Exception){
+        prine("""nativeNew(): Tidak dapat meng-instansiasi kelas: "$clazz" karena tidak tersedianya argumen atau karena merupakan kelas yg tidak dapat di-init, return `null`.""")
+        e.printStackTrace()
+        null
+    }
+}
+// */
+
+
+/*
 @ChangeLog("Senin, 28 Sep 2020", "Penambahan cek komptabilitas untuk Java 7")
 actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNativeParameter) -> Any?)?): T?{
     if(clazz.isCopySafe)
@@ -179,3 +225,4 @@ actual fun <T: Any> nativeNew(clazz: KClass<T>, defParamValFunc: ((param: SiNati
         null
     }
 }
+// */

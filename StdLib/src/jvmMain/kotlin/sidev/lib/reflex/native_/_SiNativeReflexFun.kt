@@ -17,13 +17,6 @@ internal actual fun getSiNativeParameter(nativeParameter: Any): SiNativeParamete
     var isGeneric= true
     val index: Int
     val name= when(nativeParameter){
-        is Parameter -> {
-            clazz= nativeParameter.type.kotlin
-            isGeneric= nativeParameter.parameterizedType is TypeVariable<*>
-            index= nativeParameter.declaringExecutable.parameters.indexOf(nativeParameter)
-            if(!JvmReflexConst.isParamDefault(nativeParameter)) nativeParameter.name
-            else null
-        }
         is KParameter -> {
             nativeParameter.type.classifier.asNotNull { cls: KClass<*> ->
                 clazz= cls
@@ -31,6 +24,13 @@ internal actual fun getSiNativeParameter(nativeParameter: Any): SiNativeParamete
             }
             index= nativeParameter.index
             nativeParameter.name
+        }
+        is Parameter -> {
+            clazz= nativeParameter.type.kotlin
+            isGeneric= nativeParameter.parameterizedType is TypeVariable<*>
+            index= nativeParameter.declaringExecutable.parameters.indexOf(nativeParameter)
+            if(!JvmReflexConst.isParamDefault(nativeParameter)) nativeParameter.name
+            else null
         }
         else -> throw ReflexComponentExc(currentReflexedUnit = nativeParameter, detMsg = """nativeParameter: "$nativeParameter" bkn merupakan native parameter pada Jvm.""")
     }

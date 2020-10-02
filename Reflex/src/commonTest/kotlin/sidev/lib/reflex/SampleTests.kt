@@ -493,7 +493,10 @@ class SampleTests {
         val productList= productList_full.toList()
         val boundProd= bound.productList ?: ArrayList()
         prin(bound.nativeClone())
-        prin(product.nativeClone())
+        prin(product.nativeClone().also {
+            prin("product.unit?.name= ${it.unit?.name}")
+            prin("product.category?.name= ${it.category?.name}")
+        })
         prin(productList.nativeClone())
         prin(boundProd.nativeClone())
     }

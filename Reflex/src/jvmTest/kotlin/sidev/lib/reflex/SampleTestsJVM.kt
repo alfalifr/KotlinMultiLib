@@ -11,6 +11,7 @@ import sidev.lib.reflex.full.fieldValuesTree
 import sidev.lib.reflex.full.isCollection
 import sidev.lib.reflex.full.nativeClone
 import sidev.lib.reflex.jvm.javaFieldValuesTree
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
@@ -76,5 +77,22 @@ class SampleTestsJVM {
         }
         prin(boundProd.nativeClone())
 //        prin(boundProd.first().nativeClone())
+    }
+
+    @Test
+    fun nativeParamTest(){
+        val a= ParamTest(2, "aaf")
+        for((i, constr) in a::class.java.constructors.withIndex()){
+            prin("i= $i constr= $constr")
+        }
+        for((i, param) in a::class.java.constructors[0].parameters.withIndex()){
+            prin("i= $i param= $param")
+        }
+        for((i, field) in a::class.java.declaredFields.withIndex()){
+            prin("i= $i field= $field")
+        }
+        for((i, prop) in a::class.declaredMemberProperties.withIndex()){
+            prin("i= $i prop= $prop")
+        }
     }
 }
