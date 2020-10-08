@@ -50,3 +50,5 @@ fun fpb(vararg numbers: Int): Int
             .reduce { acc, list -> (acc intersect list).toList() }
             .reduce { acc, i -> acc * i }
     } catch (e: UnsupportedOperationException){ 1 }
+
+fun factorial(n: Int): Int= if(n <= 1) 1 else n * factorial(n-1)

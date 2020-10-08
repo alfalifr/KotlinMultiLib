@@ -2,9 +2,7 @@ package main
 
 import sidev.lib.collection.duplicatUnion
 import sidev.lib.console.prin
-import sidev.lib.math.Sample
-import sidev.lib.math.fpb
-import sidev.lib.math.kpk
+import sidev.lib.math.*
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -26,5 +24,15 @@ class SampleTests {
         list1 duplicatUnion list2
 
         prin("numbers= ${numbers.joinToString()} kpk= $kpk fpb= $fpb")
+    }
+
+    @Test
+    fun possibilytTest(){
+        println("combination(3,2)= ${combination(3,2)}")
+        println("permutation(3,2)= ${permutation(3,2)}")
+        println("listOf(1,3,4,2,4,3).mode() = ${listOf(1,3,4,2,4,3).mode()}")
+        println("listOf(1,3,-10,4,1).medianNode()= ${listOf(1,3,-10,4,1).medianNode()}")
+        println("arrayOf(\"a\", 1,4,1f,'z', \"b\", 'c').medianNode()= ${arrayOf("a", 1,4,1f, 'z',"b", 'c').medianNode()}")
+        println("arrayOf(1,2,3,4,1,1,4,8,9,8).average()= ${arrayOf(1,2,3,4,1,1,4,8,9,8).average()}")
     }
 }
