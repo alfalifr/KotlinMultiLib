@@ -9,7 +9,12 @@ import kotlin.collections.toList as ktToList
 Convert
 ===============
  */
-fun <T> Array<T>.toArrayList(): ArrayList<T> =  this.toMutableList() as ArrayList<T>
+fun <T> Array<T>.toArrayList(): ArrayList<T> = this.toMutableList() as ArrayList<T>
+fun <T> Iterable<T>.toArrayList(): ArrayList<T> = when(this){
+    is ArrayList<*> -> this
+    is Collection<*> -> ArrayList(this)
+    else -> ArrayList(this.toList())
+} as ArrayList<T>
 
 
 inline fun <I, reified O> Array<I>.toArrayOfNotNul(func: (I) -> O?): Array<O> {

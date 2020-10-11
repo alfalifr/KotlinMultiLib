@@ -18,16 +18,68 @@ import kotlin.jvm.JvmOverloads
 fun medianNode(len: Int): Int = (len / 2) +(len % 2)
 
 /**
+ * Sama dg [medianNode], namun jika [len] genap, maka nilai yg di-return sebanyak 2 titik tengah.
+ * Jika [len] ganjil, maka nilai yg di-return hanya 1, sehingga Pair.second null.
+ */
+fun medianNodes(len: Int): Pair<Int, Int?> = (len % 2).let {
+    val medianLen= len / 2
+    Pair(
+        medianLen +it, if(it == 0) medianLen +1 else null
+    )
+}
+
+/**
  * Mengambil node scr utuh yang terletak pada index tengah dari `this.extension` Iterable.
  * Prinsipnya sama dg [medianNode].
  * Fungsi ini tidak mengurutkan terlebih dahulu elemennya.
  */
+@Throws(IndexOutOfBoundsException::class)
 fun <T> Iterable<T>.medianNode(): T {
-    val list= if(this is List) this else this.toList()
+    val list= (if(this is List) this else this.toList()).also {
+        if(it.isEmpty()) throw IndexOutOfBoundsException("this Iterable<T> kosong.")
+    }
+
     val medianIndex= medianNode(list.size) -1
     return list[medianIndex]
 }
-fun <T> Array<T>.medianNode(): T = this.toList().medianNode()
+@Throws(IndexOutOfBoundsException::class)
+fun <T> Array<T>.medianNode(): T {
+    if(isEmpty())
+        throw IndexOutOfBoundsException("this Array<T> kosong.")
+    val medianIndex= medianNode(size) -1
+    return this[medianIndex]
+}
+
+/**
+ * Mengambil node scr utuh yang terletak pada index tengah dari `this.extension` Iterable.
+ * Prinsipnya sama dg [medianNodes].
+ * Jika `this.extension` Iterable memiliki ukuran genap, maka elemen yg dikembalikan sebanyak 2
+ * dan jika ganjil, maka elemen yg dikembalikan berjumlah 1.
+ * Fungsi ini tidak mengurutkan terlebih dahulu elemennya.
+ */
+@Throws(IndexOutOfBoundsException::class)
+fun <T> Iterable<T>.medianNodes(): Pair<T, T?> {
+    val list= (if(this is List) this else this.toList()).also {
+        if(it.isEmpty()) throw IndexOutOfBoundsException("this Iterable<T> kosong.")
+    }
+
+    val medianIndex= medianNode(list.size) -1
+    return Pair(
+        list[medianIndex],
+        if(list.size % 2 == 0) list[medianIndex +1] else null
+    )
+}
+@Throws(IndexOutOfBoundsException::class)
+fun <T> Array<T>.medianNodes(): Pair<T, T?> {
+    if(isEmpty())
+        throw IndexOutOfBoundsException("this Array<T> kosong.")
+
+    val medianIndex= medianNode(size) -1
+    return Pair(
+        this[medianIndex],
+        if(size % 2 == 0) this[medianIndex +1] else null
+    )
+}
 
 /**
  * Mengambil titik tengah dari panjang [len].
