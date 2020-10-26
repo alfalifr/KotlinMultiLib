@@ -6,6 +6,7 @@ import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.lazy_list.rangeTo
 import sidev.lib.collection.sequence.nestedSequenceSimple
+import sidev.lib.collection.stackOf
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.date.Date
@@ -183,5 +184,14 @@ class SampleTests {
         prin("locale.script= ${locale.script}")
         prin("locale.qualifiedId= ${locale.qualifiedId}")
 // */
+    }
+
+    @Test
+    fun queueTest(){
+        val stack= stackOf(1,2,3,4,5)
+        stack.forEach { prin(it) }
+        for(i in 0 until stack.size){
+            prine(stack[i])
+        }
     }
 }

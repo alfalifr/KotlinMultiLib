@@ -12,7 +12,7 @@ enum class RoundingMode {
     HALF_DOWN,
 
     /**
-     * Pembulatan mendekati infinity negatif.
+     * Pembulatan mendekati infinity positif.
      */
     CEIL,
 
@@ -22,7 +22,7 @@ enum class RoundingMode {
     UP,
 
     /**
-     * Pembulatan mendekati infinity positif.
+     * Pembulatan mendekati infinity negatif.
      */
     FLOOR,
 

@@ -3,6 +3,7 @@ package sidev.lib.collection
 import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.console.log
 import sidev.lib.console.prine
+import kotlin.jvm.JvmOverloads
 
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
@@ -247,3 +248,84 @@ operator fun <L: MutableList<T>, T> L.times(factor: Int): L{
 }
 
 
+fun <T> MutableList<T>.pop(): T = when(this){
+    is Vector<*> -> pop()
+    else -> removeFirst()
+} as T
+
+fun <T> Collection<T>.peek(): T = when(this){
+    is Vector<*> -> peek()
+    else -> first()
+} as T
+
+fun <T> MutableList<T>.push(item: T): T = when(this){
+    is Vector<*> -> (this as Stack<T>).push(item)
+    else -> {
+        add(0, item)
+        item
+    }
+}
+
+
+/**
+ * Merapatkan elemen `this.extension` List dari index [start] hingga [end]
+ * dg cara menghapus elemen null yg berada di tengah-tengahnya.
+ * Fungsi ini mengembalikan `true` jika terjadi perpindahan tempat pada elemen yg dikarenakan adanya `null`.
+ */
+@JvmOverloads
+fun <T> MutableList<T>.trimNulls(start: Int= 0, end: Int= size): Boolean{
+    var diff= 0
+    var bool= false
+    var i= start
+    while(i < end){
+        if(this[i] == null){
+            for(u in i+1 until end){
+                diff++
+                if(this[u] != null){
+                    i= u -1
+                    break
+                }
+            }
+        } else if(diff > 0){
+            this[i -diff]= this[i]
+            bool= true
+        }
+        i++
+    }
+    return bool
+}
+/**
+ * Merapatkan elemen `this.extension` Collection dari index [start] hingga [end]
+ * dg cara menghapus elemen null yg berada di tengah-tengahnya.
+ * Fungsi ini mengembalikan `true` jika terjadi perpindahan tempat pada elemen yg dikarenakan adanya `null`.
+ */
+fun <T> MutableCollection<T>.trimNulls(): Boolean = when(this){
+    is MutableList<*> -> trimNulls()
+    else -> {
+        var bool= false
+        for(e in this)
+            if(e == null){
+                remove(e)
+                bool= true
+            }
+        bool
+    }
+}
+
+/**
+ * Mengambil sub-list dari `this.extension` List dimulai dari index [range.first] sampai [range.last]
+ */
+operator fun <C: Collection<T>, T> C.get(range: IntRange): C {
+    if(range.step < 0)
+        throw IllegalArgumentException("Progression dari range harus positif, progression skrg= ${range.step}")
+    return (if(this is List<*>) this else toList()).subList(range.first, range.last) as C
+}
+
+
+fun <T> stackOf(vararg elements: T): Stack<T> = StackImpl<T>(elements.size +5).apply {
+    elements.forEach { push(it) }
+}
+
+fun <T> queueOf(vararg elements: T): Queue<T> = QueueImpl<T>(elements.size +5).apply {
+    elements.forEach { push(it) }
+}

@@ -2,6 +2,21 @@ package sidev.lib.collection.array
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
+import sidev.lib.collection.toList
+import kotlin.jvm.JvmOverloads
+
+/**
+ * Fungsi yang melakukan copy array scr native.
+ *
+ * [length] adalah banyaknya elemen yg akan di-copy dari [src] yang dihitung dari index [srcStart]
+ * menuju [dest] pada index yg dimulai dari [destStart].
+ */
+expect fun <T> arrayCopy(
+    src: Array<T>, srcStart: Int,
+    dest: Array<T>, destStart: Int,
+    length: Int
+)
+
 
 /**
  * Fungsi array builder yg dapat diakses dari Java.
@@ -72,3 +87,47 @@ fun byteArrayOf(vararg elements: Byte): ByteArray = elements
  * Returns an array containing the specified boolean values.
  */
 fun booleanArrayOf(vararg elements: Boolean): BooleanArray = elements
+
+
+/**
+ * Merapatkan elemen `this.extension` Array dari index [start] hingga [end]
+ * dg cara menghapus elemen null yg berada di tengah-tengahnya.
+ * Fungsi ini tidak merubah panjang dari array.
+ * Fungsi ini mengembalikan `true` jika terjadi perpindahan tempat pada elemen yg dikarenakan adanya `null`.
+ */
+@JvmOverloads
+fun <T> Array<T>.trimNulls(start: Int= 0, end: Int= size): Boolean{
+    var diff= 0
+    var bool= false
+    var i= start
+    while(i < end){
+        if(this[i] == null){
+            for(u in i+1 until end){
+                diff++
+                if(this[u] != null){
+                    i= u -1
+                    break
+                }
+            }
+        } else if(diff > 0){
+            this[i -diff]= this[i]
+            bool= true
+        }
+        i++
+    }
+    return bool
+}
+
+/**
+ * Menghasilkan array baru yg isinya sama dg `this.extension` Array dg panjang [size].
+ */
+inline fun <reified T> Array<T>.trimToSize(size: Int): Array<T> = Array(size){ this[it] }
+
+/**
+ * Mengambil sub-array dari `this.extension` Array dimulai dari index [range.first] sampai [range.last]
+ */
+inline operator fun <reified T> Array<T>.get(range: IntRange): Array<T> {
+    if(range.step < 0)
+        throw IllegalArgumentException("Progression dari range harus positif, progression skrg= ${range.step}")
+    return Array(range.last -range.first +1){ this[it +range.first] }
+}
