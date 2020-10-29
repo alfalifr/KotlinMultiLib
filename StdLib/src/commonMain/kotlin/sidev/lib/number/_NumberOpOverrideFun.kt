@@ -15,7 +15,7 @@ Operator Overriding
  * @return angka hasil operasi,
  *   dan angka `this.extension` ini sendiri jika tipe pasti [other] tidak diketahui.
  */
-infix operator fun Number.plus(other: Number): Number{
+infix operator fun <T: Number> T.plus(other: Number): T{
     return when(this){
         is Int -> this + other
         is Long -> this + other
@@ -24,9 +24,9 @@ infix operator fun Number.plus(other: Number): Number{
         is Byte -> this + other
         is Short -> this + other
         else -> this
-    }
+    } as T
 }
-infix operator fun Number.minus(other: Number): Number{
+infix operator fun <T: Number> T.minus(other: Number): T{
     return when(this){
         is Int -> this - other
         is Long -> this - other
@@ -35,9 +35,9 @@ infix operator fun Number.minus(other: Number): Number{
         is Byte -> this - other
         is Short -> this - other
         else -> this
-    }
+    } as T
 }
-infix operator fun Number.times(other: Number): Number{
+infix operator fun <T: Number> T.times(other: Number): T{
     return when(this){
         is Int -> this * other
         is Long -> this * other
@@ -46,9 +46,9 @@ infix operator fun Number.times(other: Number): Number{
         is Byte -> this * other
         is Short -> this * other
         else -> this
-    }
+    } as T
 }
-infix operator fun Number.div(other: Number): Number{
+infix operator fun <T: Number> T.div(other: Number): T{
     return when(this){
         is Int -> this / other
         is Long -> this / other
@@ -57,9 +57,9 @@ infix operator fun Number.div(other: Number): Number{
         is Byte -> this / other
         is Short -> this / other
         else -> this
-    }
+    } as T
 }
-infix operator fun Number.rem(other: Number): Number{
+infix operator fun <T: Number> T.rem(other: Number): T{
     return when(this){
         is Int -> this % other
         is Long -> this % other
@@ -68,7 +68,7 @@ infix operator fun Number.rem(other: Number): Number{
         is Byte -> this % other
         is Short -> this % other
         else -> this
-    }
+    } as T
 }
 infix operator fun Number.compareTo(other: Number): Int{
     return when(this){
@@ -82,10 +82,10 @@ infix operator fun Number.compareTo(other: Number): Int{
     }
 }
 
-operator fun Number.inc(): Number= this +1
-operator fun Number.dec(): Number= this -1
-operator fun Number.unaryPlus(): Number= this
-operator fun Number.unaryMinus(): Number= this * -1
+operator fun <T: Number> T.inc(): T = this +1
+operator fun <T: Number> T.dec(): T = this -1
+operator fun <T: Number> T.unaryPlus(): T = this
+operator fun <T: Number> T.unaryMinus(): T = this * -1
 
 
 

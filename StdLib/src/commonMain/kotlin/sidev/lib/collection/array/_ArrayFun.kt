@@ -3,6 +3,7 @@ package sidev.lib.collection.array
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
 import sidev.lib.collection.toList
+import sidev.lib.progression.asEndExclusive
 import kotlin.jvm.JvmOverloads
 
 /**
@@ -124,10 +125,13 @@ fun <T> Array<T>.trimNulls(start: Int= 0, end: Int= size): Boolean{
 inline fun <reified T> Array<T>.trimToSize(size: Int): Array<T> = Array(size){ this[it] }
 
 /**
- * Mengambil sub-array dari `this.extension` Array dimulai dari index [range.first] sampai [range.last]
+ * Mengambil sub-array dari `this.extension` Array dimulai dari index [range.first] (inklusif) sampai [range.last] (eksklusif).
  */
-inline operator fun <reified T> Array<T>.get(range: IntRange): Array<T> {
+operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range.asEndExclusive())
+/*
+{
     if(range.step < 0)
         throw IllegalArgumentException("Progression dari range harus positif, progression skrg= ${range.step}")
     return Array(range.last -range.first +1){ this[it +range.first] }
 }
+ */

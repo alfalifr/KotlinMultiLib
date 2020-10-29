@@ -1,19 +1,22 @@
 package sidev.lib
 
+import sidev.lib.`val`.NumberOperationMode
 import sidev.lib.`val`.RoundingMode
+import sidev.lib.collection.*
 import sidev.lib.collection.common.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.lazy_list.rangeTo
 import sidev.lib.collection.sequence.nestedSequenceSimple
-import sidev.lib.collection.stackOf
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.date.Date
 import sidev.lib.number.*
+import sidev.lib.progression.*
 import sidev.lib.util.Locale
 import kotlin.math.exp
 import kotlin.math.log
+import kotlin.ranges.until
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -189,9 +192,113 @@ class SampleTests {
     @Test
     fun queueTest(){
         val stack= stackOf(1,2,3,4,5)
+        val stack2= stackOf(6,7,8,9)
         stack.forEach { prin(it) }
+        stack2.forEach { stack.push(it) }
+        stack.forEach { prine(it) }
         for(i in 0 until stack.size){
-            prine(stack[i])
+            prin(stack[i])
         }
+
+        var i= 0
+        var itr= stack.listIterator()
+        while(itr.hasNext()){
+            if(i == 3)
+                prine("prev= ${itr.previous()}")
+            prine(itr.next())
+            i++
+        }
+
+        i= 0
+        itr= mutableListOf(1,2,3,4,5).listIterator()
+        while(itr.hasNext()){
+            if(i == 3)
+                prin("prev= ${itr.previous()}")
+            prin(itr.next())
+            i++
+        }
+
+        val list= listOf(1,2,3,4,5)
+        prine("list.peek()= ${list.peek()}")
+        prine("list.peek()= ${list.peek()}")
+
+        val mutList= mutableListOf(1,2,3,4,5)
+        prine("mutList.pop()= ${mutList.pop()}")
+        prine("mutList.pop()= ${mutList.pop()}")
+        prine("mutList.pop()= ${mutList.pop()}")
+        mutList.push(6)
+        prine("mutList.pop()= ${mutList.pop()}")
+        prine("mutList.peek()= ${mutList.peek()}")
+        prine("mutList.peek()= ${mutList.peek()}")
+
+        prin(listOf(1,2,3,4,5).subList(1,3))
+
+        val array= arrayOf(1,2,3,4,5)
+        val arr2= array[1..3]
+        val mutList2= mutList[1 .. 1]
+
+
+        prin("mutList= $mutList mutList2= $mutList2")
+        prin("array= ${array.joinToString()} arr2= ${arr2.joinToString()}")
+    }
+
+    @Test
+    fun progressionTest(){
+        prin("halo")
+
+        1.progressTo(2).forEach {
+            prin(it)
+        }
+
+        (2.3f percentileTo 5.0f).forEach {
+            prine(it)
+        }
+
+        (1 quartileTo 3).forEach {
+            prin(it)
+        }
+
+        (1.3 centileTo 3).forEach {
+            prine(it)
+        }
+
+        (1.3 quartileTo 3).forEach {
+            prin(it)
+        }
+
+        (4 downTo 3).forEach {
+            prine(it)
+        }
+
+        (1.3 downUntil -3).forEach {
+            prin(it)
+        }
+//        1f as Int
+        (1 .. 10)[1..3].forEach {
+            prine(it)
+        }
+
+        (0.04.progressTo(100, step = 10, operationMode = NumberOperationMode.MULTIPLICATIONAL)).forEach {
+            prin(it)
+        }
+
+        (2.progressTo(300, step = 2, operationMode = NumberOperationMode.EXPONENTIAL)).forEach {
+            prine(it)
+        }
+
+        (2.3.progressTo(100, step = -2, operationMode = NumberOperationMode.MULTIPLICATIONAL)).forEach {
+            prin(it)
+        }
+
+        (16.0.progressTo(0.5, step = 0.5, operationMode = NumberOperationMode.EXPONENTIAL)).forEachIndexed { index, d ->
+            if(index >= 20) return@forEachIndexed
+            prine(d)
+        }
+
+        prin("16 pow 0.5= ${16 pow 0.5}")
+
+        prine((1 .. 10)[1])
+        prin("size= ${(1 .. 10).size}")
+        prin("range= ${(1 .. 10).range}")
     }
 }

@@ -4,6 +4,7 @@ import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.console.log
 import sidev.lib.console.prine
 import kotlin.jvm.JvmOverloads
+import sidev.lib.collection.array.get as stdSubArray
 
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
@@ -12,12 +13,13 @@ fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
             add(init(i))
     }
 }
-
+/*
 /** Mengambil bbrp elemen dari `this.extension` List dari [range.first] (inclusive) hingga [range.last] (exclusive). */
 operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, range.last)
 
 /** Mengambil bbrp elemen dari `this.extension` Array dari [range.first] (inclusive) hingga [range.last] (exclusive). */
 operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range)
+ */
 
 /** Sama seperti [first] sekaligus mengahpus element pertama */
 fun <T> MutableList<T>.takeFirst(): T = if(isEmpty()) throw NoSuchElementException("List is Empty") else removeAt(0)
@@ -316,10 +318,12 @@ fun <T> MutableCollection<T>.trimNulls(): Boolean = when(this){
  * Mengambil sub-list dari `this.extension` List dimulai dari index [range.first] sampai [range.last]
  */
 operator fun <C: Collection<T>, T> C.get(range: IntRange): C {
-    if(range.step < 0)
-        throw IllegalArgumentException("Progression dari range harus positif, progression skrg= ${range.step}")
+//    if(range.step < 0) // Gak perlu pake pengecekan karena `IntRange` itu otomatis step nya positif.
+//        throw IllegalArgumentException("Progression dari range harus positif, progression skrg= ${range.step}")
     return (if(this is List<*>) this else toList()).subList(range.first, range.last) as C
 }
+
+operator fun <T> Array<T>.get(range: IntRange): Array<T> = stdSubArray(range)
 
 
 fun <T> stackOf(vararg elements: T): Stack<T> = StackImpl<T>(elements.size +5).apply {

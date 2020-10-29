@@ -1,5 +1,6 @@
 package sidev.lib.collection
 
+/*
 import java.util.Stack as JvmStack
 
 internal actual class StackImpl<T> actual constructor(initCapacity: Int): Stack<T>{
@@ -10,8 +11,8 @@ internal actual class StackImpl<T> actual constructor(initCapacity: Int): Stack<
     override val size: Int
         get() = delegate.size
 
-    override fun popIndex(currentIndex: Int, currentSize: Int, removedIndex: Int, removedCount: Int): Int = currentSize -removedCount -1
-    override fun pushIndex(currentIndex: Int, currentSize: Int, addedIndex: Int, addedCount: Int): Int = currentSize +addedCount -1
+    override fun popIndex(cursorIndex: Int, currentSize: Int, removedIndex: Int, removedCount: Int): Int = currentSize -removedCount -1
+    override fun pushIndex(cursorIndex: Int, currentSize: Int, addedIndex: Int, addedCount: Int): Int = currentSize +addedCount -1
 
     override fun trimToSize() = delegate.trimToSize()
     override fun trimNulls() {
@@ -42,3 +43,4 @@ internal actual class StackImpl<T> actual constructor(initCapacity: Int): Stack<
     override fun set(index: Int, element: T): T = delegate.set(index, element)
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> = delegate.subList(fromIndex, toIndex)
 }
+ */

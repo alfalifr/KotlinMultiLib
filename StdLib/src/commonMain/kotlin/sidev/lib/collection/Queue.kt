@@ -17,8 +17,8 @@ interface Queue<T>: Vector<T> {
 internal class QueueImpl<T>(initCapacity: Int): VectorImpl<T>(initCapacity), Queue<T> {
     constructor(): this(10)
 
-    override fun pushIndex(currentIndex: Int, currentSize: Int, addedIndex: Int, addedCount: Int): Int = 0
-    override fun popIndex(currentIndex: Int, currentSize: Int, removedIndex: Int, removedCount: Int): Int = 0
+    override fun pushIndex(cursorIndex: Int, currentSize: Int, addedIndex: Int, addedCount: Int): Int = 0
+    override fun popIndex(cursorIndex: Int, currentSize: Int, removedIndex: Int, removedCount: Int): Int = 0
     override fun subList(fromIndex: Int, toIndex: Int): Queue<T> =
         QueueImpl<T>(elementCount +capacityIncrement /2).apply {
             addAll(this@QueueImpl.array as Array<out T>)

@@ -23,7 +23,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
     /**
      * Index ujung yg digunakan oleh fungsi [peek], [pop], dan [push].
      */
-    var nextInd: Int= -1
+    var cursorInd: Int= -1
         private set
     /**
      * Jumlah elemen yg sesungguhnya yg merupakan hasil penambahan dari [add] yg ada di [array].
@@ -53,7 +53,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         for(i in 0 until elementCount)
             array[i]= null
         elementCount= 0
-        nextInd= 0
+        cursorInd= 0
     }
 
     override fun removeAt(index: Int): T {
@@ -64,7 +64,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
             arrayCopy(array, index +1, array, index, len)
         }
 
-        nextInd= popIndex(nextInd, elementCount, index)
+        cursorInd= popIndex(cursorInd, elementCount, index)
         array[--elementCount]= null
         return item as T
     }
@@ -79,7 +79,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         if(index < elementCount)
             arrayCopy(array, index, array, index +1, elementCount -index)
 
-        nextInd= pushIndex(nextInd, elementCount, index)
+        cursorInd= pushIndex(cursorInd, elementCount, index)
         array[index]= element
         elementCount++
     }
@@ -88,8 +88,8 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         if(elementCount == array.size)
             grow()
 
-        val currInd= nextInd
-        nextInd= pushIndex(currInd, elementCount, currInd)
+        val currInd= cursorInd
+        cursorInd= pushIndex(currInd, elementCount, currInd)
         array[currInd]= element
         elementCount++
         return true
@@ -104,7 +104,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
             grow(totalLen)
 
         val addedCount= elements.size
-        nextInd= pushIndex(nextInd, elementCount, index, addedCount)
+        cursorInd= pushIndex(cursorInd, elementCount, index, addedCount)
 
         val len= elementCount -index
         arrayCopy(array, index, array, len, len)
@@ -141,7 +141,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         for((i, retained) in retainedSet.withIndex())
             array[i]= retained
 
-        nextInd= pushIndex(0, 0, retainedSet.size)
+        cursorInd= pushIndex(0, 0, retainedSet.size)
         elementCount= retainedSet.size
         return elementCount != 0
     }
@@ -151,21 +151,25 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
 
     override fun isEmpty(): Boolean = elementCount == 0
 
-    override fun peek(): T = array[nextInd] as T
-    override fun pop(): T = removeAt(nextInd)
+    override fun peek(): T = array[cursorInd] as T
+    override fun pop(): T = removeAt(cursorInd)
     override fun push(item: T): T{
-        nextInd= pushIndex(nextInd, size, nextInd)
-        add(nextInd, item)
+        cursorInd= pushIndex(cursorInd, size, cursorInd)
+        add(cursorInd, item)
         return item
     }
 
+    /**
+     * Iterasi dilakukan sesuai arah dari [queueMode].
+     */
     override fun iterator(): MutableIterator<T> = object : MutableIterator<T>{
         var i= 0
         var poppedCount= 0
         override fun hasNext(): Boolean = poppedCount < elementCount
         override fun next(): T {
+            val item= array[popIndex(i, elementCount -poppedCount, i).also { i= it }] as T
             poppedCount++
-            return array[(popIndex(i, elementCount -poppedCount, i) +2).also { i= it }] as T
+            return item
         }
         override fun remove() {
             removeAt(i)
@@ -184,13 +188,13 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         override fun previousIndex(): Int = pushIndex(i, elementCount -poppedCount, i).also { pushInd= it }
 
         override fun next(): T {
+            i= nextIndex()
             poppedCount++
-            i= popInd
             return array[popInd] as T
         }
         override fun previous(): T {
+            i= previousIndex()
             poppedCount--
-            i= pushInd
             return array[pushInd] as T
         }
         override fun add(element: T) {

@@ -26,14 +26,20 @@ interface Vector<T>: MutableList<T>, Trimmable {
     fun push(item: T): T
 
     /**
-     * Fungsi yg digunakan untuk mengambil ujung index sebelum [currentIndex]
-     * tepat sebelum sebuah item pada index [removedIndex] dihapus dari daftar.
+     * Fungsi yg digunakan untuk mengambil index ujung yg digunakan untuk mengeluarkan item ujung
+     * jika index ujung sebelum pop adalah [cursorIndex] dan ukuran koleksi adalah [currentSize]
+     * dengan ukuran yg dikeluarkan sebanyak [removedCount] dimulai dari [removedIndex].
+     *
+     * Fungsi ini dipanggil tepat sebelum operasi [pop].
      */
-    fun popIndex(currentIndex: Int, currentSize: Int, removedIndex: Int, removedCount: Int= 1): Int
+    fun popIndex(cursorIndex: Int, currentSize: Int, removedIndex: Int, removedCount: Int= 1): Int
 
     /**
-     * Fungsi yg digunakan untuk mengambil ujung index setelah [currentIndex]
-     * tepat sebelum sebuah item dimasukan pada index [addedIndex] di daftar.
+     * Fungsi yg digunakan untuk mengambil index ujung yg digunakan untuk memasukan item ujung
+     * jika index ujung sebelum push adalah [cursorIndex] dan ukuran koleksi adalah [currentSize]
+     * dengan ukuran yg dimasukan sebanyak [addedCount] dimulai dari [addedCount].
+     *
+     * Fungsi ini dipanggil tepat sebelum operasi [push].
      */
-    fun pushIndex(currentIndex: Int, currentSize: Int, addedIndex: Int, addedCount: Int= 1): Int
+    fun pushIndex(cursorIndex: Int, currentSize: Int, addedIndex: Int, addedCount: Int= 1): Int
 }
