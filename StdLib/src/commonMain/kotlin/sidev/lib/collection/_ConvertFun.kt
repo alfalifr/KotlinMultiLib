@@ -1,7 +1,7 @@
 package sidev.lib.collection
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.notNull
-import sidev.lib.structure.data.MapEntry
 import kotlin.collections.toList as ktToList
 
 /*
@@ -10,6 +10,8 @@ Convert
 ===============
  */
 fun <T> Array<T>.toArrayList(): ArrayList<T> = this.toMutableList() as ArrayList<T>
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> Iterable<T>.toArrayList(): ArrayList<T> = when(this){
     is ArrayList<*> -> this
     is Collection<*> -> ArrayList(this)

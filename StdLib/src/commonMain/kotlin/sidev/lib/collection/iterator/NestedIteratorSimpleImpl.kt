@@ -1,5 +1,7 @@
 package sidev.lib.collection.iterator
 
+import sidev.lib.`val`.SuppressLiteral
+
 /**
  * Digunakan untuk melakukan iterasi terhadap data yg memiliki banyak keturunan.
  * Sebagai contoh adalah [ViewGroup] pada Android yg punya banyak child view.
@@ -11,6 +13,7 @@ abstract class NestedIteratorSimpleImpl<T>(startIterator: Iterator<T>?)
     NestedIteratorSimple<T>,
     SkippableIterator<T> {
     constructor(startIterable: Iterable<T>): this(startIterable.iterator())
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     constructor(start: T?): this((start as? Iterable<T>)?.iterator()){
         this.start= start
     }
@@ -33,5 +36,5 @@ abstract class NestedIteratorSimpleImpl<T>(startIterator: Iterator<T>?)
         }
  */
 
-    final override fun getInputIterator(nowOutput: T): Iterator<T>? = getOutputIterator(nowOutput)
+    override fun getInputIterator(nowOutput: T): Iterator<T>? = getOutputIterator(nowOutput)
 }

@@ -2,6 +2,7 @@ package sidev.lib.progression
 
 import sidev.lib.`val`.Exclusiveness
 import sidev.lib.`val`.NumberOperationMode
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.number.*
 import sidev.lib.range.rangeTo_
 
@@ -63,7 +64,8 @@ class NumberProgressionImpl<T>(
                                 (if(last >= 1) last else 1.0 / last).absoluteValue
                     }
                     // Ini karena pangkat min sama dg 1/n, sehingga bentuk ini akan terus inverse pada progresi selanjutnya.
-                step in (0.0.rangeTo_(1.0, endExclusiveness = Exclusiveness.EXCLUSIVE)) as ClosedRange<T> ->
+                step in @Suppress(SuppressLiteral.UNCHECKED_CAST)
+                        ((0.0.rangeTo_(1.0, endExclusiveness = Exclusiveness.EXCLUSIVE)) as ClosedRange<T>) ->
                     if(exclusiveness == Exclusiveness.INCLUSIVE) {
                         next.absoluteValue >= last.absoluteValue as Number
                     } else {

@@ -2,7 +2,6 @@ package sidev.lib.reflex
 
 import com.sigudang.android._Dummy.inboundList_created
 import com.sigudang.android._Dummy.productList_full
-import com.sigudang.android.models.Bound
 import sidev.lib._config_.SidevLibConfig
 import sidev.lib.annotation.SiRename
 import sidev.lib.annotation.renamedName
@@ -12,12 +11,13 @@ import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.console.prinp
 import sidev.lib.number.*
-import sidev.lib.platform.Platform
-import sidev.lib.platform.platform
+import sidev.lib.environment.Platform
+import sidev.lib.environment.platform
 import sidev.lib.reflex.annotation.callAnnotatedFunction
 import sidev.lib.reflex.core.createType
 import sidev.lib.reflex.full.*
 import sidev.lib.reflex.full.types.*
+import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-class SampleTests {
+class ReflexCommonSampleTests {
     @Test
     fun testMe() {
         prinp("\n==== testMe() Mulai ==== \n")
@@ -268,16 +268,55 @@ class SampleTests {
         prin("list2::class.isCopySafe= ${list2::class.isCopySafe}")
         prin("\"afsa\"::class.isCopySafe= ${"afsa"::class.si.isCopySafe}")
         prin("list2::class.isCollection= ${list2::class.isCollection}")
+/*
+        prin("\n============= list2::class.supertypes ===============\n")
+        for((i, cls) in list2::class.supertypes.filter { it.classifier is KClass<*> }.withIndex())
+            prin("i= $i cls= $cls")
+ */
 
         prin("\n============= list2::class.classesTree ===============\n")
         for((i, cls) in list2::class.classesTree.withLevel().withIndex())
             prin("i= $i cls= $cls")
+///*
+        prin("\n============= ac3.implementedNestedPropertyValuesTree ===============\n")
+        for((i, field) in ac3.implementedNestedPropertyValuesTree.withLevel().withIndex())
+            prin("i= $i field= $field")
+// */
 
         prin("\n============= List Clone ===============\n")
         list1[0].poin.x= 16
         list1[1].poin.y= 32
         prin("list1[0].poin.x= ${list1[0].poin.x} list1[1].poin.x= ${list1[1].poin.x}")
         prin("list1[0].poin.y= ${list1[0].poin.y} list1[1].poin.y= ${list1[1].poin.y}")
+    }
+
+    @Test
+    fun nestedPropOrderTest(){
+        class A(val x: Int= 1, val y: Int= 0)
+        class B(val a: A= A())
+        class C(val b: B= B())
+        class D(val c: C= C())
+        class E(val d: D= D())
+        class F(val e: E= E(), val xyx: Int= 100)
+
+        var currLevel= 0
+        prin("\n============= F().implementedNestedPropertyValuesTree ===============\n")
+        for((i, field) in F().implementedNestedPropertyValuesTree.withLevel().withIndex())
+            prin("i= $i field= $field")
+    }
+
+    @Test
+    fun propTest(){
+        val ac= AC<BlaBla2>()
+        val seq= ac.implementedPropertyValuesTree
+
+        prin("\n============= ac.implementedNestedPropertyValuesTree ===============\n")
+        for((i, field) in seq.withIndex())
+            prin("i= $i field= $field")
+
+        prin("\n============= ac.implementedNestedPropertyValuesTree ke-2 ===============\n")
+        for((i, field) in seq.withIndex())
+            prin("i= $i field= $field")
     }
 
     @ExperimentalTime
@@ -423,6 +462,7 @@ class SampleTests {
             prin("FunAnot::class = ${FunAnot::class}")
             log(FunAnot::class)
         }
+/*
         var time= measureTime {
             ac.callAnnotatedFunction<FunAnot> {
                 prin("param= $it")
@@ -454,6 +494,7 @@ class SampleTests {
             }
         }
         prine("time= $time")
+ */
 /*
         val poin= Poin(y= 11)
         time= measureTime {

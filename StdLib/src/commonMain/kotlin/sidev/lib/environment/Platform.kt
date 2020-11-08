@@ -1,4 +1,4 @@
-package sidev.lib.platform
+package sidev.lib.environment
 
 enum class Platform {
     JVM,

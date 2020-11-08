@@ -2,8 +2,6 @@ package sidev.lib.property
 
 import sidev.lib.structure.data.value.Val
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.check.isNull
-import sidev.lib.check.notNull
 import kotlin.reflect.KProperty
 
 /**

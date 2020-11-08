@@ -5,6 +5,7 @@ import sidev.lib.collection.iterator.NestedIteratorImpl
 import sidev.lib.collection.iterator.SkippableIteratorImpl
 import sidev.lib.collection.lazy_list.asCached
 
+
 inline fun <reified T> Sequence<T>.toTypedArray(): Array<T> = toList().toTypedArray()
 
 

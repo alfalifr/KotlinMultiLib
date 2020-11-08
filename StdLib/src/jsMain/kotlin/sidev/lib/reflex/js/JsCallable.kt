@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
 import kotlin.js.Json
 import sidev.lib.reflex.js.call as _call
@@ -65,6 +66,7 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
 
     override val name: String by lazy{ when{
         isPureJsFunction -> {
+            @Suppress(SuppressLiteral.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE)
             try{ (func as JsClass<*>).name }
             catch (e: Throwable){ jsName(jsPureFunction(func)) }
         }
@@ -92,6 +94,7 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
 
     override fun new(vararg args: Any?): T {
         validateArgs(*args)
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
         return invoke(args, CallKind.NEW) as T
     }
     override fun newBy(args: Json): T = new(*args.sliceWithParam(parameters).toTypedArray())

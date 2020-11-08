@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
 import sidev.lib.console.log
@@ -41,6 +42,7 @@ fun <T: Any, R> createJsMutableProperty(
  */
 //TODO <16 Agustus 2020> => Untuk smtr smua properti yg diambil merupakan mutable property
 fun <T: Any> getDeclaredProperty(func: T): List<JsMutableProperty<T, *>>{
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     val func= jsPureFunction(func) as Any
     if(!func.isFunction)
         throw IllegalArgumentException("func: \"${str(func)}\" bkn fungsi.") //Agar lebih kontekstual.

@@ -73,8 +73,10 @@ fun <K, V> commonListOf(vararg elements: Pair<K, V>): CommonList<K, V>
 fun <K, V> commonMutableListOf(vararg elements: Pair<K, V>): CommonMutableList<K, V>
         = CommonMutableListImpl_Map(mutableMapOf(*elements))
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> commonIndexedListOf(vararg elements: T): CommonIndexedList<T>
         = CommonListImpl_Array(elements as Array<T>) // as CommonList<Int, T>
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> commonIndexedMutableListOf(vararg elements: T): CommonIndexedMutableList<T>
         = CommonMutableListImpl_Array(elements as Array<T>)
 
@@ -102,9 +104,11 @@ fun <K, V> CommonList<K, V>.asMap(): Map<K, V> = this
 ///*
 fun <V> CommonMutableList<*, V>.asMutableList(): MutableList<V> = this
 fun <K, V> CommonMutableList<K, V>.asMutableMap(): MutableMap<K, V> = when(this){
-    is CommonMutableListImpl_Map<*, *> -> object : MutableMap<K, V> by (map as MutableMap<K, V>){
-        override fun toString(): String = map.toString()
-    }
+    is CommonMutableListImpl_Map<*, *> ->
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
+        object : MutableMap<K, V> by (map as MutableMap<K, V>){
+            override fun toString(): String = map.toString()
+        }
     else -> {
         val res: MutableMap<K, V> by this
         res
@@ -129,9 +133,11 @@ inline operator fun <reified T> ArrayWrapper<T>.getValue(owner: Any?, prop: KPro
 /** Extension delegate function ini dibuat dg alasan karena [CommonMutableList] tidak meng-extend [MutableMap]. */
 operator fun <K, V> CommonMutableList<K, V>.getValue(owner: Any?, property: KProperty<*>): MutableMap<K, V>{
     return when(this){
-        is CommonMutableListImpl_Map<*, *> -> object : MutableMap<K, V> by (map as MutableMap<K, V>){
-            override fun toString(): String = map.toString()
-        }
+        is CommonMutableListImpl_Map<*, *> ->
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
+            object : MutableMap<K, V> by (map as MutableMap<K, V>){
+                override fun toString(): String = map.toString()
+            }
         else -> {
             val thisEx= this
             object : MutableMap<K, V> {

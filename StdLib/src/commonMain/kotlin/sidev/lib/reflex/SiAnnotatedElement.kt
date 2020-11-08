@@ -1,6 +1,8 @@
 package sidev.lib.reflex
 
-
-interface SiAnnotatedElement {
+/**
+ * Komponen [SiReflex] yang dapat dianotasi.
+ */
+interface SiAnnotatedElement: SiReflex {
     val annotations: List<Annotation>
 }

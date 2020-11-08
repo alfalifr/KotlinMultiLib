@@ -1,8 +1,9 @@
 package sidev.lib.reflex.native_
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
 import sidev.lib.exception.ReflexStateExc
-import sidev.lib.platform.platform
+import sidev.lib.environment.platform
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility
@@ -54,11 +55,13 @@ internal fun unavailableReflexAcces_int(callerFunName: String, fromUnit: Any, de
 internal fun <T> unavailableReflexAcces_callBlock(callerFunName: String, fromUnit: Any): (Array<out Any?>) -> T {
     val callBlock = { _: Array<out Any?> -> }
     printUnavailableReflexWarning(callerFunName, fromUnit, "`SiType`", callBlock.toString())
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return callBlock as ((Array<out Any?>) -> T)
 }
 internal fun <T> unavailableReflexAcces_getBlock(callerFunName: String, fromUnit: Any): (Array<out Any>) -> T {
     val callBlock = { _: Array<out Any> -> }
     printUnavailableReflexWarning(callerFunName, fromUnit, "`SiType`", callBlock.toString())
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return callBlock as ((Array<out Any>) -> T)
 }
 

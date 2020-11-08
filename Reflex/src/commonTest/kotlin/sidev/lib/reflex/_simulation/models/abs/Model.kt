@@ -1,5 +1,5 @@
-package com.sigudang.android.models.abs
+package sidev.lib.reflex._simulation.models.abs
 
-import java.io.Serializable
+//import java.io.Serializable
 
-open class Model(val id: String): Serializable
+open class Model(val id: String) //: Serializable

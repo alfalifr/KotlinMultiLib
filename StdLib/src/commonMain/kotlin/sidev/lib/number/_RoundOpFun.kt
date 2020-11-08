@@ -32,7 +32,7 @@ fun <T: Number> T.round(digitPlace: Int= 0, mode: RoundingMode = RoundingMode.HA
         // sedangkan tipe data angka kelas ini tidak memiliki koma, maka return angka ini.
         val digitTimer= (10 pow -digitPlace).toInt().toDouble() //Agar hasil koma bisa kelihatan dg pas.
         val newThis= this * digitTimer
-        return (newThis.round(0, mode) / digitTimer) as T
+        return (newThis.round(0, mode) / digitTimer)
     }
     val numberInDigit= getNumberAtDigit(digitPlace-1)
 

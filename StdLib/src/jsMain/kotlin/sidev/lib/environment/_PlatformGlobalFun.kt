@@ -1,5 +1,6 @@
-package sidev.lib.platform
+package sidev.lib.environment
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.js.asJson
@@ -51,6 +52,7 @@ internal actual fun putInternalObjectOnGlobal(obj: Any){
     prine("putInternalObjectOnGlobal() obj= $obj")
     val name= obj::class.simpleName!!
     prine("putInternalObjectOnGlobal() obj= $obj name= $name")
+    @Suppress(SuppressLiteral.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE)
     val internalObj= (getGlobalObject(SiReflexConst.SI_JS_GLOBAL_INTERNAL_OBJECT_NAME) ?: json()) as Json
     internalObj[name]= obj
     setGlobalObject(SiReflexConst.SI_JS_GLOBAL_INTERNAL_OBJECT_NAME, internalObj)

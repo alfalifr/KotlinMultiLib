@@ -1,7 +1,7 @@
 package sidev.lib.reflex.native_
 
 import sidev.lib.console.prine
-import sidev.lib.platform.platform
+import sidev.lib.environment.platform
 import sidev.lib.reflex.SiParameter
 import sidev.lib.reflex.SiType
 import sidev.lib.reflex.SiVisibility

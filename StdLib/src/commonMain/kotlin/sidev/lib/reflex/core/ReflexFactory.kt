@@ -1,10 +1,11 @@
 package sidev.lib.reflex.core
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.lazy_list.asCached
 import sidev.lib.console.prine
 import sidev.lib.exception.IllegalStateExc
-import sidev.lib.platform.Platform
-import sidev.lib.platform.platform
+import sidev.lib.environment.Platform
+import sidev.lib.environment.platform
 import sidev.lib.property.mutableLazy
 import sidev.lib.property.reevaluateLazy
 import sidev.lib.reflex.*
@@ -444,6 +445,7 @@ object ReflexFactory{
     ): SiField<R, T> {
         val getBlock= if(nativeCounterpart != null) getPropGetValueBlock<T>(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
         else {
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             val propGetter= (host as? SiProperty<T>)?.getter
             { receivers: Array<out Any> -> propGetter?.call(receivers.first())!! }
         }
@@ -469,12 +471,14 @@ object ReflexFactory{
     ): SiMutableField<R, T> {
         val getBlock= if(nativeCounterpart != null) getPropGetValueBlock(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
         else {
-            prine("createField() getBlock else")
+//            prine("createField() getBlock else")
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             val propGetter= (host as? SiProperty<T>)?.getter
             { receivers: Array<out Any> -> propGetter?.call(receivers.first())!! }
         }
         val setBlock= if(nativeCounterpart != null) getPropSetValueBlock(nativeCounterpart.implementation) //(arrayOf(receiver as Any))
         else {
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             val propSetter= (host as? SiMutableProperty<T>)?.setter
             { receivers: Array<out Any>, value: T -> propSetter?.call(receivers.first(), value)!! }
         }

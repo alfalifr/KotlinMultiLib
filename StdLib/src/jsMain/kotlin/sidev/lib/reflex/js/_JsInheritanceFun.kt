@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 import sidev.lib.reflex.js.kotlin.isKotlinFun
 import sidev.lib.reflex.js.kotlin.kotlinSupertypes
@@ -10,6 +11,7 @@ import sidev.lib.reflex.js.kotlin.kotlinSupertypes
  * supertype juga dapat diperoleh jika [func] merupakan objek, namun krg sesua konteks.
  */
 fun getSupertypes(func: Any): List<JsCallable<*>>{
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     val func= jsPureFunction(func) as Any
     if(!func.isFunction)
         throw IllegalArgumentException("func: \"${str(func)}\" bkn fungsi.") //Agar lebih kontekstual.

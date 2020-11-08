@@ -1,5 +1,6 @@
 package sidev.lib.reflex
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.reflex.core.ReflexFactory
 import sidev.lib.reflex.core.ReflexTemplate
 import sidev.lib.reflex.native_.getPropGetValueBlock
@@ -15,6 +16,7 @@ import sidev.lib.reflex.native_.getPropSetValueBlock
 
 internal abstract class SiPropertyGetter1<T, out R>(override val property: SiProperty<R>)
     : SiCallableImpl<R>(), SiProperty1.Getter<T, R> {
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     override val callBlock: (args: Array<out Any?>) -> R by lazy{
         getPropGetValueBlock<R>(property.descriptor.native!!) as (Array<out Any?>) -> R
     }
@@ -34,6 +36,7 @@ internal abstract class SiPropertySetter1<T, R>(override val property: SiPropert
     : SiCallableImpl<Unit>(), SiMutableProperty1.Setter<T, R> {
     override val callBlock: (args: Array<out Any?>) -> Unit by lazy {
         { args: Array<out Any?> ->
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             getPropSetValueBlock<R>(property.descriptor.native!!)(args as Array<out Any>, args[1] as R)
         }
     }
@@ -54,6 +57,7 @@ internal abstract class SiPropertySetter1<T, R>(override val property: SiPropert
 
 internal abstract class SiProperty1Impl<T, out R>
     : SiCallableImpl<R>(), SiProperty1<T, R> {
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     override val callBlock: (args: Array<out Any?>) -> R = { null as R } //Karena callBlocknya ikut SiProperty1, pake getter.
     override val defaultCallBlock: ((args: Array<out Any?>) -> R)? = null
     override val getter: SiProperty1.Getter<T, R> by lazy {

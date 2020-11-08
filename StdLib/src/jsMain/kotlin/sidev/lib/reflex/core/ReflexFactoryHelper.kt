@@ -1,5 +1,6 @@
 package sidev.lib.reflex.core
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.exception.ReflexComponentExc
 import sidev.lib.reflex.*
 import sidev.lib.reflex.js.JsCallableImpl
@@ -16,6 +17,7 @@ internal actual object ReflexFactoryHelper{
      */
     actual fun getSupertypes(classifier: SiClass<*>, native: Any): List<SiType>{
         return sidev.lib.reflex.js.getSupertypes(native).map {
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             JsClassImpl_<Any>((it as JsCallableImpl<*>).func).siClass as SiClass<Any>
         }.map {
             it.createType()

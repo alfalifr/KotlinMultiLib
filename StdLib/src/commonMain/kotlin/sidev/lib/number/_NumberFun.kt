@@ -1,8 +1,10 @@
 package sidev.lib.number
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
 import sidev.lib.structure.data.value.Val
 import kotlin.math.absoluteValue
+import kotlin.reflect.KClass
 
 
 fun Number.isZero(): Boolean = this.compareTo(0) == 0
@@ -72,6 +74,8 @@ val <T: Number> T.absoluteValue: T
             is Double -> absoluteValue
             else -> if(!isNegative()) this else -this
         }
+
+        @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
         return if(res.isNotNegative()) res as T
         else (res +1).absoluteValue as T
     }
@@ -89,3 +93,18 @@ fun <T: Number> T.notNegativeOr(default: T): T = if(!isNegative()) this else def
 fun <T: Number> T.notPositiveOr(default: T): T = if(!isPositive()) this else default
 fun <T: Number> T.notZeroOr(default: T): T = if(!isZero()) this else default
 
+
+fun <T: Number> Number.toFormatLike(other: T): T = toFormat(other::class)
+
+inline fun <reified T: Number> Number.toFormat(): T = toFormat(T::class)
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T: Number> Number.toFormat(cls: KClass<*>): T = when(cls){
+    this::class -> this
+    Int::class -> toInt()
+    Long::class -> toLong()
+    Float::class -> toFloat()
+    Double::class -> toDouble()
+    Byte::class -> toByte()
+    Short::class -> toShort()
+    else -> throw UnsupportedOperationException("Format angka \"$cls\" tidak diketahui")
+} as T

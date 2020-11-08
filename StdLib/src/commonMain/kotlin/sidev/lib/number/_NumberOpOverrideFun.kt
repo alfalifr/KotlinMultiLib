@@ -1,5 +1,6 @@
 package sidev.lib.number
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.reflex.clazz
 import sidev.lib.exception.UndefinedDeclarationExc
 
@@ -16,6 +17,7 @@ Operator Overriding
  *   dan angka `this.extension` ini sendiri jika tipe pasti [other] tidak diketahui.
  */
 infix operator fun <T: Number> T.plus(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this + other
         is Long -> this + other
@@ -27,6 +29,7 @@ infix operator fun <T: Number> T.plus(other: Number): T{
     } as T
 }
 infix operator fun <T: Number> T.minus(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this - other
         is Long -> this - other
@@ -38,6 +41,7 @@ infix operator fun <T: Number> T.minus(other: Number): T{
     } as T
 }
 infix operator fun <T: Number> T.times(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this * other
         is Long -> this * other
@@ -49,6 +53,7 @@ infix operator fun <T: Number> T.times(other: Number): T{
     } as T
 }
 infix operator fun <T: Number> T.div(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this / other
         is Long -> this / other
@@ -60,6 +65,7 @@ infix operator fun <T: Number> T.div(other: Number): T{
     } as T
 }
 infix operator fun <T: Number> T.rem(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this % other
         is Long -> this % other

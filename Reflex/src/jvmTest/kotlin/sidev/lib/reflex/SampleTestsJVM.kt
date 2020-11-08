@@ -3,14 +3,14 @@ package sidev.lib.reflex
 import com.sigudang.android._Dummy.inboundList_created
 import sidev.lib._config_.SidevLibConfig
 import sidev.lib.collection.sequence.nestedSequenceSimple
+import sidev.lib.collection.sequence.withLevel
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.reflex.annotation.callAnnotatedFunction
 import sidev.lib.reflex.annotation.nativeCallAnnotatedFunction
-import sidev.lib.reflex.full.fieldValuesTree
 import sidev.lib.reflex.full.isCollection
 import sidev.lib.reflex.full.nativeClone
-import sidev.lib.reflex.jvm.javaFieldValuesTree
+import sidev.lib.reflex.jvm.*
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -94,5 +94,50 @@ class SampleTestsJVM {
         for((i, prop) in a::class.declaredMemberProperties.withIndex()){
             prin("i= $i prop= $prop")
         }
+    }
+
+    @Test
+    fun jvmNamedValuesMap(){
+        class A(val a: Int= 1, val b: Int= 3)
+        class B(val str: String= "Halo bro", val aa: A= A(), val bInt: Int= 3)
+        class C(val str2: String= "Ok bro", val bb: B= B(), val cInt: Int= 5)
+///*
+        val c= C()
+        val fields= c::class.java.fields
+        prin("b::class.java= ${c::class.java} fields= ${fields.joinToString()} isEmpty= ${fields.isEmpty()}")
+
+        prin("================== javaPrimitiveFieldValuesTreeNamedMap ===============")
+        c.javaNestedPrimitiveFieldValuesTreeNamedMap.forEach { (t, u) ->
+            prin("name= $t value= $u")
+        }
+
+        prin("================== javaNonExhaustiveNestedFieldValuesTree ===============")
+        c.javaNonExhaustiveNestedFieldValuesTree.forEach { (t, u) ->
+            prin("field= $t name= ${t.name} field type= ${t.type} value= $u")
+        }
+
+        prin("================== javaFieldValuesTree ===============")
+        c.javaFieldValuesTree.forEach { (t, u) ->
+            prin("field= $t name= ${t.name} field type= ${t.type} value= $u")
+        }
+
+        prin("Int::class.java.fields.joinToString()= ${Int::class.java.fields.joinToString()}")
+    }
+
+    @Test
+    fun primitiveWrapperTest(){
+        prin(Integer::class.java)
+        prin(Int::class.javaObjectType)
+        prin(Int::class.java)
+        prin(Integer::class.java.isPrimitiveWrapper)
+        prin(Int::class.javaObjectType.isPrimitiveWrapper)
+    }
+
+    @Test
+    fun javaNestedFieldTest(){
+        val ac3= AC<BlaBla2>()
+        prin("\n============= ac3.nestedFieldValuesTree.withLevel() ===============\n")
+        for((i, field) in ac3.javaNestedFieldValuesTree.withLevel().withIndex())
+            prin("i= $i field= $field")
     }
 }

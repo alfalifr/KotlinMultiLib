@@ -21,13 +21,19 @@ actual val KClass<*>.isPrimitive: Boolean get() = when(js.name){
 }
 
 actual val KClass<*>.isCopySafe: Boolean
-    get()= isPrimitive || this == String::class
+    get()= isBaseType //isPrimitive || this == String::class
             //|| isSubclassOf(Enum::class) TODO <29 Agustus 2020> => Untuk smtr, pengecekan enum dianggap tidak copySafe
 
 actual val KClass<*>.isCollection: Boolean
     get(){
-        val collName= Collection::class.simpleName
-        return classesTree.find { it.simpleName ==  collName } != null
+        val clsName= Collection::class.simpleName
+        return classesTree.find { it.simpleName ==  clsName } != null
+    }
+
+actual val KClass<*>.isMap: Boolean
+    get(){
+        val clsName= Map::class.simpleName
+        return classesTree.find { it.simpleName ==  clsName } != null
     }
 
 actual val KClass<*>.classesTree: NestedSequence<KClass<*>>

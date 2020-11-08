@@ -64,7 +64,7 @@ actual fun <T: Any> T.nativeCloneOp(
     }
     val valueMapTree= javaFieldValuesTree
 
-//    prine("jvm nativeClone() class= $clazz")
+    prine("jvm nativeClone() class= $clazz this= $this")
 
     val constructorPropertyList= mutableListOf<Field>()
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->
@@ -101,6 +101,7 @@ actual fun <T: Any> T.nativeCloneOp(
         )
         clazz.isArray -> return nativeArrayClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc).preReturnObj() //as T
         clazz.isCollection -> return ((this as Collection<T>).nativeDeepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
+        clazz.isMap -> return ((this as Map<*, T>).nativeDeepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
         else -> nativeNew(clazz, newInsConstrParamValFuncWrapper)
             ?: if(isDelegate) {
                 prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")

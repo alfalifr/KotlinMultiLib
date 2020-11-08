@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import kotlin.js.Json
 
 
@@ -20,10 +21,11 @@ interface JsProperty<T: Any, out R>: JsCallable<R>{
     val isLateinit: Boolean
 
     /** Karena receiver pada konteks Js hanya satu. */
-    override fun call(vararg args: Any?): Any? = try{ get(args.first() as T) }
-        catch (e: Throwable){
-            throw IllegalArgumentException("Property $name.call() harus dg argumen receiver.")
-        }
+    override fun call(vararg args: Any?): Any? = try{
+        @Suppress(SuppressLiteral.UNCHECKED_CAST) get(args.first() as T)
+    } catch (e: Throwable){
+        throw IllegalArgumentException("Property $name.call() harus dg argumen receiver.")
+    }
     override fun callBy(args: Json): Any? = call(
         try{ args.properties.iterator().next() }
         catch (e: Throwable){ throw IllegalArgumentException("Property $name.callBy() harus dg argumen receiver.") }
@@ -47,7 +49,8 @@ interface JsMutableProperty<T: Any, R>: JsProperty<T, R>{
 internal abstract class JsPropertyImpl<T: Any, out R> : JsCallableImpl<R>(), JsProperty<T, R>{
     abstract override val name: String
     override val func: Any by lazy { { args: Array<out Any?> ->
-        if(args.isNotEmpty()) get(args[0] as T)
+        if(args.isNotEmpty())
+            @Suppress(SuppressLiteral.UNCHECKED_CAST) get(args[0] as T)
         else throw IllegalArgumentException("argumen dari fungsi lambda property \"$this\" tidak boleh null.")
     } } //(args: Array<out Any?>) -> T
     override val parameters: List<JsParameter> = super<JsProperty>.parameters

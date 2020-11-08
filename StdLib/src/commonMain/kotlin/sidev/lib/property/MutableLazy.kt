@@ -2,8 +2,6 @@ package sidev.lib.property
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.ChangeLog
-import sidev.lib.check.isNull
-import sidev.lib.check.notNull
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

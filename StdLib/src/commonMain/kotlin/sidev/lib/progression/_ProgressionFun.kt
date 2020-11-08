@@ -2,6 +2,8 @@ package sidev.lib.progression
 
 import sidev.lib.`val`.Exclusiveness
 import sidev.lib.`val`.NumberOperationMode
+import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.number.toFormatLike
 import kotlin.ranges.CharProgression as CharProgressionKt
 import kotlin.ranges.until as untilKt
 
@@ -9,6 +11,7 @@ import kotlin.ranges.until as untilKt
 //fun <T> T.progressTo(other: T): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 1 as T)
 
 operator fun <T> T.rangeTo(other: Number): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other)
+@Suppress(SuppressLiteral.EXTENSION_SHADOWED_BY_MEMBER) //Untuk pemakaian pada Java.
 operator fun Char.rangeTo(other: Char): CharProgression = progressTo(other)
 
 infix fun <T> T.until(other: Number): NumberProgression<Int> where T : Number, T: Comparable<T> =
@@ -45,8 +48,12 @@ fun <T> T.progressTo(
     operationMode: NumberOperationMode= NumberOperationMode.INCREMENTAL,
     startExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE,
     endExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE
-): NumberProgression<T> where T : Number, T: Comparable<T>
-        = NumberProgressionImpl(this, other as T, step as T, operationMode, startExclusiveness, endExclusiveness)
+): NumberProgression<T> where T : Number, T: Comparable<T> = NumberProgressionImpl(
+    this,
+    other.toFormatLike(this),
+    step.toFormatLike(this),
+    operationMode, startExclusiveness, endExclusiveness
+)
 //infix fun <T> T.until(other: T): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 1 as T)
 
 fun Char.progressTo(
@@ -59,9 +66,7 @@ fun Char.progressTo(
 
 fun <T> Progression<T>.toList(): List<T>{
     val list= ArrayList<T>()
-    forEach {
-        list += it
-    }
+    forEach { list += it }
     return list
 }
 

@@ -11,5 +11,5 @@ import sidev.lib.annotation.Interface
 @Interface
 interface NestedIteratorSimple<T>: NestedIterator<T, T>, Iterator<T>{
     override fun getOutputIterator(nowInput: T): Iterator<T>?
-    override fun getInputIterator(nowOutput: T): Iterator<T>?
+    override fun getInputIterator(nowOutput: T): Iterator<T>? = getOutputIterator(nowOutput)
 }

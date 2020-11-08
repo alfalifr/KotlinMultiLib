@@ -81,6 +81,7 @@ kotlin {
                 implementation kotlin("test-js")
             }
         }
+/*
         mingwMain {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
@@ -88,6 +89,7 @@ kotlin {
         }
         mingwTest {
         }
+ */
     }
 }
 

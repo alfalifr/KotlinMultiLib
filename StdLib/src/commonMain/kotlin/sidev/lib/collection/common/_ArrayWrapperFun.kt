@@ -1,5 +1,7 @@
 package sidev.lib.collection.common
 
+import sidev.lib.`val`.SuppressLiteral
+
 
 fun <T> ArrayWrapper<T>.toArray(): Array<T>
         = (this as ArrayWrapperImpl<T>).array.copyOf() //.let { it.copyOf() }
@@ -42,6 +44,7 @@ fun CharArray.asWrapped(): MutableArrayWrapper<Char> =
 
 fun <T> arrayWrapperOf(vararg element: T): ArrayWrapper<T>
         = object : ArrayWrapper<T> {
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     private val array= element as Array<T>
 
     override fun get(index: Int): T = array[index]
@@ -52,6 +55,7 @@ fun <T> arrayWrapperOf(vararg element: T): ArrayWrapper<T>
 
 fun <T> mutableArrayWrapperOf(vararg element: T): MutableArrayWrapper<T>
         = object : MutableArrayWrapper<T> {
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     private val array= element as Array<T>
 
     override fun get(index: Int): T = array[index]

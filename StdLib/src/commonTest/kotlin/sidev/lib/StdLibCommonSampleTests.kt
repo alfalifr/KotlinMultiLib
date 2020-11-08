@@ -4,10 +4,11 @@ import sidev.lib.`val`.NumberOperationMode
 import sidev.lib.`val`.RoundingMode
 import sidev.lib.collection.*
 import sidev.lib.collection.common.*
+import sidev.lib.collection.iterator.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.lazy_list.rangeTo
-import sidev.lib.collection.sequence.nestedSequenceSimple
+import sidev.lib.collection.sequence.skippingNestedSequenceSimple
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.date.Date
@@ -17,10 +18,70 @@ import sidev.lib.util.Locale
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-class SampleTests {
+class StdLibCommonSampleTests {
+
+    @Test
+    fun nestedSeqTest(){
+/*
+        prin("========= Halo bro ===========")
+        skippingNestedSequenceSimple<KClass<*>>(ArrayList::class){
+            it.supertypes.asSequence().filter { it.classifier is KClass<*> }.map { it.classifier }.iterator() as Iterator<KClass<*>>
+        }.also {
+            prin("hasNext()= ${it.iterator().hasNext()}")
+        }.forEachIndexed { index, kClass ->
+            prin("i= $index cls= $kClass")
+        }
+
+        var i= 0
+        prin("========= Halo bro - 2 ===========")
+        nestedIteratorSimple<KClass<*>>(ArrayList::class){
+            it.supertypes.asSequence().filter {
+//                prin("nestedIteratorSimple it= $it it is KClass<*>= ${it is KClass<*>} it::class= ${it::class}")
+                it.classifier is KClass<*>
+            }.map{ it.classifier }.iterator() as Iterator<KClass<*>>
+        }.also {
+            prin("hasNext()= ${it.iterator().hasNext()}")
+        }.forEach { kClass ->
+            prin("i= ${i++} cls= $kClass")
+        }
+
+        i= 0
+        prin("========= Halo bro - 3 ===========")
+        val itr: LeveledNestedIterator_2<*, KClass<*>> = leveledNestedIteratorSimple<KClass<*>>(ArrayList::class){
+            it.supertypes.asSequence().filter {
+//                prin("nestedIteratorSimple it= $it it is KClass<*>= ${it is KClass<*>} it::class= ${it::class}")
+                it.classifier is KClass<*>
+            }.map{ it.classifier }.iterator() as Iterator<KClass<*>>
+        }.also {
+            prin("hasNext()= ${it.iterator().hasNext()}")
+        }
+        itr.forEach { kClass ->
+            prin("i= ${i++} level= ${itr.currentLevel} cls= $kClass")
+        }
+
+        i= 0
+        prin("========= Halo bro - 4 ===========")
+        val itr2= leveledNestedIterator<KType, String>(ArrayList::class.supertypes.iterator(), {
+            if(i < 2) it::class.supertypes.iterator() else null
+        }){
+            iteratorSimple(it.toString())
+        }//.withLevel()
+        itr2.forEach { kClass ->
+            prin("i= ${i++} level= ${itr2.currentLevel} cls= $kClass")
+        }
+
+        prin("========= ArrayList::class.supertypes ===========")
+        ArrayList::class.supertypes.forEachIndexed{ i, e ->
+            prin("i= $i cls= $e")
+        }
+// */
+    }
+
     @Test
     fun testMe() {
         assertTrue(Sample().checkMe() > 0)
@@ -290,11 +351,20 @@ class SampleTests {
             prin(it)
         }
 
+        (2f.progressTo(100.5, step = 20.3)).forEach {
+            prine(it)
+        }
+/*
         (16.0.progressTo(0.5, step = 0.5, operationMode = NumberOperationMode.EXPONENTIAL)).forEachIndexed { index, d ->
             if(index >= 20) return@forEachIndexed
             prine(d)
         }
+ */
 
+        var powRes= 16
+        powRes= powRes pow 0.5
+
+        prin("powRes= $powRes")
         prin("16 pow 0.5= ${16 pow 0.5}")
 
         prine((1 .. 10)[1])

@@ -1,8 +1,9 @@
 package sidev.lib.reflex.core
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.asNotNullTo
-import sidev.lib.platform.Platform
-import sidev.lib.platform.platform
+import sidev.lib.environment.Platform
+import sidev.lib.environment.platform
 import sidev.lib.reflex.*
 import sidev.lib.reflex.SiDescriptorImpl
 import sidev.lib.reflex.native_.SiKClassifier
@@ -195,6 +196,7 @@ object ReflexDescriptor {
             is SiType -> {
                 //TODO ada bbrp tipe di platfor Js yg name-nya jadi "KClass".
 //                prine("getDescriptor() SiType native= ${owner.descriptor.native} class= ${owner.descriptor.native?.clazz}") //owner.classifier.class= ${owner.classifier?.clazz}
+                @Suppress(SuppressLiteral.NAME_SHADOWING)
                 val str= when(val classifier= owner.classifier){
 /*
                     is SiKClassifier -> {
@@ -211,7 +213,7 @@ object ReflexDescriptor {
                     is SiTypeParameter -> classifier.name
                     is SiKClassifier -> when(val native= classifier.implementation){
                         is KClass<*> -> {
-                            var str= native.fullName //qualifiedName
+                            val str= native.fullName //qualifiedName
                             val typeArgStr= owner.arguments.getSiTypeProjectionDescStr()
                             "$str$typeArgStr"
                         }

@@ -93,6 +93,7 @@ fun <T> Array<T>.nativeDeepClone(isElementDeepClone: Boolean= true, elementConst
 fun <T> Collection<T>.nativeDeepClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): Collection<T>{
     val newColl= mutableListOf<T>()
 
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     for(e in this)
         newColl.add(
             (if(e != null)
@@ -104,6 +105,25 @@ fun <T> Collection<T>.nativeDeepClone(isElementDeepClone: Boolean= true, element
     return when(this){
         is MutableCollection<*> -> newColl
         else -> newColl.toList()
+    }
+}
+
+/** Kode implementasi sama dg [deepClone], namun menggunakan [nativeClone] sbg fungsi clone. */
+fun <K, V> Map<K, V>.nativeDeepClone(isElementDeepClone: Boolean= true, elementConstructorParamValFunc: ((KClass<*>, SiNativeParameter) -> Any?)?= null): Map<K, V>{
+    val newMap= mutableMapOf<K, V>()
+
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    for((k, v) in this)
+        newMap[k]= (
+            (if(v != null)
+                try{ (v as Any).nativeClone(isElementDeepClone, elementConstructorParamValFunc) }
+                catch (e: NonInstantiableTypeExc){ v }
+            else null) as V //Jika `this.extension` merupakan collection of nullables.
+        )
+
+    return when(this){
+        is MutableMap<*, *> -> newMap
+        else -> newMap.toMap()
     }
 }
 

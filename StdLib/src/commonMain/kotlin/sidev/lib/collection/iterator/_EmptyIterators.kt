@@ -22,8 +22,7 @@ object EmptyNestedIterator: NestedIterator<Nothing, Nothing>, NestedIteratorSimp
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <I, O> emptyNestedIterator(): NestedIterator<I, O> = EmptyNestedIterator as NestedIterator<I, O>
 
-@Suppress(SuppressLiteral.UNCHECKED_CAST)
-fun <T> emptyIterator(): Iterator<T> = EmptyNestedIterator as Iterator<T>
+fun <T> emptyIterator(): Iterator<T> = EmptyNestedIterator //as Iterator<T>
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <O> emptyNestedIteratorSimple(): NestedIteratorSimple<O> = EmptyNestedIterator as NestedIteratorSimple<O>

@@ -1,5 +1,6 @@
-package com.sigudang.android.models.abs
+package sidev.lib.reflex._simulation.models.abs
 
-import java.io.Serializable
+//import sidev.lib.reflex._simulation.models.abs.Model
+//import java.io.Serializable
 
-open class SimplestModel(id: String, val name: String): Model(id), Serializable
+open class SimplestModel(id: String, val name: String): Model(id) //, Serializable

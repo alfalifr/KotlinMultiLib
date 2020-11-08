@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.reflex.core.SiReflexConst
 import sidev.lib.reflex.js.kotlin.kotlinMetadata
 import kotlin.js.Json
@@ -83,6 +84,7 @@ fun jsSuperclass(any: Any): Any? = try{ any.asDynamic().__proto__ } catch (e: Th
  * saat fungsi yg membentuk suatu objek perlu diambil.
  */
 fun jsConstructor(any: Any): dynamic {
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     val any= try{ (jsPureFunction(any) as Any) } catch (e: Throwable){ any }
     val constr= any.prototype.asDynamic().constructor as? Any
     if(constr == null || constr.isUndefined)

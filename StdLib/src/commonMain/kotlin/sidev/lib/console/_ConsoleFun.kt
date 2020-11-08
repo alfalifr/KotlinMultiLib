@@ -4,9 +4,9 @@ import sidev.lib.`val`.StringLiteral
 
 object IoConfig{
     const val PRINT= true
-    const val PRINT_DEBUG= PRINT && false
+    const val PRINT_DEBUG= PRINT && true
     const val PRINT_RESULT= PRINT && true
-    const val PRINT_WARNING= PRINT && false
+    const val PRINT_WARNING= PRINT && true
     const val PRINT_ERROR= PRINT && true
 }
 

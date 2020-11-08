@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.notNull
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.findIndexed
@@ -33,6 +34,7 @@ fun createJsParam(index: Int, name: String?, isOptional: Boolean= false, type: J
 }
 
 fun getParam(func: Any): List<JsParameter>{
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     val func= jsPureFunction(func) as Any
     if(!func.isFunction)
         throw IllegalArgumentException("func: \"${str(func)}\" bkn fungsi.") //Agar lebih kontekstual.
@@ -109,6 +111,6 @@ fun getParam(func: Any): List<JsParameter>{
         if(param == null)
             params[i]= createJsParam(i, paramNames[i], false)
 
-
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return params as List<JsParameter>
 }

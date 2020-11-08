@@ -1,5 +1,6 @@
 package sidev.lib.collection
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.console.log
 import sidev.lib.console.prine
@@ -108,6 +109,7 @@ infix fun <C: MutableCollection<T>, T> C.intersect(other: Iterable<T>): C{
     return this
 }
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <C: MutableCollection<T>, T> C.distinct(): C{
     return toMutableSet().toMutableList() as C
 }
@@ -250,11 +252,13 @@ operator fun <L: MutableList<T>, T> L.times(factor: Int): L{
 }
 
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> MutableList<T>.pop(): T = when(this){
     is Vector<*> -> pop()
     else -> removeFirst()
 } as T
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> Collection<T>.peek(): T = when(this){
     is Vector<*> -> peek()
     else -> first()
@@ -317,6 +321,7 @@ fun <T> MutableCollection<T>.trimNulls(): Boolean = when(this){
 /**
  * Mengambil sub-list dari `this.extension` List dimulai dari index [range.first] sampai [range.last]
  */
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 operator fun <C: Collection<T>, T> C.get(range: IntRange): C {
 //    if(range.step < 0) // Gak perlu pake pengecekan karena `IntRange` itu otomatis step nya positif.
 //        throw IllegalArgumentException("Progression dari range harus positif, progression skrg= ${range.step}")

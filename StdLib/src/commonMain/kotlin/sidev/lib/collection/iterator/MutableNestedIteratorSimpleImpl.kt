@@ -1,5 +1,7 @@
 package sidev.lib.collection.iterator
 
+import sidev.lib.`val`.SuppressLiteral
+
 
 /**
  * Digunakan untuk melakukan iterasi terhadap data yg memiliki banyak keturunan.
@@ -10,6 +12,7 @@ package sidev.lib.collection.iterator
 abstract class MutableNestedIteratorSimpleImpl<T>(startIterator: Iterator<T>?)
     : NestedIteratorSimpleImpl<T>(startIterator), MutableNestedIteratorSimple<T> {
     constructor(startIterable: Iterable<T>): this(startIterable.iterator())
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     constructor(start: T?): this((start as? Iterable<T>)?.iterator()){
         this.start= start
     }

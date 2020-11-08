@@ -1,5 +1,6 @@
 package sidev.lib.collection
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.array.arrayCopy
 import sidev.lib.collection.array.trimNulls
 import sidev.lib.collection.array.trimToSize
@@ -66,6 +67,8 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
 
         cursorInd= popIndex(cursorInd, elementCount, index)
         array[--elementCount]= null
+
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
         return item as T
     }
 
@@ -121,11 +124,16 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
     }
 
     override fun contains(element: T): Boolean = array.contains(element)
-    override fun containsAll(elements: Collection<T>): Boolean = (array as Array<T>).all { contains(it) }
-    override fun get(index: Int): T = array[index] as T
+    override fun containsAll(elements: Collection<T>): Boolean =
+        @Suppress(SuppressLiteral.UNCHECKED_CAST) (array as Array<T>).all { contains(it) }
+
+    override fun get(index: Int): T =
+        @Suppress(SuppressLiteral.UNCHECKED_CAST) (array[index] as T)
     override fun set(index: Int, element: T): T {
         val prev= array[index]
         array[index]= element
+
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
         return prev as T
     }
 
@@ -151,7 +159,8 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
 
     override fun isEmpty(): Boolean = elementCount == 0
 
-    override fun peek(): T = array[cursorInd] as T
+    override fun peek(): T =
+        @Suppress(SuppressLiteral.UNCHECKED_CAST) (array[cursorInd] as T)
     override fun pop(): T = removeAt(cursorInd)
     override fun push(item: T): T{
         cursorInd= pushIndex(cursorInd, size, cursorInd)
@@ -167,6 +176,7 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         var poppedCount= 0
         override fun hasNext(): Boolean = poppedCount < elementCount
         override fun next(): T {
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             val item= array[popIndex(i, elementCount -poppedCount, i).also { i= it }] as T
             poppedCount++
             return item
@@ -190,11 +200,15 @@ abstract class VectorImpl<T>(initCapacity: Int): Vector<T> {
         override fun next(): T {
             i= nextIndex()
             poppedCount++
+
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             return array[popInd] as T
         }
         override fun previous(): T {
             i= previousIndex()
             poppedCount--
+
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
             return array[pushInd] as T
         }
         override fun add(element: T) {

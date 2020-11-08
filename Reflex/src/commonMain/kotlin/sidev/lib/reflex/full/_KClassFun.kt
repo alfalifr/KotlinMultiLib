@@ -3,6 +3,7 @@ package sidev.lib.reflex.full
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.sequence.NestedSequence
 import sidev.lib.collection.sequence.skip
+import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 
 
@@ -10,11 +11,15 @@ expect val KClass<*>.isPrimitive: Boolean
 expect val KClass<*>.isArray: Boolean
 expect val KClass<*>.isCopySafe: Boolean
 expect val KClass<*>.isCollection: Boolean
+expect val KClass<*>.isMap: Boolean
 
 expect val KClass<*>.classesTree: NestedSequence<KClass<*>>
 expect val KClass<*>.isInterface: Boolean
 expect val KClass<*>.isCommonSealed: Boolean
 
+@get:JvmName("isBaseType")
+val KClass<*>.isBaseType: Boolean
+    get()= isPrimitive || this == String::class
 
 /**
  * Digunakan untuk mengambil nama qualified dari turunan sealed class.

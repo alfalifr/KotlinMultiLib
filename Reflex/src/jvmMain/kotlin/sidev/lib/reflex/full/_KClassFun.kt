@@ -6,7 +6,6 @@ import sidev.lib.check.asNotNullTo
 import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.sequence.NestedSequence
 import sidev.lib.collection.sequence.nestedSequence
-import sidev.lib.reflex.SiProperty1
 import sidev.lib.reflex.jvm.classesTree
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -16,6 +15,7 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.superclasses
 import java.util.List as javaList
+import java.util.Map as javaMap
 
 @get:JvmName("isArray")
 actual val KClass<*>.isArray: Boolean
@@ -27,13 +27,18 @@ actual val KClass<*>.isPrimitive: Boolean
 
 @get:JvmName("isCopySafe")
 actual val KClass<*>.isCopySafe: Boolean
-    get()= isPrimitive || this == String::class
+    get()= isBaseType //isPrimitive || this == String::class
             || isSubclassOf(Enum::class)
 
 @get:JvmName("isCollection")
 actual val KClass<*>.isCollection: Boolean
     get()= isSubclassOf(Collection::class)
             || isSubclassOf(javaList::class)
+
+@get:JvmName("isMap")
+actual val KClass<*>.isMap: Boolean
+    get()= isSubclassOf(Map::class)
+            || isSubclassOf(javaMap::class)
 
 @get:JvmName("classesTree")
 actual val KClass<*>.classesTree: NestedSequence<KClass<*>>

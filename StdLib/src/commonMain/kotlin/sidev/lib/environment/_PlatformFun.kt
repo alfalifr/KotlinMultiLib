@@ -1,3 +1,3 @@
-package sidev.lib.platform
+package sidev.lib.environment
 
 expect val platform: Platform

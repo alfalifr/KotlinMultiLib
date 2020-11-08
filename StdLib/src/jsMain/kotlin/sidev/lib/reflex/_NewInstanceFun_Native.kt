@@ -1,10 +1,12 @@
 package sidev.lib.reflex
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
 import sidev.lib.reflex.js.new
 import kotlin.reflect.KClass
 
 actual fun <T: Any> nativeSimpleNew(clazz: KClass<out T>, default: T?): T? {
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return try{
         val new= new(clazz.js)
         if(new != undefined) new

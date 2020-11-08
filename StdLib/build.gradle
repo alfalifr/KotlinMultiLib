@@ -49,7 +49,7 @@ kotlin {
     // For Linux, should be changed to e.g. linuxX64
     // For MacOS, should be changed to e.g. macosX64
     // For Windows, should be changed to e.g. mingwX64
-    mingwX64("mingw")
+    //mingwX64("mingw")
     sourceSets {
         commonMain {
             dependencies {
@@ -85,6 +85,7 @@ kotlin {
                 implementation kotlin('test-js')
             }
         }
+/*
         mingwMain {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
@@ -92,6 +93,7 @@ kotlin {
         }
         mingwTest {
         }
+// */
     }
 }
 

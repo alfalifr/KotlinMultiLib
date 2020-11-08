@@ -1,4 +1,4 @@
-package sidev.lib.platform
+package sidev.lib.environment
 
 /**
  * Menaruh objek dg nama [name] dg nilai [value] pada global.

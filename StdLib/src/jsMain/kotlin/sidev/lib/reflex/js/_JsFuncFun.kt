@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.reflex.js.kotlin.KotlinJsConst
 
 /**
@@ -8,6 +9,7 @@ import sidev.lib.reflex.js.kotlin.KotlinJsConst
  * Fungsi yg diambil hanya yg publik.
  */
 fun getDeclaredFunction(any: Any): List<JsCallable<*>>{
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     val any= try{ jsPureFunction(any) } catch (e: Throwable){ any } as Any
             //Agar dapat mengekstrak nilai sesungguhnya
             // jika [obj] merupakan wrapper seperti JsCallable.

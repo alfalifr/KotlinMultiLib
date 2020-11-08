@@ -69,6 +69,7 @@ actual fun <T: Any> T.nativeCloneOp(
         )
         clazz.isArray -> return nativeArrayClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc).preReturnObj() //as T
         clazz.isCollection -> return ((this as Collection<T>).nativeDeepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
+        clazz.isMap -> return ((this as Map<*, T>).nativeDeepClone(isDeepClone, /*newInsConstrParamValFunc*/ constructorParamValFunc) as T).preReturnObj()
         else -> nativeNew(clazz, newInsConstrParamValFuncWrapper)
             ?: if(isDelegate) {
                 prine("""This: "$this" merupakan delegate dan tidak tersedia nilai default untuk konstruktornya, return `this`.""")

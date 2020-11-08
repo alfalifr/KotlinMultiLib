@@ -1,5 +1,6 @@
 package sidev.lib.reflex
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.addIfAbsent
 import sidev.lib.reflex.core.ReflexFactory
 import sidev.lib.reflex.core.createNativeWrapper
@@ -23,8 +24,12 @@ val Annotation.realAnnotation: Annotation
 inline fun <reified T: Annotation> SiAnnotatedElement.findAnnotation(): T?
         = annotations.find { it.realAnnotation is T }?.realAnnotation as? T
 
-inline fun <reified T: Annotation> SiAnnotatedElement.hasAnnotation(): Boolean
-        = findAnnotation<T>() != null
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T: Annotation> SiAnnotatedElement.findAnnotation(clazz: KClass<T>): T?
+        = annotations.find { it.realAnnotation::class == clazz }?.realAnnotation as? T
+
+inline fun <reified T: Annotation> SiAnnotatedElement.hasAnnotation(): Boolean = findAnnotation<T>() != null
+fun <T: Annotation> SiAnnotatedElement.hasAnnotation(clazz: KClass<T>): Boolean = findAnnotation(clazz) != null
 
 
 fun SiAnnotatedElement.setAnnotation(vararg annotations: Annotation): Boolean{

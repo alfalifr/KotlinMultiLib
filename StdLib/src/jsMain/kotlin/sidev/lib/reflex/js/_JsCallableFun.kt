@@ -1,5 +1,6 @@
 package sidev.lib.reflex.js
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.notNullTo
 import sidev.lib.console.log
 import sidev.lib.exception.ImplementationExc
@@ -53,4 +54,5 @@ fun Json.sliceWithParam(params: Collection<JsParameter>): List<Any?>{
 fun <T: Any> T.toCallable(): JsCallable<T> = if(isFunction) JsCallableImpl(this)
 else throw IllegalArgumentException("Object: \"${this::class.fullName}\" bkn merupakan fungsi")
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T: Any> JsClass<T>.toCallable(): JsCallable<T> = (this as Any).toCallable() as JsCallable<T>

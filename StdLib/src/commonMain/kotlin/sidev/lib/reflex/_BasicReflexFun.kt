@@ -1,8 +1,6 @@
 package sidev.lib.reflex
 
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.exception.IllegalStateExc
-import sidev.lib.reflex.native_.getKClass
 import kotlin.reflect.KClass
 
 expect val KClass<*>.nativeFullName: String
@@ -13,6 +11,7 @@ expect val KClass<*>.native: Any
 
 val KClass<*>.fullName: String
     get()= nativeFullName //qualifiedName ?: nativeFullName
+@Suppress(SuppressLiteral.EXTENSION_SHADOWED_BY_MEMBER) //Untuk pemakaian oleh Java.
 val KClass<*>.simpleName: String
     get()= this.simpleName ?: nativeSimpleName
 

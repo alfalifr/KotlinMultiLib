@@ -10,6 +10,9 @@ val Map<*, *>.indices: IntRange
 fun <A, B> Array<out Pair<A, B>>.asMap(): Map<A, B> = mapOf(*this)
 fun <A, B> List<Pair<A, B>>.asMap(): Map<A, B> = mapOf(*toTypedArray())
 
+fun <A, B> Array<out Pair<A, B>>.asMutableMap(): MutableMap<A, B> = mutableMapOf(*this)
+fun <A, B> List<Pair<A, B>>.asMutableMap(): MutableMap<A, B> = mutableMapOf(*toTypedArray())
+
 fun <K, V> Pair<K, V>.toMutableMapEntry(): MutableMap.MutableEntry<K, V> = MutableMapEntry(first, second)
 fun <K, V> Pair<K, V>.toMapEntry(): Map.Entry<K, V> = MapEntry(first, second)
 

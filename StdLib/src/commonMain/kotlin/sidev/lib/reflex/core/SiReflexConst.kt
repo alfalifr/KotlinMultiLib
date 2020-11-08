@@ -1,9 +1,8 @@
 package sidev.lib.reflex.core
 
-import sidev.lib.platform.Platform
-import sidev.lib.platform.getGlobalObject
-import sidev.lib.platform.getInternalObject
-import sidev.lib.platform.platform
+import sidev.lib.environment.Platform
+import sidev.lib.environment.getInternalObject
+import sidev.lib.environment.platform
 import sidev.lib.type.Null
 
 object SiReflexConst {

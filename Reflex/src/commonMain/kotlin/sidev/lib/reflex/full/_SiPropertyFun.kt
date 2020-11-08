@@ -1,14 +1,19 @@
 package sidev.lib.reflex.full
 
-import sidev.lib.collection.sequence.nestedSequence
-import sidev.lib.collection.sequence.nestedSequenceSimple
+import sidev.lib.annotation.Unsafe
+import sidev.lib.check.asNotNullTo
+import sidev.lib.check.isNull
+import sidev.lib.check.notNull
+import sidev.lib.collection.iterator.*
+import sidev.lib.collection.sequence.*
+import sidev.lib.console.prine
 import sidev.lib.exception.TypeExc
 import sidev.lib.property.SI_UNINITIALIZED_VALUE
 import sidev.lib.reflex.*
 import sidev.lib.reflex.full.types.TypedValue
 import sidev.lib.reflex.full.types.isAssignableFrom
 import sidev.lib.reflex.si
-import sidev.lib.collection.sequence.NestedSequence
+import sidev.lib.structure.data.value.LeveledValue
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 
@@ -46,11 +51,147 @@ val <T: Any> T.implementedPropertyValuesTree: NestedSequence<Pair<SiProperty1<T,
                 .iterator()
         }
     }
-@get:JvmName("implementedNestedPropertyValuesTree")
-val Any.implementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
+
+/**
+ * [implementedNestedPropertyValuesTree] yang tidak mengecek cyclic field value reference.
+ * Properti ini lebih cepat namun tidak aman.
+ */
+@Unsafe("Dapat menyebabkan infinite loop saat terdapat cyclic field reference.")
+@get:JvmName("unsafeImplementedNestedPropertyValuesTree")
+val Any.unsafeImplementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
     get()= nestedSequenceSimple<Pair<SiProperty1<Any, *>, Any?>>(implementedPropertyValuesTree){
         it.second?.implementedPropertyValuesTree?.iterator()
     }
+
+@get:JvmName("implementedNestedPropertyValuesTree")
+val Any.implementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
+    get(){
+        val parentMap= mutableMapOf<Int, MutableList<Any>>()
+        val linearSeq= implementedPropertyValuesTree
+        //1. Buat leveled sequence dg iterator yang melakukan pengecekan cyclic field value reference.
+        val leveledSeq= object: LeveledNestedSequence<Pair<SiProperty1<Any, *>, Any?>>{
+            override var currentLevel: Int= 0
+            fun setCurrLevel(level: Int){ currentLevel= level }
+
+            override fun iterator(): LeveledNestedIterator<*, Pair<SiProperty1<Any, *>, Any?>> =
+                object: LeveledNestedIteratorSimpleImpl<Pair<SiProperty1<Any, *>, Any?>>(linearSeq.iterator()){
+                    init { parentMap.clear() }
+                    fun Any?.valueEmittedBefore(): Boolean {
+                        if(this == null)
+                            return false
+                        var exists= false
+                        for(i in 0 until currentLevel){
+//                            prine("implementedNestedPropertyValuesTree any it= $it nowInput= $nowInput")
+                            if(parentMap[i]!!.any { it == this }){
+                                exists= true
+                                break
+                            }
+                        }
+                        return exists
+                    }
+                    override fun skip(now: LeveledValue<Pair<SiProperty1<Any, *>, Any?>>): Boolean = now.value.second.valueEmittedBefore()
+                    override fun getOutputValueIterator(nowInput: Pair<SiProperty1<Any, *>, Any?>): Iterator<Pair<SiProperty1<Any, *>, Any?>>? {
+                        val exists= nowInput.second.valueEmittedBefore()
+//                        prine("implementedNestedPropertyValuesTree exists= $exists nowInput= $nowInput currLevel= $currentLevel")
+                        if(!exists && nowInput.second != null && !nowInput::class.isPrimitive)
+                            (parentMap[currentLevel] ?: mutableListOf<Any>().also { parentMap[currentLevel]= it }) += nowInput.second!!
+                        //pair: Pair<SiProperty1<Any, *>, Any?> ->
+                        return if(exists) null else nowInput.second?.implementedPropertyValuesTree?.iterator()
+                    }
+
+                    override fun onNext(currentNext: LeveledValue<Pair<SiProperty1<Any, *>, Any?>>) {
+//                        prine("implementedNestedPropertyValuesTree onNext() currentNext= $currentNext")
+                        super.onNext(currentNext)
+                        setCurrLevel(currentLevel)
+                    }
+                }
+        }
+        //Bungkus [leveledSeq] menjadi sequence yang mengeluarkan hanya nilai.
+        return leveledSeq.asValueSequence()
+    }
+
+/**
+ * Sama dg [unsafeImplementedNestedPropertyValuesTree], namun tidak mengambil property
+ * dari tipe data [Collection] dan [Map] karena menganggap bahwa yg penting dari tipe data tersebut
+ * adalah isinya, bkn internal state-nya.
+ */
+@Unsafe("Dapat menyebabkan infinite loop saat terdapat cyclic field reference.")
+@get:JvmName("unsafeNonExhaustiveImplementedNestedPropertyValuesTree")
+val Any.unsafeNonExhaustiveImplementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
+    get()= nestedSequenceSimple<Pair<SiProperty1<Any, *>, Any?>>(implementedPropertyValuesTree){
+        var cls= it.first.returnType.classifier
+        if(cls !is SiClass<*> && it.second != null)
+            cls= it.second!!.clazz.si
+        //Sampai sini, jika it.second != null, maka pasti cls is SiClass<*>.
+        // Jika sampai sini cls !is SiClass<*>, brarti it.second == null sehingga operasi msh aman untuk case cls.isCollection || cls.isMap.
+        // Case cls !is SiClass<*> adalah untuk case penggunaan generic di mana cls is SiType
+        if(cls !is SiClass<*> || !cls.isCollection && !cls.isMap)
+            it.second?.implementedPropertyValuesTree?.iterator()
+        else null
+    }
+
+/**
+ * Sama dg [implementedNestedPropertyValuesTree], namun tidak mengambil property
+ * dari tipe data [Collection] dan [Map] karena menganggap bahwa yg penting dari tipe data tersebut
+ * adalah isinya, bkn internal state-nya.
+ */
+@get:JvmName("nonExhaustiveImplementedNestedPropertyValuesTree")
+val Any.nonExhaustiveImplementedNestedPropertyValuesTree: NestedSequence<Pair<SiProperty1<Any, *>, Any?>>
+    get(){
+        val parentMap= mutableMapOf<Int, MutableList<Any>>()
+        val linearSeq= implementedPropertyValuesTree
+        //1. Buat leveled sequence dg iterator yang melakukan pengecekan cyclic field value reference.
+        val leveledSeq= object: LeveledNestedSequence<Pair<SiProperty1<Any, *>, Any?>>{
+            override var currentLevel: Int= 0
+            fun setCurrLevel(level: Int){ currentLevel= level }
+
+            override fun iterator(): LeveledNestedIterator<*, Pair<SiProperty1<Any, *>, Any?>> =
+                object: LeveledNestedIteratorSimpleImpl<Pair<SiProperty1<Any, *>, Any?>>(linearSeq.iterator()){
+                    init { parentMap.clear() }
+                    fun Any?.valueEmittedBefore(): Boolean {
+                        if(this == null)
+                            return false
+                        var exists= false
+                        for(i in 0 until currentLevel){
+//                            prine("implementedNestedPropertyValuesTree any it= $it nowInput= $nowInput")
+                            if(parentMap[i]!!.any { it == this }){
+                                exists= true
+                                break
+                            }
+                        }
+                        return exists
+                    }
+                    override fun skip(now: LeveledValue<Pair<SiProperty1<Any, *>, Any?>>): Boolean = now.value.second.valueEmittedBefore()
+                    override fun getOutputValueIterator(nowInput: Pair<SiProperty1<Any, *>, Any?>): Iterator<Pair<SiProperty1<Any, *>, Any?>>? {
+                        val exists= nowInput.second.valueEmittedBefore()
+//                        prine("implementedNestedPropertyValuesTree exists= $exists nowInput= $nowInput currLevel= $currentLevel")
+                        if(!exists && nowInput.second != null && !nowInput::class.isPrimitive)
+                            (parentMap[currentLevel] ?: mutableListOf<Any>().also { parentMap[currentLevel]= it }) += nowInput.second!!
+                        //pair: Pair<SiProperty1<Any, *>, Any?> ->
+                        return if(exists) null else {
+                            var cls= nowInput.first.returnType.classifier
+                            if(cls !is SiClass<*> && nowInput.second != null)
+                                cls= nowInput.second!!.clazz.si
+                            //Sampai sini, jika nowInput.second != null, maka pasti cls is SiClass<*>.
+                            // Jika sampai sini cls !is SiClass<*>, brarti nowInput.second == null sehingga operasi msh aman untuk case cls.isCollection || cls.isMap.
+                            // Case cls !is SiClass<*> adalah untuk case penggunaan generic di mana cls is SiType
+                            if(cls !is SiClass<*> || !cls.isCollection && !cls.isMap)
+                                nowInput.second?.implementedPropertyValuesTree?.iterator()
+                            else null
+                        }
+                    }
+
+                    override fun onNext(currentNext: LeveledValue<Pair<SiProperty1<Any, *>, Any?>>) {
+//                        prine("implementedNestedPropertyValuesTree onNext() currentNext= $currentNext")
+                        super.onNext(currentNext)
+                        setCurrLevel(currentLevel)
+                    }
+                }
+        }
+        //Bungkus [leveledSeq] menjadi sequence yang mengeluarkan hanya nilai.
+        return leveledSeq.asValueSequence()
+    }
+
 /*
 /** Sama dg [implementedPropertyValuesTree], namun tidak mengambil property yg `private`. */
 //@Suppress(SuppressLiteral.UNCHECKED_CAST)
