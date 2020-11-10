@@ -20,8 +20,8 @@ task initFile{
     }
 }
 
-def GROUP_ID= 'sidev.lib.kotlin.multi'
-def ARTIFACT_ID= 'StdLib'
+def GROUP_ID= 'sidev.lib.kotlin' //'sidev.lib.kotlin.multi'
+def ARTIFACT_ID= 'KtStdLib'
 def BINTRAY_REPOSITORY= 'SidevLib'
 def BINTRAY_ORGINIZATION= ""
 def ISSUE_URL= ""
