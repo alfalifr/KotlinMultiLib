@@ -2,13 +2,10 @@ package sidev.lib.collection.sequence
 
 import sidev.lib.collection.iterator.*
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.check.asNotNull
 import sidev.lib.check.asNotNullTo
 import sidev.lib.structure.data.value.LeveledValue
-import sidev.lib.structure.prop.NestedIteratorProp
+import sidev.lib.structure.data.value.withLevel
 
-
-fun <T> T.withLevel(level: Int= 0): LeveledValue<T> = LeveledValue(level, this)
 
 fun <O> NestedSequence<O>.withLevel(): LeveledNestedSequence<O> = object : LeveledNestedSequence<O>{
     override var currentLevel: Int= 0

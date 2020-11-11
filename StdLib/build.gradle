@@ -27,7 +27,8 @@ def BINTRAY_ORGINIZATION= ""
 def ISSUE_URL= ""
 def SITE_URL= ""
 def VCS_URL= "https://github.com/alfalifr/SidevLibKt/tree/master/StdLib"
-def LIBRARY_VERSION_NAME= '0.0.1x'
+def LIBRARY_VERSION_NAMES= ['0.0.1x', '0.0.1x.11112020']
+def LIBRARY_VERSION_NAME= LIBRARY_VERSION_NAMES.last()
 
 //group GROUP_ID
 version LIBRARY_VERSION_NAME

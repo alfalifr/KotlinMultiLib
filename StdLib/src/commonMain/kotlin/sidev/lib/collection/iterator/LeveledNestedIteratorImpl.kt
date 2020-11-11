@@ -4,6 +4,7 @@ import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.check.notNullTo
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.structure.data.value.LeveledValue
+import sidev.lib.structure.data.value.withLevel
 
 
 abstract class LeveledNestedIteratorImpl<I, O>(/*private val */startInputIterator: Iterator<I>?)

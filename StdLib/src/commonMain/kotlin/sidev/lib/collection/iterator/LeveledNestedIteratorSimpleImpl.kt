@@ -3,6 +3,7 @@ package sidev.lib.collection.iterator
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.structure.data.value.LeveledValue
+import sidev.lib.structure.data.value.withLevel
 
 abstract class LeveledNestedIteratorSimpleImpl<T>(/*private val */startIterator: Iterator<T>?)
     : LeveledNestedIteratorImpl<T, T>(startIterator), LeveledNestedIteratorSimple<T> {

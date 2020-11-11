@@ -33,5 +33,3 @@ open class Val<T>(){
     }
  */
 }
-
-fun <T> T.asBoxed(): Val<T> = Val(this)
