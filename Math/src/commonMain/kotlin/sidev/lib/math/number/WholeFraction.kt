@@ -49,56 +49,56 @@ interface WholeFraction: Fraction<WholeNumber>{
 
 
 
-    override operator fun plus(other: Byte): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Short): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Int): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Long): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Float): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Double): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
+    override operator fun plus(other: Byte): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator + denominator * other),
+        denominator
+    )
+    override operator fun plus(other: Short): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator + denominator * other),
+        denominator
+    )
+    override operator fun plus(other: Int): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator + denominator * other),
+        denominator
+    )
+    override operator fun plus(other: Long): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator + denominator * other),
+        denominator
+    )
+    override operator fun plus(other: Float): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator + denominator * other),
+        denominator
+    )
+    override operator fun plus(other: Double): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator + denominator * other),
+        denominator
+    )
 
 
-    override operator fun minus(other: Byte): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Short): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Int): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Long): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Float): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Double): WholeFraction = makeCommonFractions(other.toFraction())
-        .let { (thisFrac, other) ->
-            WholeFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
+    override operator fun minus(other: Byte): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator - denominator * other),
+        denominator
+    )
+    override operator fun minus(other: Short): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator - denominator * other),
+        denominator
+    )
+    override operator fun minus(other: Int): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator - denominator * other),
+        denominator
+    )
+    override operator fun minus(other: Long): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator - denominator * other),
+        denominator
+    )
+    override operator fun minus(other: Float): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator - denominator * other),
+        denominator
+    )
+    override operator fun minus(other: Double): WholeFraction = WholeFractionImpl(
+        wholeNumber(numerator - denominator * other),
+        denominator
+    )
 
 
     override operator fun times(other: Byte): WholeFraction = WholeFractionImpl(

@@ -48,56 +48,56 @@ interface IntFraction: Fraction<Int>{
     )
 
 
-    override operator fun plus(other: Byte): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Short): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Int): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Long): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Float): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
-    override operator fun plus(other: Double): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator + other.numerator, other.denominator)
-        }
+    override operator fun plus(other: Byte): IntFraction = IntFractionImpl(
+        numerator + denominator * other,
+        denominator
+    )
+    override operator fun plus(other: Short): IntFraction = IntFractionImpl(
+        numerator + denominator * other,
+        denominator
+    )
+    override operator fun plus(other: Int): IntFraction = IntFractionImpl(
+        numerator + denominator * other,
+        denominator
+    )
+    override operator fun plus(other: Long): IntFraction = IntFractionImpl(
+        (numerator + denominator * other).toInt(),
+        denominator
+    )
+    override operator fun plus(other: Float): IntFraction = IntFractionImpl(
+        (numerator + denominator * other).toInt(),
+        denominator
+    )
+    override operator fun plus(other: Double): IntFraction = IntFractionImpl(
+        (numerator + denominator * other).toInt(),
+        denominator
+    )
 
 
-    override operator fun minus(other: Byte): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Short): IntFraction  = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Int): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Long): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Float): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
-    override operator fun minus(other: Double): IntFraction = makeCommonFractions(fractionOf(other.toInt(), 1))
-        .let { (thisFrac, other) ->
-            IntFractionImpl(thisFrac.numerator - other.numerator, other.denominator)
-        }
+    override operator fun minus(other: Byte): IntFraction = IntFractionImpl(
+        numerator - denominator * other,
+        denominator
+    )
+    override operator fun minus(other: Short): IntFraction = IntFractionImpl(
+        numerator - denominator * other,
+        denominator
+    )
+    override operator fun minus(other: Int): IntFraction = IntFractionImpl(
+        numerator - denominator * other,
+        denominator
+    )
+    override operator fun minus(other: Long): IntFraction = IntFractionImpl(
+        (numerator - denominator * other).toInt(),
+        denominator
+    )
+    override operator fun minus(other: Float): IntFraction = IntFractionImpl(
+        (numerator - denominator * other).toInt(),
+        denominator
+    )
+    override operator fun minus(other: Double): IntFraction = IntFractionImpl(
+        (numerator - denominator * other).toInt(),
+        denominator
+    )
 
 
     override operator fun times(other: Byte): IntFraction = IntFractionImpl(

@@ -114,5 +114,8 @@ class MathSampleTests {
         prin("fr15= $fr15")
         prin("fr15 == fr13= ${fr15 == fr13}")
         prin("fr15.simply()= ${fr15.simply()} fr13.simply()= ${fr13.simply()}")
+
+        val fr16= fr15 + 2
+        prin("fr16= $fr16")
     }
 }
