@@ -22,6 +22,8 @@ fun commonFractionsOf(vararg fractions: WholeFraction): List<WholeFraction> {
     return fractions.map { WholeFractionImpl(it.numerator * (kpk / it.denominator), kpk) }
 }
 
+fun WholeFraction.toIntFraction(): IntFraction = fractionOf(numerator.toInt(), denominator.toInt())
+fun IntFraction.toWholeFraction(): WholeFraction = fractionOf(wholeNumber(numerator), wholeNumber(denominator))
 
 fun Number.toFraction(): WholeFraction = when(this){
     is FloatingNumber -> toFraction()
