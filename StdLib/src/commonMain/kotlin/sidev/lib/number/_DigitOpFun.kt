@@ -1,5 +1,9 @@
 package sidev.lib.number
 
+import sidev.lib.annotation.Experimental
+import sidev.lib.annotation.Unsafe
+import sidev.lib.console.prine
+
 /**
  * Mengambil angka pada digit [digitPlace]. Fungsi ini tidak mengambil angka di belakang koma.
  * [digitPlace] dihitung dari belakang, bkn dari depan. [digitPlace] dimulai dari 0.
@@ -28,4 +32,48 @@ operator fun Number.get(digitPlace: Int): Int = getNumberAtDigit(digitPlace)
  * Mengambil angka desimal saja. Kemungkinan @return 0 jika `this.extension` adalah angka bulat.
  * Fungsi ini tidak menjamin angka desimal yg diambil bulat dan sesuai input.
  */
-fun Number.getDecimal(): Number = this -(this.toInt())
+@Unsafe("Angka yg dihasilkan blum memiliki presisi yg tinggi.")
+fun Number.getDecimal(): Number = this -(this.toLong())
+
+//123.123
+@Experimental("Cara mudah dg menjadikannya string dan mencari titik (.). Namun, Hal tersebut bkn cara optimal.")
+fun Float.getDigitBehindDecimal(): Int = toString().run {
+    val decIndex= indexOf(".")
+    (length - decIndex - 1).let {
+        if(it == 1 && this[decIndex +1] == '0') 0
+        else it
+    }
+}
+
+@Experimental("Cara mudah dg menjadikannya string dan mencari titik (.). Namun, Hal tersebut bkn cara optimal.")
+fun Double.getDigitBehindDecimal(): Int = toString().run {
+    val decIndex= indexOf(".")
+    (length - decIndex - 1).let {
+        if(it == 1 && this[decIndex +1] == '0') 0
+        else it
+    }
+}
+
+/*
+fun Float.getDigitBehindDecimal(): Int {
+    var decimal= getDecimal()
+    var digit= 0
+    while(decimal > 0){
+        digit++
+        prine("decimal= $decimal digit= $digit")
+        decimal= (decimal * 10).getDecimal()
+    }
+    return digit
+}
+
+fun Double.getDigitBehindDecimal(): Int {
+    var decimal= getDecimal()
+    var digit= 0
+    while(decimal > 0){
+        digit++
+        prine("decimal= $decimal digit= $digit")
+        decimal= (decimal * 10).getDecimal()
+    }
+    return digit
+}
+ */

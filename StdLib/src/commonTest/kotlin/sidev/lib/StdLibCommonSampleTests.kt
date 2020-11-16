@@ -371,4 +371,29 @@ class StdLibCommonSampleTests {
         prin("size= ${(1 .. 10).size}")
         prin("range= ${(1 .. 10).range}")
     }
+
+    @Test
+    fun randomTest(){
+        val list= ArrayList<List<*>>()
+        for(i in 0 until 14)
+            prin(listOf(1,2,"F",3).shuffled().also { list += it }) //.random()
+
+        val uniqueList= mutableMapOf<List<*>, Int>()
+        list.forEach {
+            uniqueList[it]= (uniqueList[it]?.plus(1) ?: 1)
+        }
+
+        val len= list.size
+        val percents= mutableListOf<Float>()
+        uniqueList.forEach { (ls, count) ->
+            val percent= count / len.toFloat()
+            prin("list= $ls len= $len count= $count percent= $percent")
+        }
+    }
+
+    @Test
+    fun decimalNumberTest(){
+        prin("123.123 * 1000= ${123.123 * 1000}")
+        prin("123.123f.getDigitBehindDecimal() = ${123.123f.getDigitBehindDecimal()}")
+    }
 }

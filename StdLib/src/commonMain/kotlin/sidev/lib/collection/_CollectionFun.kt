@@ -104,6 +104,22 @@ infix fun <T> Collection<T>.duplicatUnion(other: Collection<T>): List<T>{
     return minColl + maxColl
 }
 
+infix fun <T> Collection<T>.duplicatIntersect(other: Collection<T>): List<T>{
+    val minColl= if(size > other.size) other else this
+    val maxColl= (if(size <= other.size) other else this).toMutableList()
+
+    val res= mutableListOf<T>()
+
+    for(e in minColl){
+        if(e in maxColl){
+            res += e
+            maxColl -= e
+        }
+    }
+
+    return res //minColl + maxColl
+}
+
 infix fun <C: MutableCollection<T>, T> C.intersect(other: Iterable<T>): C{
     this.retainAll(other)
     return this

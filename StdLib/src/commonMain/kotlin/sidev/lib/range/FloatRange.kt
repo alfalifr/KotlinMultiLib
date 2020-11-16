@@ -7,7 +7,7 @@ class FloatRange(
     start: Float,
     end: Float,
     val emptyFun: (start: Float, end: Float) -> Boolean,
-    val containsFun: (start: Float, end: Float, value: Float) -> Boolean
+    val containsFun: (start: Float, end: Float, value: Number) -> Boolean
 ) : ClosedFloatingPointRange<Float> {
     private val _start = start
     private val _end = end
@@ -16,6 +16,7 @@ class FloatRange(
 
     override fun lessThanOrEquals(a: Float, b: Float): Boolean = a <= b
 
+    operator fun contains(value: Number): Boolean = containsFun(_start, _end, value)
     override fun contains(value: Float): Boolean = containsFun(_start, _end, value)
     override fun isEmpty(): Boolean = emptyFun(_start, _end)
 

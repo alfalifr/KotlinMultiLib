@@ -19,51 +19,63 @@ fun <K, V> CommonIterable<V>.toCommonMutableList(): CommonMutableList<K, V> = wh
 }
  */
 
+fun <V> CommonList<*, V>.first(): V = if(!isEmpty()) this[0] else throw NoSuchElementException()
+fun <V> CommonList<*, V>.last(): V = if(!isEmpty()) this[lastIndex] else throw NoSuchElementException()
+
+fun <V> CommonList<*, V>.firstOrNul(): V? = if(!isEmpty()) this[0] else null
+fun <V> CommonList<*, V>.lastOrNull(): V? = if(!isEmpty()) this[lastIndex] else null
+
+
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-fun <K, V> Any.toCommonList(): CommonList<K, V>?{
+fun <K, V> Any.toCommonList(): CommonList<K, V>{
     return when(this){
         is CommonList<*, *> -> this as CommonList<K, V>
         is List<*> -> (this as List<V>).toCommonList() as CommonList<K, V>
         is Map<*, *> -> (this as Map<K, V>).toCommonList()
         is Array<*> -> (this as Array<V>).toCommonList() as CommonList<K, V>
         is ArrayWrapper<*> -> (this as ArrayWrapper<V>).toCommonList() as CommonList<K, V>
-        else -> null
+        is Iterable<*> -> toCommonList() as CommonList<K, V>
+        else -> throw ClassCastException("""`this` : "$this" tidak bisa dicast ke `CommonList`.""")//null
     }
 }
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-fun <K, V> Any.toCommonMutableList(): CommonMutableList<K, V>?{
+fun <K, V> Any.toCommonMutableList(): CommonMutableList<K, V>{
     return when(this){
         is CommonMutableList<*, *> -> this as CommonMutableList<K, V>
         is MutableList<*> -> (this as MutableList<V>).toCommonMutableList() as CommonMutableList<K, V>
         is MutableMap<*, *> -> (this as MutableMap<K, V>).toCommonMutableList()
         is Array<*> -> (this as Array<V>).toCommonMutableList() as CommonMutableList<K, V>
         is ArrayWrapper<*> -> (this as ArrayWrapper<V>).toCommonMutableList() as CommonMutableList<K, V>
-        else -> null
+        is Iterable<*> -> toMutableList().toCommonMutableList() as CommonMutableList<K, V>
+        else -> throw ClassCastException("""`this` : "$this" tidak bisa dicast ke `CommonMutableList`.""")//null
     }
 }
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-fun <V> Any.toCommonIndexedList(): CommonIndexedList<V>?{
+fun <V> Any.toCommonIndexedList(): CommonIndexedList<V>{
     return when(this){
-        //is CommonList<*, *> tidak dicek karena bisa saja K bkn Int
+        is CommonList<*, *> -> (if(isIndexed) this else toCommonIndexedList()) as CommonIndexedList<V>
         is List<*> -> (this as List<V>).toCommonList() //as CommonIndexedList<V>
         is Map<*, *> -> (this as Map<*, V>).map { it.value }.toCommonList() //as CommonIndexedList<V>
         is Array<*> -> (this as Array<V>).toCommonList() //as CommonIndexedList<V>
         is ArrayWrapper<*> -> (this as ArrayWrapper<V>).toCommonList() //as CommonIndexedList<V>
-        else -> null
+        is Iterable<*> -> toCommonList() as CommonIndexedList<V>
+        else -> throw ClassCastException("""`this` : "$this" tidak bisa dicast ke `CommonIndexedList`.""")//null
     }
 }
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-fun <V> Any.toCommonIndexedMutableList(): CommonIndexedMutableList<V>?{
+fun <V> Any.toCommonIndexedMutableList(): CommonIndexedMutableList<V>{
     return when(this){
-        //is CommonMutableList<*, *> tidak dicek karena bisa saja K bkn Int
+        is CommonMutableList<*, *> -> (if(isIndexed) this else toCommonIndexedMutableList()) as CommonIndexedMutableList<V>
+        is CommonList<*, *> -> toCommonIndexedMutableList() as CommonIndexedMutableList<V>
         is MutableList<*> -> (this as MutableList<V>).toCommonMutableList() //as CommonIndexedMutableList<V>
         is MutableMap<*, *> -> ((this as MutableMap<*, V>).map { it.value } as MutableList<V>).toCommonMutableList() //as CommonIndexedMutableList<V>
         is Array<*> -> (this as Array<V>).toCommonMutableList() //as CommonIndexedMutableList<V>
         is ArrayWrapper<*> -> (this as ArrayWrapper<V>).toCommonMutableList() //as CommonIndexedMutableList<V>
-        else -> null
+        is Iterable<*> -> toMutableList().toCommonMutableList() as CommonIndexedMutableList<V>
+        else -> throw ClassCastException("""`this` : "$this" tidak bisa dicast ke `CommonIndexedMutableList`.""")//null
     }
 }
 
@@ -81,6 +93,7 @@ fun <T> commonIndexedMutableListOf(vararg elements: T): CommonIndexedMutableList
         = CommonMutableListImpl_Array(elements as Array<T>)
 
 
+fun <T> Iterable<T>.toCommonList(): CommonIndexedList<T> = CommonListImpl_List(toList())
 fun <T> List<T>.toCommonList(): CommonIndexedList<T> = CommonListImpl_List(this)
 fun <T> MutableList<T>.toCommonMutableList(): CommonIndexedMutableList<T> = CommonMutableListImpl_List(this)
 
@@ -101,7 +114,7 @@ fun <V> CommonIterable<V>.withIndex(): Iterator<IndexedValue<V>> = iterator().wi
 
 fun <V> CommonList<*, V>.asList(): List<V> = this
 fun <K, V> CommonList<K, V>.asMap(): Map<K, V> = this
-///*
+
 fun <V> CommonMutableList<*, V>.asMutableList(): MutableList<V> = this
 fun <K, V> CommonMutableList<K, V>.asMutableMap(): MutableMap<K, V> = when(this){
     is CommonMutableListImpl_Map<*, *> ->
@@ -114,6 +127,54 @@ fun <K, V> CommonMutableList<K, V>.asMutableMap(): MutableMap<K, V> = when(this)
         res
     }
 }
+
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <V> CommonList<*, V>.toMutableList(): MutableList<V> = when(this){
+    is CommonMutableListImpl_List<*> -> list //as MutableList<V>
+    is CommonMutableListImpl_Array<*> -> list
+    is CommonListImpl_Map<*, *> -> map.values.toMutableList()
+    is CommonMutableList<*, *> -> this
+    is CommonListImpl_List<*> -> list.toMutableList()
+    is CommonListImpl_Array<*> -> list.toMutableList()
+    else -> {
+        val list= mutableListOf<V>()
+        for(e in this)
+            list += e
+        list
+    }
+}as MutableList<V>
+
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <K, V> CommonList<K, V>.toCommonMutableList(): CommonMutableList<K, V> = when(this){
+    is CommonMutableList<*, *> -> this
+    is CommonListImpl_List<*> -> CommonMutableListImpl_List(list.toMutableList() as MutableList<V>)
+    is CommonListImpl_Array<*> -> CommonMutableListImpl_List(list.toMutableList() as MutableList<V>)
+    is CommonListImpl_Map<*, *> -> CommonMutableListImpl_Map(map.toMutableMap() as MutableMap<K, V>)
+    else -> CommonMutableListImpl_List(toMutableList())
+} as CommonMutableList<K, V>
+
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <V> CommonList<*, V>.toCommonIndexedList(): CommonIndexedList<V> = when(this){
+    is CommonIndexedList<*> -> this
+    else -> CommonListImpl_List(this) //iterator().withIndex()
+} as CommonIndexedList<V>
+
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <V> CommonList<*, V>.toCommonIndexedMutableList(): CommonIndexedMutableList<V> = when(this){
+    is CommonIndexedMutableList<*> -> this
+    else -> CommonMutableListImpl_List(when(this){
+        is CommonListImpl_List<*> -> list.toMutableList()
+        is CommonListImpl_Array<*> -> list.toMutableList()
+        else -> this.toMutableList()
+    } as MutableList<V> )
+} as CommonIndexedMutableList<V>
+
+
+///*
 // */
 
 //operator fun <K, V> CommonMutableList<K, V>.getValue(owner: Any?, property: KProperty<*>): MutableList<K, V>{}
@@ -291,4 +352,33 @@ inline fun <K, V> CommonList<K, V>.forEachCommonEntry(action: (Map.Entry<K, V>) 
 }
 inline fun <V> CommonList<*, V>.forEachCommon(action: (V) -> Unit){
     for (element in this) action(element)
+}
+
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Any.getElementAt(index: Int): T = when(this){
+    is List<*> -> this[index]
+    is Array<*> -> this[index]
+    is CommonList<*, *> -> this[index]
+    is Iterable<*> -> {
+        var e: Any?= null
+        val itr= iterator()
+        for(i in 0 .. index)
+            e= itr.next()
+        e
+    }
+    else -> throw IllegalArgumentException("`this` : \"$this\" bkn List atau Array")
+} as T
+
+
+val Any.isCommonList: Boolean get()= when(this){
+    is CommonList<*, *> -> true
+    is List<*> -> true
+    is Array<*> -> true
+    else -> false
+}
+val Any.isCommonIterable: Boolean get()= when(this){
+    is CommonIterable<*> -> true
+    is Array<*> -> true
+    else -> false
 }

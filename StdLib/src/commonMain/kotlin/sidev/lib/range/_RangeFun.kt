@@ -1,6 +1,7 @@
 package sidev.lib.range
 
 import sidev.lib.`val`.Exclusiveness
+import sidev.lib.number.compareTo
 
 fun Double.rangeTo_(
     other: Double,
@@ -33,3 +34,12 @@ fun Float.rangeTo_(
                 && (if(endExclusiveness == Exclusiveness.INCLUSIVE) value <= end else value < end)
     }
 )
+
+
+operator fun <R, T> R.contains(number: Number): Boolean
+        where T: Number, T: Comparable<T>, R: ClosedRange<T>, R: LongProgression =
+    number >= first && number <= last
+
+operator fun <R, T> R.contains(number: Number): Boolean
+        where T: Number, T: Comparable<T>, R: ClosedRange<T>, R: IntProgression =
+    number >= first && number <= last

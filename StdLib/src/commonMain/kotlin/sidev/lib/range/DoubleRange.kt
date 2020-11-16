@@ -7,7 +7,7 @@ class DoubleRange(
     start: Double,
     end: Double,
     val emptyFun: (start: Double, end: Double) -> Boolean,
-    val containsFun: (start: Double, end: Double, value: Double) -> Boolean
+    val containsFun: (start: Double, end: Double, value: Number) -> Boolean
 ) : ClosedFloatingPointRange<Double> {
     private val _start = start
     private val _end = end
@@ -16,6 +16,7 @@ class DoubleRange(
 
     override fun lessThanOrEquals(a: Double, b: Double): Boolean = a <= b
 
+    operator fun contains(value: Number): Boolean = containsFun(_start, _end, value)
     override fun contains(value: Double): Boolean = containsFun(_start, _end, value)
     override fun isEmpty(): Boolean = emptyFun(_start, _end)
 
