@@ -2,6 +2,7 @@ package sidev.lib.math.number
 
 import sidev.lib.console.prine
 import sidev.lib.exception.UnavailableOperationExc
+import sidev.lib.number.plus
 import sidev.lib.structure.data.Cloneable
 import sidev.lib.range.contains
 

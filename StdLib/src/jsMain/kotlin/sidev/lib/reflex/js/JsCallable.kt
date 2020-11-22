@@ -113,8 +113,11 @@ internal open class JsCallableImpl<out T>(open val func: Any) : JsCallable<T>{
         }
     }
 
-    override fun equals(other: Any?): Boolean =
-        if(other is JsClassImpl_<*>) func == other.func
-        else super.equals(other)
+    override fun equals(other: Any?): Boolean = when(other) {
+        is JsClassImpl_<*> -> func == other.func
+        is JsCallable<*> -> hashCode() == other.hashCode()
+//        is JsClass<*> -> hashCode() == other.hashCode()
+        else -> hashCode() == other.hashCode() //super.equals(other)
+    }
     override fun hashCode(): Int = func.hashCode()
 }

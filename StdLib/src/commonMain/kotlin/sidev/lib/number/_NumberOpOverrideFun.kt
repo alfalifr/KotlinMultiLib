@@ -25,7 +25,7 @@ infix operator fun <T: Number> T.plus(other: Number): T{
         is Double -> this + other
         is Byte -> this + other
         is Short -> this + other
-        else -> this
+        else -> NumberConst.plus(this::class, this, other) as T //this
     } as T
 }
 infix operator fun <T: Number> T.minus(other: Number): T{
@@ -37,7 +37,7 @@ infix operator fun <T: Number> T.minus(other: Number): T{
         is Double -> this - other
         is Byte -> this - other
         is Short -> this - other
-        else -> this
+        else -> NumberConst.minus(this::class, this, other) as T //this
     } as T
 }
 infix operator fun <T: Number> T.times(other: Number): T{
@@ -49,7 +49,7 @@ infix operator fun <T: Number> T.times(other: Number): T{
         is Double -> this * other
         is Byte -> this * other
         is Short -> this * other
-        else -> this
+        else -> NumberConst.times(this::class, this, other) as T //this
     } as T
 }
 infix operator fun <T: Number> T.div(other: Number): T{
@@ -61,7 +61,7 @@ infix operator fun <T: Number> T.div(other: Number): T{
         is Double -> this / other
         is Byte -> this / other
         is Short -> this / other
-        else -> this
+        else -> NumberConst.div(this::class, this, other) as T //this
     } as T
 }
 infix operator fun <T: Number> T.rem(other: Number): T{
@@ -73,7 +73,7 @@ infix operator fun <T: Number> T.rem(other: Number): T{
         is Double -> this % other
         is Byte -> this % other
         is Short -> this % other
-        else -> this
+        else -> NumberConst.rem(this::class, this, other) as T //this
     } as T
 }
 infix operator fun Number.compareTo(other: Number): Int{
@@ -84,7 +84,7 @@ infix operator fun Number.compareTo(other: Number): Int{
         is Double -> this.compareTo(other)
         is Byte -> this.compareTo(other)
         is Short -> this.compareTo(other)
-        else -> 0
+        else -> NumberConst.compareTo(this::class, this, other) //this
     }
 }
 

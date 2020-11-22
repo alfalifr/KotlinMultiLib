@@ -1,8 +1,7 @@
 package sidev.lib.number
 
-import sidev.lib.annotation.Experimental
+import sidev.lib.annotation.Note
 import sidev.lib.annotation.Unsafe
-import sidev.lib.console.prine
 
 /**
  * Mengambil angka pada digit [digitPlace]. Fungsi ini tidak mengambil angka di belakang koma.
@@ -36,7 +35,8 @@ operator fun Number.get(digitPlace: Int): Int = getNumberAtDigit(digitPlace)
 fun Number.getDecimal(): Number = this -(this.toLong())
 
 //123.123
-@Experimental("Cara mudah dg menjadikannya string dan mencari titik (.). Namun, Hal tersebut bkn cara optimal.")
+//@Experimental("Cara mudah dg menjadikannya string dan mencari titik (.). Namun, Hal tersebut bkn cara optimal.")
+@Note("Tidak ada cara lebih akurat dan optimal dari toString().")
 fun Float.getDigitBehindDecimal(): Int = toString().run {
     val decIndex= indexOf(".")
     (length - decIndex - 1).let {
@@ -45,7 +45,8 @@ fun Float.getDigitBehindDecimal(): Int = toString().run {
     }
 }
 
-@Experimental("Cara mudah dg menjadikannya string dan mencari titik (.). Namun, Hal tersebut bkn cara optimal.")
+//@Experimental("Cara mudah dg menjadikannya string dan mencari titik (.). Namun, Hal tersebut bkn cara optimal.")
+@Note("Tidak ada cara lebih akurat dan optimal dari toString().")
 fun Double.getDigitBehindDecimal(): Int = toString().run {
     val decIndex= indexOf(".")
     (length - decIndex - 1).let {

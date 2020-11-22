@@ -1,6 +1,8 @@
 package sidev.lib.math.number
 
 import sidev.lib.exception.UnavailableOperationExc
+import sidev.lib.number.minus
+import sidev.lib.number.plus
 import sidev.lib.structure.data.Cloneable
 
 /**

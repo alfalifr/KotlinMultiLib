@@ -2,6 +2,9 @@ package sidev.lib.math.number
 
 import sidev.lib.number.isNegative
 import sidev.lib.number.isPositive
+import sidev.lib.number.rem
+import sidev.lib.number.div
+import sidev.lib.number.compareTo
 
 internal class FloatFloatingNumber(override val floatValue: Float): FloatingNumber() {
     override val doubleValue: Double

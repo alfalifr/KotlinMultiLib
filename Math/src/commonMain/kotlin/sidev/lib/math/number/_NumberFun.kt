@@ -1,6 +1,5 @@
 package sidev.lib.math.number
 
-import sidev.lib.console.prine
 import sidev.lib.number.*
 import sidev.lib.number.compareTo
 import sidev.lib.range.DoubleRange
