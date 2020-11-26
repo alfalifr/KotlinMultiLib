@@ -1,5 +1,7 @@
 package sidev.lib.math.number
 
+import sidev.lib.number.compareTo
+
 internal class LongWholeNumber(override val longValue: Long): WholeNumber() {
     override val byteValue: Byte
         get() = longValue.toByte()

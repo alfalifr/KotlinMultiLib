@@ -16,8 +16,8 @@ Operator Overriding
  * @return angka hasil operasi,
  *   dan angka `this.extension` ini sendiri jika tipe pasti [other] tidak diketahui.
  */
-infix operator fun <T: Number> T.plus(other: Number): T{
-    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
+infix operator fun Number.plus(other: Number): Number{
+    //@Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this + other
         is Long -> this + other
@@ -25,11 +25,24 @@ infix operator fun <T: Number> T.plus(other: Number): T{
         is Double -> this + other
         is Byte -> this + other
         is Short -> this + other
-        else -> NumberConst.plus(this::class, this, other) as T //this
+        else -> NumberConst.plus(this::class, this, other) //as T //this
+    }
+}
+infix fun <T: Number> T.plusCast(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    return when(this){
+        is Int -> (this + other).toInt()
+        is Long -> (this + other).toLong()
+        is Float -> (this + other).toFloat()
+        is Double -> (this + other).toDouble()
+        is Byte -> (this + other).toByte()
+        is Short -> (this + other).toShort()
+        else -> NumberConst.plus(this::class, this, other) //as T //this
     } as T
 }
-infix operator fun <T: Number> T.minus(other: Number): T{
-    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
+
+infix operator fun Number.minus(other: Number): Number{
+    //@Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this - other
         is Long -> this - other
@@ -37,11 +50,24 @@ infix operator fun <T: Number> T.minus(other: Number): T{
         is Double -> this - other
         is Byte -> this - other
         is Short -> this - other
-        else -> NumberConst.minus(this::class, this, other) as T //this
+        else -> NumberConst.minus(this::class, this, other) //as T //this
+    }
+}
+infix fun <T: Number> T.minusCast(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    return when(this){
+        is Int -> (this - other).toInt()
+        is Long -> (this - other).toLong()
+        is Float -> (this - other).toFloat()
+        is Double -> (this - other).toDouble()
+        is Byte -> (this - other).toByte()
+        is Short -> (this - other).toShort()
+        else -> NumberConst.minus(this::class, this, other) //as T //this
     } as T
 }
-infix operator fun <T: Number> T.times(other: Number): T{
-    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
+
+infix operator fun Number.times(other: Number): Number{
+    //@Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this * other
         is Long -> this * other
@@ -49,11 +75,24 @@ infix operator fun <T: Number> T.times(other: Number): T{
         is Double -> this * other
         is Byte -> this * other
         is Short -> this * other
-        else -> NumberConst.times(this::class, this, other) as T //this
+        else -> NumberConst.times(this::class, this, other) //as T //this
+    } //as T
+}
+infix fun <T: Number> T.timesCast(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    return when(this){
+        is Int -> (this * other).toInt()
+        is Long -> (this * other).toLong()
+        is Float -> (this * other).toFloat()
+        is Double -> (this * other).toDouble()
+        is Byte -> (this * other).toByte()
+        is Short -> (this * other).toShort()
+        else -> NumberConst.times(this::class, this, other) //as T //this
     } as T
 }
-infix operator fun <T: Number> T.div(other: Number): T{
-    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
+
+infix operator fun Number.div(other: Number): Number{
+    //@Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this / other
         is Long -> this / other
@@ -61,11 +100,24 @@ infix operator fun <T: Number> T.div(other: Number): T{
         is Double -> this / other
         is Byte -> this / other
         is Short -> this / other
-        else -> NumberConst.div(this::class, this, other) as T //this
+        else -> NumberConst.div(this::class, this, other) //as T //this
+    } //as T
+}
+infix fun <T: Number> T.divCast(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    return when(this){
+        is Int -> (this / other).toInt()
+        is Long -> (this / other).toLong()
+        is Float -> (this / other).toFloat()
+        is Double -> (this / other).toDouble()
+        is Byte -> (this / other).toByte()
+        is Short -> (this / other).toShort()
+        else -> NumberConst.div(this::class, this, other) //as T //this
     } as T
 }
-infix operator fun <T: Number> T.rem(other: Number): T{
-    @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
+
+infix operator fun Number.rem(other: Number): Number{
+    //@Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return when(this){
         is Int -> this % other
         is Long -> this % other
@@ -73,9 +125,22 @@ infix operator fun <T: Number> T.rem(other: Number): T{
         is Double -> this % other
         is Byte -> this % other
         is Short -> this % other
-        else -> NumberConst.rem(this::class, this, other) as T //this
+        else -> NumberConst.rem(this::class, this, other) //as T //this
+    } //as T
+}
+infix fun <T: Number> T.remCast(other: Number): T{
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    return when(this){
+        is Int -> (this % other).toInt()
+        is Long -> (this % other).toLong()
+        is Float -> (this % other).toFloat()
+        is Double -> (this % other).toDouble()
+        is Byte -> (this % other).toByte()
+        is Short -> (this % other).toShort()
+        else -> NumberConst.rem(this::class, this, other) //as T //this
     } as T
 }
+
 infix operator fun Number.compareTo(other: Number): Int{
     return when(this){
         is Int -> this.compareTo(other)
@@ -88,10 +153,10 @@ infix operator fun Number.compareTo(other: Number): Int{
     }
 }
 
-operator fun <T: Number> T.inc(): T = this +1
-operator fun <T: Number> T.dec(): T = this -1
+operator fun <T: Number> T.inc(): T = (this +1) as T
+operator fun <T: Number> T.dec(): T = (this -1) as T
 operator fun <T: Number> T.unaryPlus(): T = this
-operator fun <T: Number> T.unaryMinus(): T = this * -1
+operator fun <T: Number> T.unaryMinus(): T = (this * -1) as T
 
 
 

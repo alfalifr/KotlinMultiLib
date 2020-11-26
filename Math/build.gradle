@@ -37,7 +37,11 @@ apply plugin: 'com.jfrog.bintray'
 
 
 kotlin {
-    jvm()
+    jvm().compilations.main {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
     js {
         browser {
         }

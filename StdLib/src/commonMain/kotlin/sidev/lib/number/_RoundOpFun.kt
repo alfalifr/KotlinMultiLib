@@ -31,8 +31,8 @@ fun <T: Number> T.round(digitPlace: Int= 0, mode: RoundingMode = RoundingMode.HA
         if(!this.isDecimalType()) return this//Jika ternyata angka yg diambil adalah di belakang koma,
         // sedangkan tipe data angka kelas ini tidak memiliki koma, maka return angka ini.
         val digitTimer= (10 pow -digitPlace).toInt().toDouble() //Agar hasil koma bisa kelihatan dg pas.
-        val newThis= this * digitTimer
-        return (newThis.round(0, mode) / digitTimer)
+        val newThis= this timesCast digitTimer
+        return (newThis.round(0, mode) divCast digitTimer)
     }
     val numberInDigit= getNumberAtDigit(digitPlace-1)
 

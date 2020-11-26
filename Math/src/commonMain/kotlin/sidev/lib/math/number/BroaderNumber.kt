@@ -1,5 +1,7 @@
 package sidev.lib.math.number
 
+import sidev.lib.number.compareTo
+
 /**
  * [Number_] yg memiliki tipe lebih luas yaitu [WholeNumber] dan [FloatingNumber].
  */

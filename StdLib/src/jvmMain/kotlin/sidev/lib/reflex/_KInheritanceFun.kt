@@ -1,3 +1,4 @@
+@file:JvmName("_KInheritanceFunJvm")
 package sidev.lib.reflex
 
 import kotlin.reflect.KClass

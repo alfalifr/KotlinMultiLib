@@ -4,8 +4,41 @@ import kotlin.js.JsName
 import kotlin.jvm.JvmName
 
 //TODO <29 Juli 2020> => Buat validator angka (menghilangkan 0 di depan angka).
-fun <T> T.toString(func: (obj: T) -> String): String{
+fun <T> T.toString(func: (obj: T) -> String): String {
     return func(this)
+}
+
+
+fun CharSequence.findIndexed(start: Int = 0, predicate: (IndexedValue<Char>) -> Boolean): IndexedValue<Char>?{
+    for(i in start until length){
+        val vals= IndexedValue(i, this[i])
+        if(predicate(vals))
+            return vals
+    }
+    return null
+}
+
+fun CharSequence.indexOfWhere(start: Int = 0, predicate: (Char) -> Boolean): Int {
+    for(i in start until length){
+        if(predicate(this[i]))
+            return i
+    }
+    return -1
+}
+
+fun CharSequence.nextNonWhitespaceChar(start: Int= 0): Char? = try{
+    this[indexOfWhere(start) { !it.isWhitespace() }]
+} catch (e: IndexOutOfBoundsException) {
+    null
+}
+
+fun CharSequence.prevNonWhitespaceChar(start: Int= 0): Char? {
+    for(i in start downTo 0){
+        if(!this[i].isWhitespace()){
+            return this[i]
+        }
+    }
+    return null
 }
 
 /**
@@ -61,14 +94,6 @@ fun CharSequence.getQuoted(quoter: CharSequence, startIndex: Int= 0, withQuote: 
     return null
 }
 
-fun CharSequence.nextNonWhitespaceChar(startInd: Int= 0): Char? {
-    for(i in startInd until this.length){
-        if(!this[i].isWhitespace()){
-            return this[i]
-        }
-    }
-    return null
-}
 
 /**
  * Memendekan string `this` jika melebihi pjg [maxLen].

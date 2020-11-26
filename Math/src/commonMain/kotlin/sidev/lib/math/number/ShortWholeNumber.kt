@@ -1,7 +1,13 @@
 package sidev.lib.math.number
 
+import sidev.lib.number.compareTo
 import sidev.lib.number.isNegative
 import sidev.lib.number.isPositive
+import sidev.lib.number.rem
+import sidev.lib.number.div
+import sidev.lib.number.plus
+import sidev.lib.number.minus
+import sidev.lib.number.times
 
 internal class ShortWholeNumber(override val shortValue: Short): WholeNumber() {
     override val byteValue: Byte

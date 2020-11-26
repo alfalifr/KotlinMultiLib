@@ -389,9 +389,14 @@ val Any.javaNestedFieldValuesTreeMap: Map<Field, Any?>
 Named Map - Berguna untuk interoperability terhadap Flutter Dart, yaitu dengan menge-pass map String-Any?
 ==========================
  */
+/**
+ * Mengubah data `this.extension` dg tipe `Object` menjadi [Map] yang berisi semua atribut dg tipe `primitive`.
+ * Jika tipe data field berupa `Object`, maka nilai field tersebut berupa [Map] yang berisi nilai nested field.
+ */
 @get:JvmName("javaNestedPrimitiveFieldValuesTreeNamedMap")
 val Any.javaNestedPrimitiveFieldValuesTreeNamedMap: Map<String, Any?>
     get()= mutableMapOf<String, Any?>().apply {
+        val a: MutableMap
 //        var isItrInNested= false
         var currLevel= 0
         val mapHierarchy= mutableListOf<MutableMap<String, Any?>>()

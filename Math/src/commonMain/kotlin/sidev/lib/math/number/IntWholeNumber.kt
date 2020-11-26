@@ -1,7 +1,10 @@
 package sidev.lib.math.number
 
+import sidev.lib.number.compareTo
 import sidev.lib.number.isNegative
 import sidev.lib.number.isPositive
+import sidev.lib.number.rem
+import sidev.lib.number.div
 
 internal class IntWholeNumber(override val intValue: Int): WholeNumber() {
     override val byteValue: Byte

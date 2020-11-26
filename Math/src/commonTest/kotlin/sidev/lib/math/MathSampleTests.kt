@@ -3,10 +3,12 @@ package main
 import sidev.lib.collection.duplicatUnion
 import sidev.lib.console.prin
 import sidev.lib.math.*
+import sidev.lib.math.arithmetic.*
 import sidev.lib.math.number.*
 import sidev.lib.math.stat.mean
 import sidev.lib.math.stat.medianNode
 import sidev.lib.math.stat.mode
+import sidev.lib.text.removeWhitespace
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -117,5 +119,68 @@ class MathSampleTests {
 
         val fr16= fr15 + 2
         prin("fr16= $fr16")
+    }
+
+    @Test
+    fun arithmeticTest(){
+        //(3x + 10 - (2x + 4) - 4y) * 2
+        //((3x + 10) * 2 - (2x + 4) - 4y) * 2
+        //(((3x + 10) * 2 - (2x + 4) - 4y) / 2) * 2
+
+        val firstElement= variableOf("x", 3)
+        val block= blockOf(firstElement)
+
+        block.addOperation(constantOf(10), Operation.PLUS)
+        block.addOperation(variableOf("y", 4), Operation.MINUS)
+        block.addOperation(constantOf(2), Operation.TIMES, prioritizePrecedence = true)
+
+        val block2= blockOf(variableOf("x", 2))
+        block2.addOperation(constantOf(4), Operation.PLUS)
+
+        block.addOperation(block2, Operation.MINUS, 2)
+        block.addOperation(constantOf(2), Operation.TIMES, 2)
+        block.addOperation(constantOf(2), Operation.DIVIDES, 1, false)
+        block.addOperation(constantOf(2), Operation.POWER, prioritizePrecedence = false)
+
+//        (block.elements[1] as Block).addOperation(variableOf("y", 2), Operation.MINUS)
+
+        prin("======== block.elements.forEach(::println) =========")
+        block.elements.forEach {
+            println("it= $it class= ${it::class}")
+        }
+        prin("=================")
+
+        prin("======== block.operations.forEach(::println) =========")
+        block.operations.forEach(::println)
+        prin("=================")
+
+        val x= 5
+        val y= 2
+        val res= block("x" to x, "y" to y)
+        val res2= block2("x" to x)
+        prin("res= $res res2= $res2")
+
+        prin("block= $block")
+
+        val blockStr= block.toString()
+        prin("blockStr.length= ${blockStr.length}")
+
+        val block3= Block.parse(blockStr.removeWhitespace().also { prin("blockStr.removeWhitespace() = $it") })
+        val res3= block3("x" to x, "y" to y)
+        prin("res3= $res3")
+        prin("block3= $block3")
+
+        prin("======== block3.elements.forEach(::println) =========")
+        block3.elements.forEach {
+            println("it= $it class= ${it::class} elements= ${if(it is Block) it.elements else "<null>"}")
+        }
+        prin("=================")
+
+        prin("======== block3.operations.forEach(::println) =========")
+        block3.operations.forEach(::println)
+        prin("=================")
+
+        val blockStr3= block3.toString()
+        prin("blockStr3 == blockStr => ${blockStr3 == blockStr}")
     }
 }

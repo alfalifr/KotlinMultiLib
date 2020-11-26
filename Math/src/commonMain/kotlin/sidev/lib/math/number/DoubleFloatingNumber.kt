@@ -1,5 +1,7 @@
 package sidev.lib.math.number
 
+import sidev.lib.number.compareTo
+
 internal class DoubleFloatingNumber(override val doubleValue: Double): FloatingNumber() {
     override val floatValue: Float
         get() = doubleValue.toFloat()

@@ -6,5 +6,5 @@ data class WholeFractionImpl(override val numerator: WholeNumber, override val d
         else -> super.equals(other)
     }
     override fun hashCode(): Int = realNumber.hashCode()
-    override fun toString(): String = "$numerator / $denominator"
+    override fun toString(): String = "$numerator/$denominator"
 }
