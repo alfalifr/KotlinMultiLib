@@ -1,6 +1,7 @@
 package sidev.lib.math.arithmetic
 
 //import sidev.lib.console.prine
+//import sidev.lib.console.prine
 import sidev.lib.console.prinw
 import sidev.lib.exception.IllegalArgExc
 import sidev.lib.exception.IllegalStateExc
@@ -13,7 +14,7 @@ import kotlin.jvm.JvmStatic
  * Kumpulan operasi matematika yang berada pada tempat yg sama yg dipisahkan oleh tanda ekuasi.
  * Satu blok dapat terdiri dari bbrp nested blok (yg dipisahkan dg tanda kurung).
  */
-interface Block: Calculatable {
+interface Block: Calculable {
     companion object {
         /**
          * Mengubah [blockStr] menjadi [Block].
@@ -30,9 +31,11 @@ interface Block: Calculatable {
 
             var currOpParent: Operation?= null
             var currOp: Operation?= null
+            var currSignum: Int= 1 //untuk tanda - +
             var currNum: Int?= null
             var currName: String?= null
-            var currElement: Calculatable?= null
+            var currElement: Calculable?= null
+            var isCurrentlyChangeBlock= false
 
             var i= 0
             fun Block.addCurrOperation(){
@@ -44,6 +47,7 @@ interface Block: Calculatable {
                 prine("currName= $currName")
                 prine("currElement= $currElement")
 // */
+                currNum = currNum?.times(currSignum)
 
                 if(currElement == null)
                     currElement= if(currName != null) variableOf(currName!!, currNum!!)
@@ -57,6 +61,7 @@ interface Block: Calculatable {
                 currElement= null
                 currName= null
                 currNum= null
+                currSignum= 1
             }
 
             val lastIndex= blockStr.length -1
@@ -70,29 +75,64 @@ interface Block: Calculatable {
                         currOpParent= currOp
                         currOp= null
                         block= blockOf(operationLevel = 10, parentBlock = block)
+                        isCurrentlyChangeBlock= true
                     }
                     ch == ')' -> {
+/*
+                        if(isCurrentlyChangeBlock) {
+                            isCurrentlyChangeBlock= false
+                            continue
+                        }
+ */
                         if(--openingBracket < 0)
                             throw IllegalStateExc(stateOwner = this::class, currentState = "\")\" terlalu banyak")
-                        try { block.addCurrOperation() }
-                        catch (e: NullPointerException) {
-                            if(blockStr.prevNonWhitespaceChar(i-1) != ')')
-                                throw IllegalStateExc(detMsg = "Terjadi kesalahan dalam penulisan block.")
+                        if(!isCurrentlyChangeBlock){ // ini untuk kondisi saat tanda kurung yg digunakan untuk mengapit angka minus.
+                            try {
+                                block.addCurrOperation()
+                                currElement= block
+                            } catch (e: NullPointerException) {
+                                if(blockStr.prevNonWhitespaceChar(i-1) != ')')
+                                    throw IllegalStateExc(detMsg = "Terjadi kesalahan dalam penulisan block.")
+                            }
                         }
 
                         currOp= currOpParent
-                        currElement= block
                         currOpParent= null
                         block= block.parentBlock!!
                         block.addCurrOperation()
+                        isCurrentlyChangeBlock= false
                     }
-                    ch.isMathOperator() -> {
-                        try { block.addCurrOperation() }
-                        catch (e: NullPointerException) { /*abaikan karena kesalahan terjadi karena fungsi addCurrOperation() udah dipanggil duluan pas ')'*/ }
 
-                        currOp= Operation.from(ch)
-                        if(block.operationLevel > currOp.level)
-                            (block as BlockImpl).operationLevel= currOp.level
+                    ch.isMathOperator() -> {
+                        if(ch == '-' && currOp == null/* && isCurrentlyChangeBlock*/){
+//                            block= block.parentBlock!!
+                            blockStr.indexOfWhere(i+1) { !it.isWhitespace() }.let {
+                                if(it.isNotNegative()){
+                                    val ch2= blockStr[it]
+                                    when {
+                                        ch2.isDigit() -> {
+                                            currSignum= -1
+                                            i= it-1
+                                        }
+                                        ch2.isLetter() -> {
+                                            currNum = -1
+                                            i= it-1
+                                        }
+                                        else -> throw IllegalStateExc(currentState = "`blockStr` tidak valid", detMsg = "`blockStr` memiliki char '$ch2' di belakang blok.")
+                                    }
+                                } else {
+                                    throw IllegalStateExc(currentState = "`blockStr` tidak lengkap", detMsg = "`blockStr` memiliki tanda '-' di belakang blok.")
+                                }
+                            }
+                        } else {
+                            try { block.addCurrOperation() }
+                            catch (e: NullPointerException) { /*abaikan karena kesalahan terjadi karena fungsi addCurrOperation() udah dipanggil duluan pas ')'*/ }
+
+                            currOp= Operation.from(ch)
+                            if(block.operationLevel > currOp.level)
+                                (block as BlockImpl).operationLevel= currOp.level
+                            isCurrentlyChangeBlock= false
+                        }
                     }
                     ch.isDigit() -> {
                         val u = if(i < lastIndex) blockStr.indexOfWhere(i+1) { !it.isDigit() }
@@ -102,6 +142,7 @@ interface Block: Calculatable {
                             currNum= blockStr.substring(i, u).toInt()
                             i= u-1
                         }
+//                        isCurrentlyChangeBlock= false
                     }
                     ch.isLetter() -> {
                         val u = if(i < lastIndex) blockStr.indexOfWhere(i+1) { !it.isLetter() }
@@ -111,6 +152,7 @@ interface Block: Calculatable {
                             currName= blockStr.substring(i, u)
                             i= u-1
                         }
+//                        isCurrentlyChangeBlock= false
                     }
                 }
                 i++
@@ -128,7 +170,7 @@ interface Block: Calculatable {
     val operationLevel: Int
 
     override val nInput: Int
-        get() = elements.fold(0) { acc, calculatable -> acc + calculatable.nInput }
+        get() = elements.fold(0) { acc, calculable -> acc + calculable.nInput }
 
     /**
      *
@@ -136,9 +178,9 @@ interface Block: Calculatable {
     val parentBlock: Block?
 
     /**
-     * Kumpulan element [Calculatable] yang terhubung dengan [operations] dg `level` yang sama.
+     * Kumpulan element [Calculable] yang terhubung dengan [operations] dg `level` yang sama.
      */
-    val elements: List<Calculatable>
+    val elements: List<Calculable>
 
     /**
      * Jumlah [elements] yang berupa [Variable].
@@ -186,13 +228,13 @@ interface Block: Calculatable {
      */
     val operations: List<Operation>
 
-    fun setFirstElement(element: Calculatable)
+    fun setFirstElement(element: Calculable)
 
     /**
      * return `Block` yang menjadi akar, yaitu `Block` yg punya [operationLevel] lebih rendah.
      */
     fun addOperation(
-        element: Calculatable, operation: Operation,
+        element: Calculable, operation: Operation,
         elementIndex: Int = elements.size, prioritizePrecedence: Boolean= true
     )
 
@@ -296,18 +338,18 @@ interface Block: Calculatable {
 }
 
 internal class BlockImpl(
-    firstElement: Calculatable = NullCalculatable,
+    firstElement: Calculable = NullCalculable,
     override var operationLevel: Int = 1,
     override val parentBlock: Block? = null
 ): Block{
-    override val elements: List<Calculatable> = mutableListOf()
+    override val elements: List<Calculable> = mutableListOf()
     override val operations: List<Operation> = mutableListOf()
 
     init {
         (elements as MutableList) += firstElement
     }
 
-    override fun setFirstElement(element: Calculatable) {
+    override fun setFirstElement(element: Calculable) {
         (elements as MutableList)[0]= element
     }
 
@@ -317,11 +359,11 @@ internal class BlockImpl(
     //1+2+(3*5/7)-4
     //1+2+(3*5)-(10/7)-4
     override fun addOperation(
-        element: Calculatable, operation: Operation,
+        element: Calculable, operation: Operation,
         elementIndex: Int, prioritizePrecedence: Boolean
     ) {
-        if(elements.first() == NullCalculatable){
-            prinw("Block.addOperation() elemen awal masih `NullCalculatable`, `operation` diabaikan.")
+        if(elements.first() == NullCalculable){
+            prinw("Block.addOperation() elemen awal masih `NullCalculable`, `operation` diabaikan.")
             setFirstElement(element)
             return
         }
@@ -348,8 +390,8 @@ internal class BlockImpl(
                     catch (e: Exception) { listOf(operations.last()) }
 
                 val tailBlock= BlockImpl(element, operationLevel, parentBlock)
-                tailElements.forEachIndexed { index, calculatable ->
-                    tailBlock.addOperation(calculatable, tailOps[index])
+                tailElements.forEachIndexed { index, calculable ->
+                    tailBlock.addOperation(calculable, tailOps[index])
                     (elements as MutableList).removeLast()
                     (operations as MutableList).removeLast()
                 }
@@ -382,7 +424,10 @@ internal class BlockImpl(
             e= elItr.next()
             op= opItr.next()
 
-            val eStr= if(e !is Block) e.toString() else "($e)"
+            val eStr= if(e !is Block) e.toString().let {
+                if(it.startsWith('-')) "($it)" else it
+            } else "($e)"
+
             if(op.level > operationLevel && i > 0){
                 res = "($res"
                 res += ") $op $eStr"

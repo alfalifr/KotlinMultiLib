@@ -1,6 +1,6 @@
 package sidev.lib.math.arithmetic
 
-interface Constant<T: Number>: Calculatable {
+interface Constant<T: Number>: Calculable {
     val number: T
     override val nInput: Int
         get() = 0

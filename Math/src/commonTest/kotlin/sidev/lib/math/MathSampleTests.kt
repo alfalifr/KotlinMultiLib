@@ -139,8 +139,8 @@ class MathSampleTests {
 
         block.addOperation(block2, Operation.MINUS, 2)
         block.addOperation(constantOf(2), Operation.TIMES, 2)
-        block.addOperation(constantOf(2), Operation.DIVIDES, 1, false)
-        block.addOperation(constantOf(2), Operation.POWER, prioritizePrecedence = false)
+        block.addOperation(constantOf(-2), Operation.DIVIDES, 1, false)
+//        block.addOperation(constantOf(2), Operation.POWER, prioritizePrecedence = false)
 
 //        (block.elements[1] as Block).addOperation(variableOf("y", 2), Operation.MINUS)
 

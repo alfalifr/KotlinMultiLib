@@ -6,7 +6,7 @@ import sidev.lib.number.times
 /**
  *
  */
-interface Variable<T: Number>: Calculatable {
+interface Variable<T: Number>: Calculable {
     val name: String
     val coeficient: T
     override val nInput: Int
