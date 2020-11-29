@@ -1,25 +1,18 @@
 package sidev.lib;
 
-import kotlin.Pair;
 import kotlin.Unit;
-import kotlin.collections.CollectionsKt;
 import kotlin.jvm.functions.Function1;
-import kotlin.sequences.SequencesKt;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import sidev.lib.annotation.ChangeLog;
 import sidev.lib.collection.lazy_list._LazyListFunKt;
-import sidev.lib.number._ArithmethicFunKt;
+import sidev.lib.number._OpFunKt;
 import sidev.lib.number._NumberFunKt;
 
 import static kotlin.collections.CollectionsKt.*;
-import java.util.Iterator;
+
 import java.util.Optional;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import static sidev.lib.check._CheckFunKt.*;
 
 import static kotlin.sequences.SequencesKt.*;
 import static kotlin.TuplesKt.*;
@@ -78,7 +71,7 @@ public class SampleTestJava {
     public void cob(){
         prin(_NumberFunKt.isNegative(1));
         prin(_NumberFunKt.asNumber(1).floatValue());
-        prin(_ArithmethicFunKt.pow(2, 3));
+        prin(_OpFunKt.pow(2, 3));
         Number n= 1;
     }
 }

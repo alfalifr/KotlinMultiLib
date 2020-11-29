@@ -23,9 +23,11 @@ interface WholeFraction: Fraction<WholeNumber>{
         )
     }
 
+
     override fun simply(): WholeFraction = numerator.fpb(denominator).let {
         WholeFractionImpl(numerator / it, denominator / it)
     }
+
 
     override fun plus(other: Fraction<WholeNumber>): WholeFraction = makeCommonFractions(other)
         .let { (thisFrac, other) ->

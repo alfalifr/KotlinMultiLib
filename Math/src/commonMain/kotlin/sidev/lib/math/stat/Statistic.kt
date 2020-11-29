@@ -288,7 +288,7 @@ internal fun Any.stdDeviation_internal(mean: Double?= null, method: StdDeviation
     val size: Double
     val func: (Number) -> Double = when(method){
         StdDeviationMethod.ABSOLUTE -> { it: Number -> if(it >= mean) it.toDouble() - mean else mean - it.toDouble() }
-        StdDeviationMethod.SQUARE -> { it: Number -> (it.toDouble() - mean) pow 2 }
+        StdDeviationMethod.SQUARE -> { it: Number -> (it.toDouble() - mean) powCast 2 }
     }
     return list.map(func).also { size= it.size.toDouble() }.sum() / size  //.sumByDouble { it.toDouble() } / size
 }

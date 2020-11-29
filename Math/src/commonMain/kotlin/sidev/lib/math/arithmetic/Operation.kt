@@ -14,15 +14,16 @@ import kotlin.jvm.JvmStatic
 enum class Operation(
     val level: Int,
     val opFun: (Number, Number) -> Number,
+    val calcOpFun: (Calculable, Calculable) -> Calculable,
     vararg val symbol: Char
 ): Operationable<Number> {
-    PLUS(1, { n1, n2 -> n1 + n2 },'+'),
-    MINUS(1, { n1, n2 -> n1 - n2 }, '-'),
-    TIMES(2, { n1, n2 -> n1 * n2 }, '*'),
-    DIVIDES(2, { n1, n2 -> n1 / n2 }, '/'),
-    MODULO(2, { n1, n2 -> n1 % n2 }, '%'),
-    POWER(3, { n1, n2 -> n1 pow n2 }, '^'),
-    ROOT(3, { n1, n2 -> n1 root n2 }, '~');
+    PLUS(1, { n1, n2 -> n1 + n2 }, { n1, n2 -> n1 + n2 },'+'),
+    MINUS(1, { n1, n2 -> n1 - n2 }, { n1, n2 -> n1 - n2 }, '-'),
+    TIMES(2, { n1, n2 -> n1 * n2 }, { n1, n2 -> n1 * n2 }, '*'),
+    DIVIDES(2, { n1, n2 -> n1 / n2 }, { n1, n2 -> n1 / n2 }, '/'),
+    MODULO(3, { n1, n2 -> n1 % n2 }, { n1, n2 -> n1 % n2 }, '%'),
+    POWER(4, { n1, n2 -> n1 powCast n2 }, { n1, n2 -> n1 pow n2 }, '^'),
+    ROOT(4, { n1, n2 -> n1 rootCast n2 }, { n1, n2 -> n1 root n2 }, '~');
 
     companion object {
         @JvmStatic
@@ -41,6 +42,10 @@ enum class Operation(
         }
     }
     override fun doOperation(n1: Number, n2: Number): Number = opFun(n1, n2)
+    fun doOperation(element1: Calculable, element2: Calculable): Calculable = calcOpFun(element1, element2)
+
+    operator fun invoke(element1: Calculable, element2: Calculable): Calculable = doOperation(element1, element2)
+
     val opposite: Operation get()= when(this) {
         PLUS -> MINUS
         MINUS -> PLUS

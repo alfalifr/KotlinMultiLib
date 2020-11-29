@@ -25,8 +25,8 @@ interface Equation {
      */
     val signs: List<Sign>
 /*
-    fun solve(): List<Equation> {
+    fun solve(): List<Pair<String, Number>> {
 
     }
- */
+// */
 }

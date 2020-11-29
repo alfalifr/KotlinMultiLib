@@ -135,3 +135,22 @@ operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range.asEn
     return Array(range.last -range.first +1){ this[it +range.first] }
 }
  */
+
+
+fun <T> Array<T>.indexOfWhere(start: Int = 0, predicate: (T) -> Boolean): Int {
+    for(i in start until size)
+        if(predicate(this[i]))
+            return i
+    return -1
+}
+
+
+fun <T> Array<T>.forEach(start: Int= 0, end: Int= size, block: (T) -> Unit) {
+    for(i in start until end)
+        block(this[i])
+}
+
+fun <T> Array<T>.forEachIndexed(start: Int= 0, end: Int= size, block: (i: Int, T) -> Unit) {
+    for(i in start until end)
+        block(i, this[i])
+}

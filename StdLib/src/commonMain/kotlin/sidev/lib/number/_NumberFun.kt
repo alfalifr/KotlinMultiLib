@@ -16,9 +16,9 @@ fun Number.isNotNegative(): Boolean = !isNegative()
 fun Number.isNotPositive(): Boolean = !isPositive()
 
 /** @return true jika `this.extension` merupakan angka dg tipe data yg memiliki angka di belakang koma. */
-fun Number.isDecimalType(): Boolean = this is Double || this is Float
+fun Number.isFloatingType(): Boolean = this is Double || this is Float
 
-fun Number.toDecimalType(): Number =
+fun Number.toFloatingType(): Number =
     try{ toFloat() }
     catch (e: NumberFormatException){
         try{ toDouble() }
@@ -108,3 +108,36 @@ fun <T: Number> Number.toFormat(cls: KClass<*>): T = when(cls){
     Short::class -> toShort()
     else -> throw UnsupportedOperationException("Format angka \"$cls\" tidak diketahui")
 } as T
+
+
+/**
+ * Menghilangkan tanda desimal (titik) pada angka dg format floating
+ * dg cara mengalikan 10 ^ jml digit di belakang tanda desimal.
+ */
+fun Number.getRidOfDecimal(): Long {
+    val factor= 10 powCast getDigitBehindDecimal()
+    return (this * factor).toLong()
+}
+
+/**
+ * Menghilangkan tanda desimal (titik) pada angka dg format floating
+ * dg cara mengalikan 10 ^ jml digit di belakang tanda desimal.
+ *
+ * Properti ini sama dg [getRidOfDecimal], namun lebih praktis karena singkat.
+ */
+val Number.noDecimalValue: Long
+    get()= getRidOfDecimal()
+
+fun max(n1: Number, n2: Number): Number = if(n1 > n2) n1 else n2
+fun min(n1: Number, n2: Number): Number = if(n1 < n2) n1 else n2
+
+fun toSameScaleWholeNumber(vararg nums: Number): List<Long> {
+    val usedFactor = getCommonScale(*nums)
+    return nums.map { (it * usedFactor).toLong() }
+}
+
+fun getCommonScale(vararg nums: Number): Long =
+    10L powCast nums.map { it.getDigitBehindDecimal() }.reduce { acc, int -> max(acc, int) as Int }
+
+fun getFloatingCommonScale(vararg nums: Number): Double =
+    10.0 powCast nums.map { it.getDigitBehindDecimal() }.reduce { acc, int -> max(acc, int) as Int }

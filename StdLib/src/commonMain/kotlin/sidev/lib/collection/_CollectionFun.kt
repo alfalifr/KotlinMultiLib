@@ -6,6 +6,7 @@ import sidev.lib.console.log
 import sidev.lib.console.prine
 import kotlin.jvm.JvmOverloads
 import sidev.lib.collection.array.get as stdSubArray
+import kotlin.collections.toTypedArray as kToTypedArray
 
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
@@ -14,6 +15,9 @@ fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
             add(init(i))
     }
 }
+
+inline fun <reified T> Iterable<T>.toTypedArray(): Array<T> = toList().kToTypedArray()
+
 /*
 /** Mengambil bbrp elemen dari `this.extension` List dari [range.first] (inclusive) hingga [range.last] (exclusive). */
 operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, range.last)
@@ -21,6 +25,43 @@ operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, ra
 /** Mengambil bbrp elemen dari `this.extension` Array dari [range.first] (inclusive) hingga [range.last] (exclusive). */
 operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range)
  */
+
+fun <T> Iterable<T>.forEach(start: Int= 0, end: Int= -1, block: (T) -> Unit) {
+    if(this is List<*>) {
+        val range= start until if(end < 0) size else end
+        for(i in range)
+            block(this[i] as T)
+    } else {
+        val itr= iterator()
+        val range= start until if(end < 0) Int.MAX_VALUE else end
+        var i= 0
+
+        while (itr.hasNext()){
+            val e= itr.next()
+            if(i in range)
+                block(e)
+            i++
+        }
+    }
+}
+fun <T> Iterable<T>.forEachIndexed(start: Int= 0, end: Int= -1, block: (i: Int, T) -> Unit) {
+    if(this is List<*>) {
+        val range= start until if(end < 0) size else end
+        for(i in range)
+            block(i, this[i] as T)
+    } else {
+        val itr= iterator()
+        val range= start until if(end < 0) Int.MAX_VALUE else end
+        var i= 0
+
+        while (itr.hasNext()){
+            val e= itr.next()
+            if(i in range)
+                block(i, e)
+            i++
+        }
+    }
+}
 
 /** Sama seperti [first] sekaligus mengahpus element pertama */
 fun <T> MutableList<T>.takeFirst(): T = if(isEmpty()) throw NoSuchElementException("List is Empty") else removeAt(0)
@@ -53,8 +94,8 @@ fun <T> MutableList<T>.removeLast(element: T): Boolean{ //= if(isEmpty()) throw 
  * Fungsi ini menggunakan standard equals().
  */
 inline fun <T> MutableList<T>.addIfAbsent(element: T, chekcFun: ((existingElement: T) -> Boolean)= {true}): Boolean{
-    prine("MutableList<T>.addIfAbsent() this::class= ${this::class} this= $this")
-    log(this)
+//    prine("MutableList<T>.addIfAbsent() this::class= ${this::class} this= $this")
+//    log(this)
     val existingElementIndex= indexOf(element)
     val canAdd= existingElementIndex < 0 || !chekcFun(this[existingElementIndex])
     if(canAdd)
@@ -74,15 +115,24 @@ inline fun <T> MutableList<T>.addAllIfAbsent(vararg element: T, chekcFun: ((exis
 }
 
 
-inline fun <reified T> Array<T>.copy(reversed: Boolean= false): Array<T> {
-    return if(!reversed) this.copyOf()
+inline fun <reified T> Array<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): Array<T> {
+    val rangeItr= (if(!reversed) start until end
+        else end-1 downTo start).iterator()
+    return Array(end - start){ this[rangeItr.nextInt()] }
+/*
+    return if(!reversed) this.copyOf(end - start).also {
+        for(i in start until end){
+
+        }
+    } as Array<T>
     else Array(this.size){this[size -it -1]}
+ */
 }
 
-fun <T> List<T>.copy(reversed: Boolean= false): List<T> {
+fun <T> List<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): List<T> {
     val newList= mutableListOf<T>()
-    val range= if(!reversed) this.indices
-    else this.size .. 0
+    val range= if(!reversed) start until end
+        else end-1 downTo start
     for(i in range)
         newList.add(this[i])
     return newList
@@ -235,6 +285,19 @@ fun CharSequence.filterContainedIn(array: Array<String>): List<String> {
         if(e in this)
             out.add(e)
     return out
+}
+
+fun <T> Iterable<T>.indexOfWhere(start: Int = 0, predicate: (T) -> Boolean): Int {
+    if(this is List){
+        for(i in start until size)
+            if(predicate(this[i]))
+                return i
+    } else {
+        for((i, e) in this.withIndex())
+            if(i >= start && predicate(e))
+                return i
+    }
+    return -1
 }
 
 

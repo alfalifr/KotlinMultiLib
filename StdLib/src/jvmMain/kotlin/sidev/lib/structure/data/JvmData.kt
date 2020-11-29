@@ -56,4 +56,5 @@ interface JvmData<T: Data<T>>: Data<T> {
      * `copy_(vararg vals: Any?)` dan `copy_(vararg prop: Pair<String, Any?>)`.
      */
     fun copy_(): T = copy_(*arrayOfNulls(0))
+    override fun copy(): T = copy_()
 }

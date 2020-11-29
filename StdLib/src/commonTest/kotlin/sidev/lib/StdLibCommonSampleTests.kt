@@ -4,22 +4,19 @@ import sidev.lib.`val`.NumberOperationMode
 import sidev.lib.`val`.RoundingMode
 import sidev.lib.collection.*
 import sidev.lib.collection.common.*
-import sidev.lib.collection.iterator.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
 import sidev.lib.collection.lazy_list.rangeTo
-import sidev.lib.collection.sequence.skippingNestedSequenceSimple
 import sidev.lib.console.prin
 import sidev.lib.console.prine
 import sidev.lib.date.Date
 import sidev.lib.number.*
 import sidev.lib.progression.*
+import sidev.lib.reflex.getHashCode
 import sidev.lib.util.Locale
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -107,17 +104,17 @@ class StdLibCommonSampleTests {
 
         prin(ipow(2, 3))
         prin(ipow(2, -2))
-        prin("2.pow(-2)= ${2 pow -2}")
-        prin("125 root 3= ${125 root 3}")
-        prin("81 root 4= ${81 root 4}")
-        prin("81 root 2= ${81 root 2}")
-        prin("81.sqrt()= ${81.sqrt()}")
+        prin("2.pow(-2)= ${2 powCast -2}")
+        prin("125 root 3= ${125 rootCast 3}")
+        prin("81 root 4= ${81 rootCast 4}")
+        prin("81 root 2= ${81 rootCast 2}")
+        prin("81.sqrt()= ${81.sqrtCast()}")
         prin("exp(2.0)= ${exp(2.0)}")
         prin(ipow(3, 4))
         prin(ipow(5, 5))
         log(2f, 3f)
-        prin("10 log 1000= ${10 log 1000}")
-        prin("3 log 81= ${3 log 81}")
+        prin("10 log 1000= ${10 logCast 1000}")
+        prin("3 log 81= ${3 logCast 81}")
 
         prin("223.1352= ${223.1352}")
         prin("223.1352.round()= ${223.1352.round()}")
@@ -362,10 +359,10 @@ class StdLibCommonSampleTests {
  */
 
         var powRes= 16
-        powRes= powRes pow 0.5
+        powRes= powRes powCast 0.5
 
         prin("powRes= $powRes")
-        prin("16 pow 0.5= ${16 pow 0.5}")
+        prin("16 pow 0.5= ${16 powCast 0.5}")
 
         prine((1 .. 10)[1])
         prin("size= ${(1 .. 10).size}")
@@ -395,5 +392,40 @@ class StdLibCommonSampleTests {
     fun decimalNumberTest(){
         prin("123.123 * 1000= ${123.123 * 1000}")
         prin("123.123f.getDigitBehindDecimal() = ${123.123f.getDigitBehindDecimal()}")
+    }
+
+    @Test
+    fun hashCodeTest(){
+        class A
+        val h1= getHashCode(listOf(1,2,3), calculateOrder = false)
+        val h2= getHashCode(listOf(3,1,2), calculateOrder = false)
+
+        prin("h1= $h1")
+        prin("h2= $h2")
+
+        val a= A()
+        val b= A()
+        val c= A()
+
+        prin("a.hashCode()= ${a.hashCode()}")
+        prin("b.hashCode()= ${b.hashCode()}")
+        prin("c.hashCode()= ${c.hashCode()}")
+
+        prin("a.hashCode()= ${a.hashCode()}")
+        prin("b.hashCode()= ${b.hashCode()}")
+        prin("c.hashCode()= ${c.hashCode()}")
+
+        val h3= getHashCode(listOf(a,b,c).also { prin("list hashCode= ${it.hashCode()}") }, calculateOrder = false)
+        val h4= getHashCode(listOf(b,c,a), calculateOrder = false)
+
+        prin("h3= $h3")
+        prin("h4= $h4")
+
+        val x= 1624113833
+        val y= 789160464
+        val z= 436643214
+
+        prin("x+y+z= ${x+y+z}")
+        prin("z+y+x= ${z+y+x}")
     }
 }

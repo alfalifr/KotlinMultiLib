@@ -86,7 +86,7 @@ class NumberProgressionImpl<T>(
         override fun nextStep(prev: T, step: T): T = when(operationMode){
             NumberOperationMode.INCREMENTAL -> prev plusCast step
             NumberOperationMode.MULTIPLICATIONAL -> prev timesCast step
-            NumberOperationMode.EXPONENTIAL -> prev pow step
+            NumberOperationMode.EXPONENTIAL -> prev powCast step
         }
     }
 }

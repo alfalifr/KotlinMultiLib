@@ -2,7 +2,7 @@ package sidev.lib.math.number
 
 import sidev.lib.math.kpk
 import sidev.lib.number.getDigitBehindDecimal
-import sidev.lib.number.pow
+import sidev.lib.number.powCast
 
 fun fractionOf(numerator: Int, denominator: Int): IntFraction = IntFractionImpl(numerator, denominator)
 fun fractionOf(numerator: WholeNumber, denominator: WholeNumber): WholeFraction = WholeFractionImpl(numerator, denominator)
@@ -34,13 +34,13 @@ fun Number.toFraction(): WholeFraction = when(this){
 }
 
 fun FloatingNumber.toFraction(): WholeFraction = getDigitBehindDecimal().let {
-    WholeFractionImpl(wholeNumber(this * it), wholeNumber(10 pow it)).simply()
+    WholeFractionImpl(wholeNumber(this * it), wholeNumber(10 powCast it)).simply()
 }
 
 fun Float.toFraction(): WholeFraction = getDigitBehindDecimal().let {
-    WholeFractionImpl(wholeNumber(this * (10 pow it)), wholeNumber(10 pow it)).simply()
+    WholeFractionImpl(wholeNumber(this * (10 powCast it)), wholeNumber(10 powCast it)).simply()
 }
 fun Double.toFraction(): WholeFraction = getDigitBehindDecimal().let {
-    WholeFractionImpl(wholeNumber(this * (10 pow it)), wholeNumber(10 pow it)).simply()
+    WholeFractionImpl(wholeNumber(this * (10 powCast it)), wholeNumber(10 powCast it)).simply()
 }
 //fun fractionOf(numerator: Long, denominator: Long): IntFraction = IntFractionImpl(numerator, denominator)

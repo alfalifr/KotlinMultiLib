@@ -95,6 +95,9 @@ fun floatingNumber(number: Number): FloatingNumber = when(number){
 fun Number.asWholeNumber(): WholeNumber = wholeNumber(this)
 fun Number.asFloatingNumber(): FloatingNumber = floatingNumber(this)
 
+fun Number.isFloatingType_(): Boolean = isFloatingType() || this is FloatingNumber
+fun Number_.isFloatingType_(): Boolean = this is FloatingNumber
+
 
 fun FloatingNumber.getDigitBehindDecimal(): Int = when(val vals= primitiveValue){
     is Double -> vals.getDigitBehindDecimal()

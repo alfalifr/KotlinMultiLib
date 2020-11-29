@@ -1,5 +1,6 @@
 package main
 
+import sidev.lib.collection.forEachIndexed
 import sidev.lib.collection.duplicatUnion
 import sidev.lib.console.prin
 import sidev.lib.math.*
@@ -8,7 +9,10 @@ import sidev.lib.math.number.*
 import sidev.lib.math.stat.mean
 import sidev.lib.math.stat.medianNode
 import sidev.lib.math.stat.mode
+import sidev.lib.number.getFloatingCommonScale
+import sidev.lib.number.toSameScaleWholeNumber
 import sidev.lib.text.removeWhitespace
+import kotlin.math.absoluteValue
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -181,6 +185,230 @@ class MathSampleTests {
         prin("=================")
 
         val blockStr3= block3.toString()
+        prin("blockStr => $blockStr")
+        prin("blockStr3 => $blockStr3")
         prin("blockStr3 == blockStr => ${blockStr3 == blockStr}")
+    }
+
+    @Test
+    fun blockEqualityTest(){
+        // + 2x - 3
+        // -3 + 2x
+        val block1= blockOf(variableOf("x", 2).also { prin("variable 1= ${it.hashCode()}") })
+        val block2= blockOf(constantOf(-3))
+
+        block1.addOperation(constantOf(3), Operation.MINUS)
+        block2.addOperation(variableOf("x", 2).also { prin("variable 2= ${it.hashCode()}") }, Operation.PLUS)
+
+        val h1= block1.hashCode()
+        val h2= block2.hashCode()
+
+        prin("block1= $block1")
+        prin("block2= $block2")
+
+        prin("h1= $h1")
+        prin("h2= $h2")
+
+        prin("Operation.PLUS.hashCode()= ${Operation.PLUS.hashCode()}")
+        prin("Operation.PLUS.hashCode()= ${Operation.PLUS.hashCode()}")
+        prin("Operation.PLUS.hashCode()= ${Operation.PLUS.hashCode()}")
+
+        prin("-3.absoluteValue.hashCode() = ${(-3).absoluteValue.hashCode()}")
+
+        prin("12341231 == 12341231.hashCode() => ${12341231 == 12341231.hashCode()}")
+
+        prin("Operation.PLUS.hashCode() + Operation.MINUS.hashCode() = ${Operation.PLUS.hashCode() + Operation.MINUS.hashCode()}")
+        prin("Operation.MINUS.hashCode() + Operation.PLUS.hashCode()= ${Operation.MINUS.hashCode() + Operation.PLUS.hashCode()}")
+
+        prin("block1 == block2 => ${block1 == block2}")
+
+        block1.resultEquals(block2)
+    }
+
+    @Test
+    fun blockTest_4(){
+        // #4 - Ok
+        //1*3*2/4
+        //((1*3)-10)*2/4 ##1
+        //(10-1)*3*2/4 ##2
+
+        val block1= blockOf(constantOf(1))
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        val block2= blockOf(constantOf(1))
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        prin("block awal= $block1")
+
+        block1.addOperation(constantOf(10), Operation.MINUS, 2, false).also { prin("block1= $it") }
+        block2.addOperation(constantOf(10), Operation.MINUS, 0, false).also { prin("block1= $it") }
+
+        prin("block1()= ${block1()}")
+        prin("block2()= ${block2()}")
+    }
+
+    @Test
+    fun blockTest_3(){
+        // #3 - Ok
+        //1*2*3/4
+        //5-(1*2*3/4) ##1
+        //1-(5*2*3/4) ##2
+        //1-|17+(5*2*3/4)| ##2.1
+        //1-|5+(17*2*3/4)| ##3 ###2.2
+
+        val block1= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        val block2= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        val block3= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        block1.addOperation(constantOf(5), Operation.MINUS, 0).also { prin("block1 = $it") }
+        block2.addOperation(constantOf(5), Operation.MINUS, 1).also { prin("block2 = $it") }
+        block3.addOperation(constantOf(5), Operation.MINUS, 1)
+        block2.addOperation(constantOf(17), Operation.PLUS, 0).also { prin("block2.1 = $it") }
+        block3.addOperation(constantOf(17), Operation.PLUS, 1).also { prin("block3 2.2 = $it") }
+    }
+
+    @Test
+    fun blockTest_2(){
+        // #2 - Ok
+        //1*2*3/4
+        //0-(1*2*3/4)-5
+        //(1*2*3/4)-5 ##1
+        //(1*2*3)-(5/4) ##2
+        //(1*2)-(5*3/4) ##3
+
+        val block1= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        val block2= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        val block3= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.TIMES)
+            .addOperation(constantOf(3), Operation.TIMES)
+            .addOperation(constantOf(4), Operation.DIVIDES)
+
+        block1.addOperation(constantOf(5), Operation.MINUS).also { prin("block1 = $it") }
+        block2.addOperation(constantOf(5), Operation.MINUS, 3).also { prin("block2 = $it") }
+        block3.addOperation(constantOf(5), Operation.MINUS, 2).also { prin("block3 = $it") }
+    }
+
+    @Test
+    fun blockTest_1(){
+        // #1 - Ok
+        //1+2+3-4
+        //1+2+3-(4*5) ##1
+        //(5*1)+2+3-4 ##2
+        //(1*5)+2+3-4 ##3
+        //1+(2*5)+3-4 ##4
+
+        val block1= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.PLUS)
+            .addOperation(constantOf(3), Operation.PLUS)
+            .addOperation(constantOf(4), Operation.MINUS)
+
+        val block2= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.PLUS)
+            .addOperation(constantOf(3), Operation.PLUS)
+            .addOperation(constantOf(4), Operation.MINUS)
+
+        val block3= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.PLUS)
+            .addOperation(constantOf(3), Operation.PLUS)
+            .addOperation(constantOf(4), Operation.MINUS)
+
+        val block4= blockOf(constantOf(1))
+            .addOperation(constantOf(2), Operation.PLUS)
+            .addOperation(constantOf(3), Operation.PLUS)
+            .addOperation(constantOf(4), Operation.MINUS)
+
+        block1.addOperation(constantOf(5), Operation.TIMES).also { prin("block1 = $it") }
+        block2.addOperation(constantOf(5), Operation.TIMES, 0).also { prin("block2 = $it") }
+        block3.addOperation(constantOf(5), Operation.TIMES, 1).also { prin("block3 = $it") }
+        block4.addOperation(constantOf(5), Operation.TIMES, 2).also { prin("block4 = $it") }
+
+        prin("block1()= ${block1()}")
+        prin("block2()= ${block2()}")
+        prin("block3()= ${block3()}")
+        prin("block4()= ${block4()}")
+    }
+
+    @Test
+    fun blockSimplyTest(){
+        val block0= blockOf(variableOf("x", 2))
+            .addOperation(constantOf(3), Operation.MINUS)
+            .addOperation(variableOf("x", 3), Operation.MINUS)
+
+        listOf(1,2,3,4,5).forEachIndexed(2) { i, it -> prin("it= $it") }
+
+        prin("block0= $block0 level= ${block0.operationLevel}")
+        prin("block0.simply()= ${block0.simply()}")
+
+        val block1= Block.parse("(3x / (-2) / 3x) + (10 * 2) - (2x + 4 - 2x) - (4y * 2) ")
+        prin("block1= $block1")
+        prin("block1.simply() 1= ${block1.simply()}")
+        prin("block1.simply() 2= ${block1.simply()}")
+
+        val block2= Block.parse("(6x / 2y * 2y / 6)")
+        prin("block2= $block2")
+        prin("block2.simply()= ${block2.simply()}")
+
+        val block3= Block.parse("(3x / (-2) * 3x / x /x/x) + (10 * 2) - (2x + 4 - 7x) - (4y * 2) ")
+        prin("block3= $block3")
+        prin("block3.simply()= ${block3.simply()}")
+        prin("block3(\"x\" to 2, \"y\" to 3)= ${block3("x" to 2, "y" to 3)}")
+
+        val block4= Block.parse("(6x / (-2) * 3x) + (10 * 2) - (2x + 4 - 7x) - (4y * 2) ^ 2")
+        prin("block4= $block4")
+        prin("block4(\"x\" to 2, \"y\" to 3) 1= ${block4("x" to 2, "y" to 3)}")
+        prin("block4.simply()= ${block4.simply()}")
+        prin("block4(\"x\" to 2, \"y\" to 3) 2= ${block4("x" to 2, "y" to 3)}")
+
+        val block5= Block.parse("(6x / (-2) * 3x) + (-5x + 4) - (10 * 2) - (2x + 4 - 7x) - (4y * 2) ^ 2")
+        prin("block5= $block5")
+        prin("block5(\"x\" to 2, \"y\" to 3) 1= ${block5("x" to 2, "y" to 3)}")
+        prin("block5.simply()= ${block5.simply()}")
+        prin("block5(\"x\" to 2, \"y\" to 3) 2= ${block5("x" to 2, "y" to 3)}")
+        prin("block5.simply()= ${block5.simply()}")
+        prin("block5(\"x\" to 2, \"y\" to 3) 3= ${block5("x" to 2, "y" to 3)}")
+    }
+
+    @Test
+    fun floatingPowTest(){
+        prin(0.11.isPrime())
+        prin(0.11.nextPrime())
+        prin(0.012.primeFactors())
+
+        prin(1.2 kpk 36)
+        prin(1.2 kpk 3.6)
+        prin(1.2 kpk 0.36)
+        prin(120 kpk 36)
+        prin(getFloatingCommonScale(1.2, 0.36))
+        prin(toSameScaleWholeNumber(1.2, 0.36))
+        prin(toSameScaleWholeNumber(0.5, 30))
+        prin(0.5 kpk 30)
+        prin(0.12 kpk 36)
+
+        prin(kpk(360, 125))
+        prin(kpk(0.1, 0.02, 3.6, 0.005, 1.25))
+        prin(fpb(0.1, 0.02, 3.6, 0.005, 1.25))
     }
 }

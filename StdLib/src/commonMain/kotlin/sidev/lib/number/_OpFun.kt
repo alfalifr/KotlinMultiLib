@@ -56,10 +56,21 @@ fun Float.pow(exp: Int): Float {
 
 
 /** Fungsi untuk mengambil `this.extension` pangkat [exp] */
-infix fun <T: Number> T.pow(exp: Number): T{
-    val base= toDecimalType()
+infix fun <T: Number> T.powCast(exp: Number): T = pow(exp).toFormat(this::class)
+
+infix fun <T: Number> T.rootCast(root: Number): T = root(root).toFormat(this::class)
+
+fun <T: Number> T.sqrtCast(): T = sqrt().toFormat(this::class)
+
+infix fun <T: Number> T.logCast(x: Number): T = log(x).toFormat(this::class)
+
+
+
+/** Fungsi untuk mengambil `this.extension` pangkat [exp] */
+infix fun Number.pow(exp: Number): Number{
+    val base= toFloatingType()
     @Suppress(SuppressLiteral.NAME_SHADOWING)
-    val exp= exp.toDecimalType()
+    val exp= exp.toFloatingType()
 
     @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return (when(base){
@@ -83,13 +94,13 @@ infix fun <T: Number> T.pow(exp: Number): T{
             prine("""Number.pow(): Tidak dapat mengambil hasil dari "$this pow $exp", return `this` ($this) """)
             this
         }
-    }) as T
+    })
 }
 
-infix fun <T: Number> T.root(root: Number): T = this pow (1.0/root)
+infix fun Number.root(root: Number): Number = this powCast (1.0/root)
 
-fun <T: Number> T.sqrt(): T {
-    val base= toDecimalType()
+fun Number.sqrt(): Number {
+    val base= toFloatingType()
 
     @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return (when(base){
@@ -99,13 +110,13 @@ fun <T: Number> T.sqrt(): T {
             prine("""Number.pow(): Tidak dapat mengambil hasil dari "$this.sqrt()", return `this` ($this) """)
             this
         }
-    }) as T
+    })
 }
 
-infix fun <T: Number> T.log(x: Number): T {
-    val base= toDecimalType()
+infix fun Number.log(x: Number): Number {
+    val base= toFloatingType()
     @Suppress(SuppressLiteral.NAME_SHADOWING)
-    val x= x.toDecimalType()
+    val x= x.toFloatingType()
 
     @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
     return (when(base){
@@ -129,5 +140,5 @@ infix fun <T: Number> T.log(x: Number): T {
             prine("""Number.pow(): Tidak dapat mengambil hasil dari "$this log $x", return `this` ($this) """)
             this
         }
-    }) as T
+    })
 }

@@ -28,16 +28,16 @@ infix fun Number.roundClosest(range: IntRange): Int{
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T: Number> T.round(digitPlace: Int= 0, mode: RoundingMode = RoundingMode.HALF_UP): T{
     if(digitPlace.isNegative()){
-        if(!this.isDecimalType()) return this//Jika ternyata angka yg diambil adalah di belakang koma,
+        if(!this.isFloatingType()) return this//Jika ternyata angka yg diambil adalah di belakang koma,
         // sedangkan tipe data angka kelas ini tidak memiliki koma, maka return angka ini.
-        val digitTimer= (10 pow -digitPlace).toInt().toDouble() //Agar hasil koma bisa kelihatan dg pas.
+        val digitTimer= (10 powCast -digitPlace).toInt().toDouble() //Agar hasil koma bisa kelihatan dg pas.
         val newThis= this timesCast digitTimer
         return (newThis.round(0, mode) divCast digitTimer)
     }
     val numberInDigit= getNumberAtDigit(digitPlace-1)
 
     val digitPlaceDividerFactor= (digitPlace).notNegativeOr(0)
-    val digitPlaceDivider= (10 pow digitPlaceDividerFactor).toInt()
+    val digitPlaceDivider= (10 powCast digitPlaceDividerFactor).toInt()
 
     val increment= when(mode){
         RoundingMode.CEIL -> if(isNotNegative()) 1 else 0

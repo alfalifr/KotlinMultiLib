@@ -11,16 +11,16 @@ import sidev.lib.annotation.Unsafe
 fun Number.getNumberAtDigit(digitPlace: Int): Int{
 //    if(digitPlace.isNegative()) throw ParameterExc(paramName = "digitPlace", detMsg = "Tidak boleh negatif.")
     if(digitPlace.isNegative()){
-        if(!this.isDecimalType()) return 0 //Jika ternyata angka yg diambil adalah di belakang koma,
+        if(!this.isFloatingType()) return 0 //Jika ternyata angka yg diambil adalah di belakang koma,
         // sedangkan tipe data angka kelas ini tidak memiliki koma, maka return 0.
-        val newThis= this * (10 pow -digitPlace).toInt()
+        val newThis= this * (10 powCast -digitPlace).toInt()
         return newThis.getNumberAtDigit(0)
     }
     val digitPlaceDividerFactor= (digitPlace).notNegativeOr(0)
     val digitPlaceModderFactor= (digitPlace+1).notNegativeOr(0)
 
-    val digitPlaceDivider= (10 pow digitPlaceDividerFactor).toInt()
-    val digitPlaceModder= (10 pow digitPlaceModderFactor).toInt()
+    val digitPlaceDivider= (10 powCast digitPlaceDividerFactor).toInt()
+    val digitPlaceModder= (10 powCast digitPlaceModderFactor).toInt()
 
     return ((this % digitPlaceModder) / digitPlaceDivider).toInt() //as T
 }
@@ -52,6 +52,17 @@ fun Double.getDigitBehindDecimal(): Int = toString().run {
     (length - decIndex - 1).let {
         if(it == 1 && this[decIndex +1] == '0') 0
         else it
+    }
+}
+
+fun Number.getDigitBehindDecimal(): Int = when {
+    !isFloatingType() -> 0
+    else -> toString().run {
+        val decIndex= indexOf(".")
+        (length - decIndex - 1).let {
+            if(it == 1 && this.length == 3 && this[decIndex +1] == '0') 0
+            else it
+        }
     }
 }
 
