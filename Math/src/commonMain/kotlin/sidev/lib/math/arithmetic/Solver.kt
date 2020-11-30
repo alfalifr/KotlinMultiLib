@@ -1,5 +1,6 @@
 package sidev.lib.math.arithmetic
 
+import sidev.lib.collection.copy
 import sidev.lib.math.fpb
 import sidev.lib.number.*
 
@@ -299,4 +300,143 @@ object Solver {
         else blockOf(n1).addOperation(n2, Operation.MODULO)
     fun pow(n1: Block, n2: Block): Block = n1.addOperation(n2, Operation.POWER)
     fun root(n1: Block, n2: Block): Block = n1.addOperation(n2, Operation.ROOT)
+
+
+
+    //4(x^2) + 8x + 4
+    //4(x.x) + 8x + 4
+
+    /**
+     * Memproses nested `Block` sehingga [block] memiliki jml nested `Block` seminimal mungkin.
+     * Pemrosesan yang dimaksud adalah mengubah bentuk dari [Operation.level] yg lebih tinggi ke yg lebih rendah.
+     */
+///*
+    @ExperimentalStdlibApi
+    fun flatten(block: Block): Calculable {
+        val uniqueEls= mutableListOf<Calculable>()
+        val uniqueOps= mutableListOf<Operation>()
+
+        when(block.operationLevel){
+            Operation.POWER.level -> {
+
+            }
+        }
+        return block
+    }
+// */
+    @ExperimentalStdlibApi
+    fun sortLevel1Block(block: Block): Block {
+        if(block.operationLevel != 1)
+            return block
+        return block
+    }
+
+
+    //(2x+4) * (6y-2)
+    // + .. - .. + .. - ..
+    //(2x-4) * (6y+2)
+    // + .. + .. - .. - ..
+    //(2x-4) * (6y-2)
+    // + .. - .. - .. + ..
+    // + 12xy - 4x - 24y + 8
+    // + 4x.(3x - 1) - 8.(3y + 1)
+    // (4x-8) * (3x - 1)
+
+    // + 12xy - 24y + 8 - 4x
+    // + 12y(x - 2) + 4(2 - x)
+    // + 12y(x - 2) + (-4(x - 2))
+    // (12y-4) * (x-2)
+
+    // (12x ^ 2) ^ 24y = 12x ^ 48y
+
+    // + 12xy + 8 - 4x - 24y
+    // 4(3xy + 2) - 4(x + 6y)
+
+    //(2x-4) * (6y+2)
+
+    //(12xy + 4x - 24y - 8) * (2z+4)
+    //+ .. + .. + .. + .. - .. - .. - .. -
+
+    //4(3xy + x - 6y - 2)
+    //4y(3x + 4x/y - 24 - 8/y)
+    //4x(3y + 4 - 24y/x - 8/x)
+    //4x(y(3 + 4/y + 24/x - 8/xy))
+    //y()
+
+    //(2x*4) + (18xy/2x)
+    //(2x+4) + (18xy-2x)
+
+///*
+    //#1
+    //4x-2 = 2.(2x-1)
+    //#2
+    //4x-(6x^4)+2 = 2.(2x-)
+    //4x-(6x^4)+2 = 4x-((6^4).(x^4))+2 = 4x-(1296.(x^4))+2 = 2.(2x-(648.(x^4))+1)
+    //#3
+    //(2x-4) + (18xy+2x) = 2(x-2) +  2x(9y+1) = 2((x-2) + x(9y+1)) =
+    //(2x-4) * (18xy+2x)
+
+    // + (12 * x * y) - (4 * x) - (24 * y) + 8
+    // + 4((3 * x * y) - (1 * x) - (6 * y) + 2)
+
+    // (2x + 3) * (x + 1)
+    // 2(x^2) + 2x + 3x + 3
+    @ExperimentalStdlibApi
+    fun factorize(block: Block, simplifyFirst: Boolean= true): Calculable {
+        val simplified= if(simplifyFirst) block.simply() else block
+        if(simplified !is Block)
+            return simplified
+
+        val elementDupl= simplified.elements.copy().toMutableList()
+
+        elementDupl.forEachIndexed { i, e ->
+            if(e is Block) elementDupl[i]= factorize(e, false)
+        }
+
+        when(simplified.operationLevel){
+            Operation.PLUS.level -> {
+                val factorPerElement= elementDupl.map { it.numberComponent(false) }
+                val nameFactorPerElement= elementDupl.map { it }
+                val fpb= fpb(*elementDupl.mapNotNull { it.numberComponent(false) }.toTypedArray())
+
+            }
+            Operation.TIMES.level -> {
+                return simplified // Karena `Block` dg level TIMES itu sendiri adalah faktornya.
+            }
+            Operation.POWER.level -> {
+                return simplified // Karena `Block` dg level POWER tidak bisa difaktorkan.
+            }
+        }
+        return simplified
+    }
+
+    @ExperimentalStdlibApi
+    fun fpb(vararg els: Calculable): Calculable {
+        if(els.all { it is SingleElement<*> })
+            return fpb(*(els as Array<SingleElement<*>>))
+
+        val blockElFactors= els.toMutableList()
+        val singleElFactors= els.mapIndexedNotNull { i, e ->
+            if(e is SingleElement<*>){
+                blockElFactors.removeAt(i)
+                e
+            } else null
+        }
+
+        val singleElFpb= fpb(*singleElFactors.toTypedArray())
+        return singleElFpb
+    }
+
+    fun fpb(vararg els: SingleElement<*>): SingleElement<*> {
+        val numFactorPerElement= els.map { it.numberComponent }
+        val nameFactorPerElement= els.map { if(it is Variable<*>) it.name else null }
+
+        val numFpb= fpb(*numFactorPerElement.toTypedArray())
+        val nameFpb= if(nameFactorPerElement.all { it != null }) nameFactorPerElement.first()
+            else null
+
+        return if(nameFpb != null) variableOf(nameFpb, numFpb)
+        else constantOf(numFpb)
+    }
+// */
 }

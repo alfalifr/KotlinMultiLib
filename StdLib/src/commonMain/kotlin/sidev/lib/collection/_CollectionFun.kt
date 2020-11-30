@@ -4,6 +4,7 @@ import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.console.log
 import sidev.lib.console.prine
+import sidev.lib.structure.data.value.Val
 import kotlin.jvm.JvmOverloads
 import sidev.lib.collection.array.get as stdSubArray
 import kotlin.collections.toTypedArray as kToTypedArray
@@ -18,6 +19,8 @@ fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
 
 inline fun <reified T> Iterable<T>.toTypedArray(): Array<T> = toList().kToTypedArray()
 
+
+
 /*
 /** Mengambil bbrp elemen dari `this.extension` List dari [range.first] (inclusive) hingga [range.last] (exclusive). */
 operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, range.last)
@@ -26,7 +29,76 @@ operator fun <T> List<T>.get(range: IntRange): List<T> = subList(range.first, ra
 operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range)
  */
 
-fun <T> Iterable<T>.forEach(start: Int= 0, end: Int= -1, block: (T) -> Unit) {
+fun <T> Iterable<T>.forEach(
+    start: Int= 0, end: Int= -1,
+    breakRef: Val<Boolean>? = null,
+    contRef: Val<Boolean>? = null,
+    block: (T) -> Unit
+) {
+    if(this is List<*>) {
+        val range= start until if(end < 0) size else end
+        for(i in range){
+            if(breakRef?.value == true)
+                break
+            if(contRef?.value == true)
+                continue
+            block(this[i] as T)
+        }
+    } else {
+        val itr= iterator()
+        val range= start until if(end < 0) Int.MAX_VALUE else end
+        var i= 0
+
+        while (itr.hasNext()){
+            if(breakRef?.value == true)
+                break
+            if(contRef?.value == true)
+                continue
+            val e= itr.next()
+            if(i in range)
+                block(e)
+            i++
+        }
+    }
+}
+fun <T> Iterable<T>.forEachIndexed(
+    start: Int= 0, end: Int= -1,
+    breakRef: Val<Boolean>? = null,
+    contRef: Val<Boolean>? = null,
+    block: (i: Int, T) -> Unit
+) {
+    if(this is List<*>) {
+        val range= start until if(end < 0) size else end
+        for(i in range){
+            if(breakRef?.value == true)
+                break
+            if(contRef?.value == true)
+                continue
+            block(i, this[i] as T)
+        }
+    } else {
+        val itr= iterator()
+        val range= start until if(end < 0) Int.MAX_VALUE else end
+        var i= 0
+
+        while (itr.hasNext()){
+            if(breakRef?.value == true)
+                break
+            if(contRef?.value == true)
+                continue
+            val e= itr.next()
+            if(i in range)
+                block(i, e)
+            i++
+        }
+    }
+}
+
+
+fun <T> Iterable<T>.forEach(
+    start: Int= 0, end: Int= -1,
+    block: (T) -> Unit
+) {
     if(this is List<*>) {
         val range= start until if(end < 0) size else end
         for(i in range)
@@ -44,7 +116,10 @@ fun <T> Iterable<T>.forEach(start: Int= 0, end: Int= -1, block: (T) -> Unit) {
         }
     }
 }
-fun <T> Iterable<T>.forEachIndexed(start: Int= 0, end: Int= -1, block: (i: Int, T) -> Unit) {
+fun <T> Iterable<T>.forEachIndexed(
+    start: Int= 0, end: Int= -1,
+    block: (i: Int, T) -> Unit
+) {
     if(this is List<*>) {
         val range= start until if(end < 0) size else end
         for(i in range)
@@ -62,6 +137,9 @@ fun <T> Iterable<T>.forEachIndexed(start: Int= 0, end: Int= -1, block: (i: Int, 
         }
     }
 }
+
+
+
 
 /** Sama seperti [first] sekaligus mengahpus element pertama */
 fun <T> MutableList<T>.takeFirst(): T = if(isEmpty()) throw NoSuchElementException("List is Empty") else removeAt(0)

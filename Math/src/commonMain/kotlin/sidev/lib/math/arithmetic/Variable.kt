@@ -7,7 +7,9 @@ import sidev.lib.number.*
 /**
  *
  */
-interface Variable<T: Number>: Calculable {
+interface Variable<T: Number>: SingleElement<T> {
+    override val numberComponent: T
+        get() = coeficient
     val name: String
     val coeficient: T
     override val nInput: Int

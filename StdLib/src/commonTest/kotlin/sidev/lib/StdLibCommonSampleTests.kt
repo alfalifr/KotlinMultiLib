@@ -428,4 +428,12 @@ class StdLibCommonSampleTests {
         prin("x+y+z= ${x+y+z}")
         prin("z+y+x= ${z+y+x}")
     }
+
+    @Test
+    fun forEachTes(){
+        listOf(1,2,3,4,5,6,7,8,9).forEachIndexed(3) { i, e ->
+            if(e > 7) return@forEachIndexed
+            prin(e)
+        }
+    }
 }

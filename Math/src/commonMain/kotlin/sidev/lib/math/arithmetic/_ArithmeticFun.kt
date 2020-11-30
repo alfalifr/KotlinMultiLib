@@ -6,9 +6,19 @@ fun <T: Number> constantOf(number: T): Constant<T> = ConstantImpl(number)
 fun blockOf(firstElement: Calculable = NullCalculable, /*operationLevel: Int = 1,*/ parentBlock: Block? = null): Block =
     BlockImpl(firstElement, parentBlock)
 
-val Calculable.numberComponent: Number? get()= when(this){
+fun Calculable.numberComponent(factorizeBlockFirst: Boolean = true): Number? = when(this){
     is Constant<*> -> number
     is Variable<*> -> coeficient
+/*
+    is Block -> {
+        (if(factorizeBlockFirst) Solver.factorize(this).also {
+            if(it !is Block) return it.numberComponent(false)
+        } else this).run { this as Block
+            elements.find { it is Constant<*> }?.numberComponent(false)
+                ?: 1
+        }
+    }
+ */
     else -> null
 }
 

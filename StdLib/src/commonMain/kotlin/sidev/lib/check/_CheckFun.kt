@@ -1,5 +1,6 @@
 package sidev.lib.check
 
+import sidev.lib.collection.toTypedArray
 import sidev.lib.console.prine
 import sidev.lib.exception.isUninitializedExc
 import kotlin.Exception
@@ -244,3 +245,20 @@ fun <T> Collection<T>.contentEquals(other: Collection<T>): Boolean = size == oth
 fun <T> Collection<T>.contentEquals(other: Array<out T>): Boolean = size == other.size && containsAll(other.toList())
 fun <T> Array<T>.contentEquals(other: Array<out T>): Boolean = size == other.size && toList().containsAll(other.toList())
 fun <T> Array<T>.contentEquals(other: Collection<T>): Boolean = size == other.size && toList().containsAll(other)
+
+
+fun <T> T.equalsAny(vararg others: T): Boolean {
+    for(o in others)
+        if(this == o)
+            return true
+    return false
+}
+inline infix fun <reified T> T.equalsAny(others: Iterable<T>): Boolean = equalsAny(*others.toTypedArray())
+
+fun <T> T.equalsAll(vararg others: T): Boolean {
+    for(o in others)
+        if(this != o)
+            return false
+    return true
+}
+inline infix fun <reified T> T.equalsAll(others: Iterable<T>): Boolean = equalsAll(*others.toTypedArray())

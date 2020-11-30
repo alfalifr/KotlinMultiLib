@@ -6,7 +6,9 @@ import sidev.lib.number.minus
 import sidev.lib.number.plus
 import sidev.lib.number.times
 
-interface Constant<T: Number>: Calculable {
+interface Constant<T: Number>: SingleElement<T> {
+    override val numberComponent: T
+        get() = number
     val number: T
     override val nInput: Int
         get() = 0

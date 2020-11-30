@@ -4,6 +4,7 @@ import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
 import sidev.lib.collection.toList
 import sidev.lib.progression.asEndExclusive
+import sidev.lib.structure.data.value.Val
 import kotlin.jvm.JvmOverloads
 
 /**
@@ -145,12 +146,50 @@ fun <T> Array<T>.indexOfWhere(start: Int = 0, predicate: (T) -> Boolean): Int {
 }
 
 
-fun <T> Array<T>.forEach(start: Int= 0, end: Int= size, block: (T) -> Unit) {
+
+fun <T> Array<T>.forEach(
+    start: Int= 0, end: Int= size,
+    breakRef: Val<Boolean>? = null,
+    contRef: Val<Boolean>? = null,
+    block: (T) -> Unit
+) {
+    for(i in start until end){
+        if(breakRef?.value == true)
+            break
+        if(contRef?.value == true)
+            continue
+        block(this[i])
+    }
+}
+
+fun <T> Array<T>.forEachIndexed(
+    start: Int= 0, end: Int= size,
+    breakRef: Val<Boolean>? = null,
+    contRef: Val<Boolean>? = null,
+    block: (i: Int, T) -> Unit
+) {
+    for(i in start until end){
+        if(breakRef?.value == true)
+            break
+        if(contRef?.value == true)
+            continue
+        block(i, this[i])
+    }
+}
+
+
+fun <T> Array<T>.forEach(
+    start: Int= 0, end: Int= size,
+    block: (T) -> Unit
+) {
     for(i in start until end)
         block(this[i])
 }
 
-fun <T> Array<T>.forEachIndexed(start: Int= 0, end: Int= size, block: (i: Int, T) -> Unit) {
+fun <T> Array<T>.forEachIndexed(
+    start: Int= 0, end: Int= size,
+    block: (i: Int, T) -> Unit
+) {
     for(i in start until end)
         block(i, this[i])
 }

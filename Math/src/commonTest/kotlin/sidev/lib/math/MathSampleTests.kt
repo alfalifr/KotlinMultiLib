@@ -10,6 +10,8 @@ import sidev.lib.math.stat.mean
 import sidev.lib.math.stat.medianNode
 import sidev.lib.math.stat.mode
 import sidev.lib.number.getFloatingCommonScale
+import sidev.lib.number.pow
+import sidev.lib.number.root
 import sidev.lib.number.toSameScaleWholeNumber
 import sidev.lib.text.removeWhitespace
 import kotlin.math.absoluteValue
@@ -352,6 +354,42 @@ class MathSampleTests {
     }
 
     @Test
+    fun blockParseTest(){
+
+        val block1= Block.parse("(6x / (-2) * 3x) + (10 * 2) - (2x + 4 - 7x) - (4y * 2) ^ 2")
+        prin("block1= $block1")
+        prin("block1(\"x\" to 2, \"y\" to 3) 1= ${block1("x" to 2, "y" to 3)}")
+        prin("block1.simply()= ${block1.simply()}")
+        prin("block1(\"x\" to 2, \"y\" to 3) 2= ${block1("x" to 2, "y" to 3)}")
+///*
+        val block2= Block.parse("2 + x * y ^ 2")
+        prin("block2= $block2")
+///*
+        prin("block2(\"x\" to 2, \"y\" to 3) 1= ${block2("x" to 2, "y" to 3)}")
+        prin("block2.simply()= ${block2.simply()}")
+        prin("block2(\"x\" to 2, \"y\" to 3) 2= ${block2("x" to 2, "y" to 3)}")
+// */
+
+        val block3= Block.parse("2 + x")
+            .addOperation(variableOf("y", 1), Operation.TIMES)
+            .addOperation(constantOf(2), Operation.POWER)
+        prin("block3= $block3")
+/*
+        prin("block2(\"x\" to 2, \"y\" to 3) 1= ${block2("x" to 2, "y" to 3)}")
+        prin("block2.simply()= ${block2.simply()}")
+        prin("block2(\"x\" to 2, \"y\" to 3) 2= ${block2("x" to 2, "y" to 3)}")
+ */
+///*
+        val block4= Block.parse("(2 + x * y) ^ 2")
+        prin("block4= $block4")
+///*
+        prin("block4(\"x\" to 2, \"y\" to 3) 1= ${block4("x" to 2, "y" to 3)}")
+        prin("block4.simply()= ${block4.simply()}")
+        prin("block4(\"x\" to 2, \"y\" to 3) 2= ${block4("x" to 2, "y" to 3)}")
+// */
+    }
+
+    @Test
     fun blockSimplyTest(){
         val block0= blockOf(variableOf("x", 2))
             .addOperation(constantOf(3), Operation.MINUS)
@@ -392,6 +430,21 @@ class MathSampleTests {
     }
 
     @Test
+    fun blockSimplyTest_2(){
+        val block1= Block.parse("2 ^ 4 ^ 3x ^ 2 ~ 6x")
+        prin("block1= $block1")
+        prin("block1.simply()= ${block1.simply()}")
+
+        val block2= Block.parse("2 ^ 4 ^ 3x ^ 2 ~ 6x ~4")
+        prin("block2= $block2")
+        prin("block2.simply()= ${block2.simply()}")
+
+        val block3= Block.parse("2 ^ 4 ^ 3x ^ (0) ~ 6x ~4")
+        prin("block3= $block3")
+        prin("block3.simply()= ${block3.simply()}")
+    }
+
+    @Test
     fun floatingPowTest(){
         prin(0.11.isPrime())
         prin(0.11.nextPrime())
@@ -410,5 +463,46 @@ class MathSampleTests {
         prin(kpk(360, 125))
         prin(kpk(0.1, 0.02, 3.6, 0.005, 1.25))
         prin(fpb(0.1, 0.02, 3.6, 0.005, 1.25))
+    }
+
+    @Test
+    fun powTest(){
+        prin(2 pow 4)
+        prin(4 pow 2)
+        prin(2 pow 3 pow 4)
+        prin(2 pow (3 * 4))
+        prin(2 pow 4 pow 3)
+        prin(3 pow 4 pow 2)
+        prin(4 pow 3 pow 2)
+        prin(2 pow (3 pow 4))
+
+        prin(4 pow 6 root 2)
+        prin(4 pow (6 / 2))
+        prin(4 pow 2 root 6)
+        prin(4 pow (2 / 6.0))
+    }
+
+    @Test
+    fun blockPowTest(){
+///*
+        val block1= Block.parse("4x ^ 2 ^ 3y")
+        prin(block1)
+        prin(block1("x" to 1, "y" to 2))
+        prin(block1("x" to 9, "y" to 1 / 12.0))
+
+        val block2= Block.parse("4x ^ 6y")
+        prin(block2)
+        prin(block2("x" to 1, "y" to 2))
+        prin(block2("x" to 9, "y" to 1 / 12.0))
+// */
+
+        val block3= Block.parse("(2x + 1) + 4y ^ 2 - (2x+1)")
+        prin(block3)
+        prin(block3("x" to 3, "y" to 2))
+        prin(block3.simply())
+        prin(block3("x" to 3, "y" to 2))
+        prin(block3("x" to 9, "y" to 1 / 12.0))
+
+//        prin(block1.resultEquals(block2))
     }
 }
