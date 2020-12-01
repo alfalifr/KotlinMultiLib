@@ -17,6 +17,8 @@ interface Constant<T: Number>: SingleElement<T> {
     fun calculate(): Number = number
     operator fun invoke()= number
 
+    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = this
+    fun replaceVars(): Constant<T> = this
 
     override fun plus(element: Calculable): Calculable = when(element){
         is Constant<*> -> Solver.plus(this, element)
@@ -48,7 +50,9 @@ interface Constant<T: Number>: SingleElement<T> {
         else -> Solver.rem(this, element)
     }
 
-/*
+    override fun clone_(isShallowClone: Boolean): Constant<T> = constantOf(number)
+
+    /*
     override fun plus(element: Calculable): Calculable {
         if(element is Constant<*>)
             return constantOf(number + element.number)

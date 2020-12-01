@@ -505,4 +505,39 @@ class MathSampleTests {
 
 //        prin(block1.resultEquals(block2))
     }
+
+    //2x-3 = 5
+    @Test
+    fun simpleEquationTest(){
+        val block1= Block.parse("2x-3")
+        val block2= constantOf(5)
+
+        val simpleEq1= simpleEquationOf(block1, block2)
+
+        prin(block1)
+        prin(block2)
+        prin(simpleEq1)
+
+        prin(simpleEq1.solve())
+        prin(simpleEq1.test("x" to 4))
+        prin(simpleEq1.test("x" to 5))
+
+        val block3= Block.parse("2x-3+y^2")
+        val block4= constantOf(10)
+
+        val simpleEq2= simpleEquationOf(block3, block4)
+
+        prin(block3)
+        prin(block4)
+        prin(simpleEq2)
+
+        prin(simpleEq2.solve())
+        prin(simpleEq2)
+
+
+        val block5= Block.parse("(13 - (y ^ 2)) / 2")
+        prin(block5)
+        prin(block3)
+        prin(block3.replaceVars("x" to block5))
+    }
 }

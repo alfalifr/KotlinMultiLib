@@ -2,7 +2,7 @@ package sidev.lib.math.arithmetic
 
 import sidev.lib.collection.forEachIndexed
 import sidev.lib.annotation.TooExpensiveForBackingField
-import sidev.lib.check.equalsAny
+import sidev.lib.check.notNull
 import sidev.lib.collection.addIfAbsent
 import sidev.lib.collection.copy
 import sidev.lib.collection.indexOfWhere
@@ -13,7 +13,6 @@ import sidev.lib.exception.IllegalStateExc
 import sidev.lib.exception.UnavailableOperationExc
 import sidev.lib.number.*
 import sidev.lib.reflex.getHashCode
-import sidev.lib.structure.data.Copyable
 import sidev.lib.structure.data.value.Val
 import sidev.lib.text.*
 import kotlin.jvm.JvmStatic
@@ -24,7 +23,7 @@ import kotlin.random.Random
  * Kumpulan operasi matematika yang berada pada tempat yg sama yg dipisahkan oleh tanda ekuasi.
  * Satu blok dapat terdiri dari bbrp nested blok (yg dipisahkan dg tanda kurung).
  */
-interface Block: Calculable, Copyable<Block> {
+interface Block: Calculable {
     companion object {
         /**
          * Mengubah [blockStr] menjadi [Block].
@@ -39,7 +38,7 @@ interface Block: Calculable, Copyable<Block> {
             var openingBracket= 0
 //            var closingBracket= 0
 
-            var currChildBlock: Block?= null
+//            var currChildBlock: Block?= null
             var currOpParent: Operation?= null
             var currOp: Operation?= null
             var currSignum: Int= 1 //untuk tanda - +
@@ -75,7 +74,7 @@ interface Block: Calculable, Copyable<Block> {
                 else
                     setElementAt(0, currElement!!) //setFirstElement(currElement!!)
 
-                currChildBlock= null
+//                currChildBlock= null
                 currElement= null
                 currName= null
                 currNum= null
@@ -243,6 +242,15 @@ interface Block: Calculable, Copyable<Block> {
                 else -> acc
             }
         }
+
+    fun hasVarName(name: String): Boolean {
+        for(e in elements)
+            when(e){
+                is Variable<*> -> if(e.name == name) return true
+                is Block -> if(e.hasVarName(name)) return true
+            }
+        return false
+    }
 
     /**
      * Jumlah [elements] yang berupa [Variable].
@@ -412,6 +420,16 @@ interface Block: Calculable, Copyable<Block> {
         return res
     }
 
+    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = clone_().apply {
+        val numMap= mapOf(*namedCalculable)
+        for((i, e) in elements.withIndex()) {
+            when(e){
+                is Variable<*> -> numMap[e.name].notNull { setElementAt(i, e.replaceVars(it)) }
+                is Block -> setElementAt(i, e.replaceVars(*namedCalculable))
+            }
+        }
+    }
+
     fun resultEquals(other: Calculable): Boolean {
         val rand= Random.Default
         val limit= Random.Default.nextInt(5, 20)
@@ -558,6 +576,12 @@ internal class BlockImpl(
  */
 
     override fun simply(): Calculable {
+        if(elements.size == 1)
+            return elements.first().let {
+                if(it is Block) it.simply()
+                else it
+            }
+
 //        var i= 0
 //        prine("simply() operate res AWAL DW ==============")
 
@@ -637,6 +661,9 @@ internal class BlockImpl(
                 if(!isCoeficientComputed
                     && operationLevel == Operation.TIMES.level && e1 !is Block
                 ){
+                    if(i > 0 && e1 is Constant<*>)
+                        uniqueOps.removeLast()
+
                     var coeficientNum=
                         if(i > 0 && operations[i-1] == Operation.DIVIDES) 1.0 / e1.numberComponent(false)!!
                         else e1.numberComponent(false)!!
@@ -892,22 +919,18 @@ internal class BlockImpl(
             }
         }
 
-        elements= uniqueEls
-        operations= uniqueOps
-        operationLevel= if(operations.isNotEmpty()) operations.first().level else -1
-
-        if(elements.isEmpty() && computedCoeficient != null) {
-            uniqueEls.add(0, constantOf(computedCoeficient!!))
-        }
-
         var elHasOneDegreeUpIncr= -1
         var elHasOneDegreeUpEnd= elHasOneDegreeUp.size
-        if(computedCoeficient != null && uniqueEls.size > 1)
-            uniqueOps.add(0, Operation.TIMES)
-        else if(operationLevel == Operation.TIMES.level){
+        if(computedCoeficient != null){
+            if(uniqueEls.isEmpty())
+                uniqueEls.add(0, constantOf(computedCoeficient!!))
+            if(uniqueEls.size > 1)
+                uniqueOps.add(0, Operation.TIMES)
             elHasOneDegreeUpIncr= 0
             elHasOneDegreeUpEnd--
         }
+//        if(computedCoeficient != null) { }
+
 ///*
         prine("simply() HAMPIR AKHIR elHasOneDegreeUp= $elHasOneDegreeUp elements= $elements operations= $operations level= $operationLevel")
         for(i in 0 until elHasOneDegreeUpEnd){
@@ -915,6 +938,11 @@ internal class BlockImpl(
             uniqueOps[eUp + elHasOneDegreeUpIncr]= Operation.TIMES
         }
 // */
+
+        elements= uniqueEls
+        operations= uniqueOps
+        operationLevel= if(operations.isNotEmpty()) operations.first().level else -1
+
         prine("SBLUM AKHIR ==== elements= $elements operations= $operations operationLevel= $operationLevel")
 
         if(uniqueEls.size == 1)
@@ -1206,8 +1234,16 @@ internal class BlockImpl(
         }
     }
 
-    override fun copy(): Block = BlockImpl().also {
-        it.elements= elements.copy()
+    override fun clone_(isShallowClone: Boolean): Block = BlockImpl().also {
+        if(isShallowClone){
+            it.elements= elements.copy()
+        } else {
+            val newEls= mutableListOf<Calculable>()
+            elements.forEachIndexed { i, e ->
+                newEls += if(e !is Block) e
+                else e.clone_(isShallowClone)
+            }
+        }
         it.operations= operations.copy()
         it.operationLevel= operationLevel
     }

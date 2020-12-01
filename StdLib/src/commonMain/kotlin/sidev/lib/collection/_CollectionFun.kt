@@ -31,12 +31,16 @@ operator fun <T> Array<T>.get(range: IntRange): Array<T> = sliceArray(range)
 
 fun <T> Iterable<T>.forEach(
     start: Int= 0, end: Int= -1,
+    reversed: Boolean = false,
     breakRef: Val<Boolean>? = null,
     contRef: Val<Boolean>? = null,
     block: (T) -> Unit
 ) {
     if(this is List<*>) {
-        val range= start until if(end < 0) size else end
+        val range= if(!reversed) start until if(end < 0) size else end
+        else {
+            (if(start > 0) start else size-1) downTo (if(end < 0) 0 else end+1)
+        }
         for(i in range){
             if(breakRef?.value == true)
                 break
@@ -45,30 +49,46 @@ fun <T> Iterable<T>.forEach(
             block(this[i] as T)
         }
     } else {
-        val itr= iterator()
-        val range= start until if(end < 0) Int.MAX_VALUE else end
-        var i= 0
+        if(!reversed){
+            val itr= iterator()
+            val range= start until if(end < 0) Int.MAX_VALUE else end
+            var i= 0
 
-        while (itr.hasNext()){
-            if(breakRef?.value == true)
-                break
-            if(contRef?.value == true)
-                continue
-            val e= itr.next()
-            if(i in range)
-                block(e)
-            i++
+            while (itr.hasNext()){
+                if(breakRef?.value == true)
+                    break
+                if(contRef?.value == true)
+                    continue
+                val e= itr.next()
+                if(i in range)
+                    block(e)
+                i++
+            }
+        } else {
+            val list= this.toList()
+            val range= (if(start > 0) start else list.size-1) downTo (if(end < 0) 0 else end+1)
+            for(i in range){
+                if(breakRef?.value == true)
+                    break
+                if(contRef?.value == true)
+                    continue
+                block(list[i])
+            }
         }
     }
 }
 fun <T> Iterable<T>.forEachIndexed(
     start: Int= 0, end: Int= -1,
+    reversed: Boolean = false,
     breakRef: Val<Boolean>? = null,
     contRef: Val<Boolean>? = null,
     block: (i: Int, T) -> Unit
 ) {
     if(this is List<*>) {
-        val range= start until if(end < 0) size else end
+        val range= if(!reversed) start until if(end < 0) size else end
+        else {
+            (if(start > 0) start else size-1) downTo (if(end < 0) 0 else end+1)
+        }
         for(i in range){
             if(breakRef?.value == true)
                 break
@@ -77,19 +97,31 @@ fun <T> Iterable<T>.forEachIndexed(
             block(i, this[i] as T)
         }
     } else {
-        val itr= iterator()
-        val range= start until if(end < 0) Int.MAX_VALUE else end
-        var i= 0
+        if(!reversed){
+            val itr= iterator()
+            val range= start until if(end < 0) Int.MAX_VALUE else end
+            var i= 0
 
-        while (itr.hasNext()){
-            if(breakRef?.value == true)
-                break
-            if(contRef?.value == true)
-                continue
-            val e= itr.next()
-            if(i in range)
-                block(i, e)
-            i++
+            while (itr.hasNext()){
+                if(breakRef?.value == true)
+                    break
+                if(contRef?.value == true)
+                    continue
+                val e= itr.next()
+                if(i in range)
+                    block(i, e)
+                i++
+            }
+        } else {
+            val list= this.toList()
+            val range= (if(start > 0) start else list.size-1) downTo (if(end < 0) 0 else end+1)
+            for(i in range){
+                if(breakRef?.value == true)
+                    break
+                if(contRef?.value == true)
+                    continue
+                block(i, list[i])
+            }
         }
     }
 }
@@ -97,43 +129,67 @@ fun <T> Iterable<T>.forEachIndexed(
 
 fun <T> Iterable<T>.forEach(
     start: Int= 0, end: Int= -1,
+    reversed: Boolean = false,
     block: (T) -> Unit
 ) {
     if(this is List<*>) {
-        val range= start until if(end < 0) size else end
+        val range= if(!reversed) start until if(end < 0) size else end
+        else {
+            (if(start > 0) start else size-1) downTo (if(end < 0) 0 else end+1)
+        }
         for(i in range)
             block(this[i] as T)
     } else {
-        val itr= iterator()
-        val range= start until if(end < 0) Int.MAX_VALUE else end
-        var i= 0
+        if(!reversed){
+            val itr= iterator()
+            val range= start until if(end < 0) Int.MAX_VALUE else end
+            var i= 0
 
-        while (itr.hasNext()){
-            val e= itr.next()
-            if(i in range)
-                block(e)
-            i++
+            while (itr.hasNext()){
+                val e= itr.next()
+                if(i in range)
+                    block(e)
+                i++
+            }
+        } else {
+            val list= this.toList()
+            val range= (if(start > 0) start else list.size-1) downTo (if(end < 0) 0 else end+1)
+            for(i in range){
+                block(list[i])
+            }
         }
     }
 }
 fun <T> Iterable<T>.forEachIndexed(
     start: Int= 0, end: Int= -1,
+    reversed: Boolean = false,
     block: (i: Int, T) -> Unit
 ) {
     if(this is List<*>) {
-        val range= start until if(end < 0) size else end
+        val range= if(!reversed) start until if(end < 0) size else end
+        else {
+            (if(start > 0) start else size-1) downTo (if(end < 0) 0 else end+1)
+        }
         for(i in range)
             block(i, this[i] as T)
     } else {
-        val itr= iterator()
-        val range= start until if(end < 0) Int.MAX_VALUE else end
-        var i= 0
+        if(!reversed){
+            val itr= iterator()
+            val range= start until if(end < 0) Int.MAX_VALUE else end
+            var i= 0
 
-        while (itr.hasNext()){
-            val e= itr.next()
-            if(i in range)
-                block(i, e)
-            i++
+            while (itr.hasNext()){
+                val e= itr.next()
+                if(i in range)
+                    block(i, e)
+                i++
+            }
+        } else {
+            val list= this.toList()
+            val range= (if(start > 0) start else list.size-1) downTo (if(end < 0) 0 else end+1)
+            for(i in range){
+                block(i, list[i])
+            }
         }
     }
 }

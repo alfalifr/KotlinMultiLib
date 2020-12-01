@@ -149,11 +149,16 @@ fun <T> Array<T>.indexOfWhere(start: Int = 0, predicate: (T) -> Boolean): Int {
 
 fun <T> Array<T>.forEach(
     start: Int= 0, end: Int= size,
+    reversed: Boolean = false,
     breakRef: Val<Boolean>? = null,
     contRef: Val<Boolean>? = null,
     block: (T) -> Unit
 ) {
-    for(i in start until end){
+    val range= if(!reversed) start until end
+    else {
+        (if(start > 0) start else size-1) downTo (if(end < size) end+1 else 0)
+    }
+    for(i in range){
         if(breakRef?.value == true)
             break
         if(contRef?.value == true)
@@ -164,11 +169,16 @@ fun <T> Array<T>.forEach(
 
 fun <T> Array<T>.forEachIndexed(
     start: Int= 0, end: Int= size,
+    reversed: Boolean = false,
     breakRef: Val<Boolean>? = null,
     contRef: Val<Boolean>? = null,
     block: (i: Int, T) -> Unit
 ) {
-    for(i in start until end){
+    val range= if(!reversed) start until end
+    else {
+        (if(start > 0) start else size-1) downTo (if(end < size) end+1 else 0)
+    }
+    for(i in range){
         if(breakRef?.value == true)
             break
         if(contRef?.value == true)
@@ -180,16 +190,26 @@ fun <T> Array<T>.forEachIndexed(
 
 fun <T> Array<T>.forEach(
     start: Int= 0, end: Int= size,
+    reversed: Boolean= false,
     block: (T) -> Unit
 ) {
-    for(i in start until end)
+    val range= if(!reversed) start until end
+    else {
+        (if(start > 0) start else size-1) downTo (if(end < size) end+1 else 0)
+    }
+    for(i in range)
         block(this[i])
 }
 
 fun <T> Array<T>.forEachIndexed(
     start: Int= 0, end: Int= size,
+    reversed: Boolean= false,
     block: (i: Int, T) -> Unit
 ) {
-    for(i in start until end)
+    val range= if(!reversed) start until end
+    else {
+        (if(start > 0) start else size-1) downTo (if(end < size) end+1 else 0)
+    }
+    for(i in range)
         block(i, this[i])
 }

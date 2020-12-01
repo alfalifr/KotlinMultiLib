@@ -431,8 +431,8 @@ class StdLibCommonSampleTests {
 
     @Test
     fun forEachTes(){
-        listOf(1,2,3,4,5,6,7,8,9).forEachIndexed(3) { i, e ->
-            if(e > 7) return@forEachIndexed
+        listOf(1,2,3,4,5,6,7,8,9).forEachIndexed(reversed = true) { i, e ->
+//            if(e > 7) return@forEachIndexed
             prin(e)
         }
     }

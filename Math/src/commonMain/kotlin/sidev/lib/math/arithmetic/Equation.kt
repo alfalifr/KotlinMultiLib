@@ -11,22 +11,45 @@ interface Equation {
         MORE_THAN_EQUAL({ n1, n2 -> n1 >= n2 }, ">=");
 
         override fun doOperation(n1: Number, n2: Number): Boolean = compareFun(n1, n2)
+        override fun toString(): String = symbol.first().toString()
     }
 
     /**
-     * [Block] yang membentuk `this` Equation.
-     * Minimal terdiri dari 2 [Block].
+     * [Calculable] yang membentuk `this` Equation.
+     * Minimal terdiri dari 2 [Calculable], seperti [Variable], [Constant], atau [Block].
      */
-    val blocks: List<Block>
+    val blocks: List<Calculable>
 
     /**
      * Tanda yang memisahkan [blocks].
      * Jml [signs] harus n-1 jml [blocks].
      */
     val signs: List<Sign>
-/*
-    fun solve(): List<Pair<String, Number>> {
 
+    /*
+    2+3 = 5 = 4+1
+     */
+
+    /**
+     * Menyelesaikan persamaan / pertidak-samaan yang ada pada [blocks] sehingga menghasilkan
+     * penyelesaian berupa persamaan [Variable] dg [Calculable].
+     */
+    fun solve(
+        varName: String? = null,
+        vararg varArg: Pair<String, Calculable>
+    ): List<SimpleEquation>
+
+    fun test(vararg varArg: Pair<String, Number>): Boolean {
+        val blockItr= blocks.iterator()
+        val signItr= signs.iterator()
+
+        var res1= blockItr.next().calculate(*varArg)
+        while(blockItr.hasNext()){
+            val res2= blockItr.next().calculate(*varArg)
+            if(!signItr.next()(res1, res2))
+                return false
+            res1= res2
+        }
+        return true
     }
-// */
 }

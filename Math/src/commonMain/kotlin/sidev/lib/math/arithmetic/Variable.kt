@@ -1,7 +1,5 @@
 package sidev.lib.math.arithmetic
 
-import sidev.lib.exception.IllegalStateExc
-import sidev.lib.exception.NotYetSupportedExc
 import sidev.lib.number.*
 
 /**
@@ -19,6 +17,13 @@ interface Variable<T: Number>: SingleElement<T> {
     fun calculate(n: Number): Number = n * coeficient
     operator fun invoke(n: Number): Number = calculate(n)
 
+    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = replaceVars(namedCalculable.first().second)
+    fun replaceVars(calc: Calculable): Calculable = when(calc){
+        is Constant<*> -> constantOf(coeficient * calc.number)
+        is Variable<*> -> variableOf(calc.name, coeficient * calc.coeficient)
+        else -> blockOf(constantOf(coeficient)).addOperation(calc, Operation.TIMES)
+    }
+    operator fun invoke(calc: Calculable): Calculable = replaceVars(calc)
 
     override fun plus(element: Calculable): Calculable = when(element){
         is Constant<*> -> Solver.plus(this, element)
@@ -50,7 +55,9 @@ interface Variable<T: Number>: SingleElement<T> {
         else -> Solver.rem(this, element)
     }
 
-/*
+    override fun clone_(isShallowClone: Boolean): Variable<T> = variableOf(name, coeficient)
+
+    /*
     override fun plus(element: Calculable): Calculable {
         if(element is Variable<*> && name == element.name){
             return (coeficient + element.coeficient).let {
