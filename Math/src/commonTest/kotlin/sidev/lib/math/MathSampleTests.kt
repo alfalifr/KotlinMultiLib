@@ -407,10 +407,13 @@ class MathSampleTests {
 
         val block2= Block.parse("(6x / 2y * 2y / 6)")
         prin("block2= $block2")
+        prin("block2(\"x\" to 2, \"y\" to 3)= ${block2("x" to 2, "y" to 3)}")
         prin("block2.simply()= ${block2.simply()}")
+        prin("block2(\"x\" to 2, \"y\" to 3)= ${block2("x" to 2, "y" to 3)}")
 
         val block3= Block.parse("(3x / (-2) * 3x / x /x/x) + (10 * 2) - (2x + 4 - 7x) - (4y * 2) ")
         prin("block3= $block3")
+        prin("block3(\"x\" to 2, \"y\" to 3)= ${block3("x" to 2, "y" to 3)}")
         prin("block3.simply()= ${block3.simply()}")
         prin("block3(\"x\" to 2, \"y\" to 3)= ${block3("x" to 2, "y" to 3)}")
 
@@ -424,6 +427,7 @@ class MathSampleTests {
         prin("block5= $block5")
         prin("block5(\"x\" to 2, \"y\" to 3) 1= ${block5("x" to 2, "y" to 3)}")
         prin("block5.simply()= ${block5.simply()}")
+        prin("block5.simply()= ${block5}")
         prin("block5(\"x\" to 2, \"y\" to 3) 2= ${block5("x" to 2, "y" to 3)}")
         prin("block5.simply()= ${block5.simply()}")
         prin("block5(\"x\" to 2, \"y\" to 3) 3= ${block5("x" to 2, "y" to 3)}")
@@ -539,5 +543,6 @@ class MathSampleTests {
         prin(block5)
         prin(block3)
         prin(block3.replaceVars("x" to block5))
+        prin((block3.replaceVars("x" to block5) as Block).simply())
     }
 }

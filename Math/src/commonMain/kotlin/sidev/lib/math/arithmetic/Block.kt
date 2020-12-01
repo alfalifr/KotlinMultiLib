@@ -48,7 +48,7 @@ interface Block: Calculable {
             var isCurrentlyChangeBlock= false
 
             var i= 0
-            fun Block.addCurrOperation() {
+            fun Block.addCurrOperation(): Block {
                 var res= this
 ///*
                 prine("addCurrOperation() i= $i ch= ${ try{blockStr[i]} catch (e: Exception){ "<IndexOutOfBound>" } }")
@@ -57,6 +57,7 @@ interface Block: Calculable {
                 prine("currNum= $currNum")
                 prine("currName= $currName")
                 prine("currElement awal= $currElement")
+                prine("currSignum= $currSignum")
 // */
                 currNum = currNum?.times(currSignum)
 
@@ -80,7 +81,8 @@ interface Block: Calculable {
                 currNum= null
                 currSignum= 1
                 block= res
-                resBlock= res
+                return res
+//                resBlock= res
             }
 
             val lastIndex= blockStr.length -1
@@ -134,8 +136,10 @@ interface Block: Calculable {
                     }
 
                     ch.isMathOperator() -> {
-                        prine("ch == '-' && ,, currOp == null => ${currOp == null}")
-                        if(ch == '-' && currOp == null && isCurrentlyChangeBlock){
+                        prine("ch == '-' && ,, ch= $ch currOp= $currOp currNum= $currNum currName= $currName isCurrentlyChangeBlock= $isCurrentlyChangeBlock")
+                        if(ch == '-' && isCurrentlyChangeBlock
+                            && currNum == null && currName == null)
+                        {
 //                            block= block.parentBlock!!
                             blockStr.indexOfWhere(i+1) { !it.isWhitespace() }.let {
                                 if(it.isNotNegative()){
@@ -196,7 +200,9 @@ interface Block: Calculable {
 
 //            prine(" ===== akhir ===== currElement= $currElement currNum= $currNum currName= $currName")
             if(currElement != null || currNum != null || currName != null)
-                block.addCurrOperation()
+                block.addCurrOperation().also {
+                    resBlock= it
+                }
 
             if(resBlock.elements.size == 1){
                 val f= resBlock.elements.firstOrNull()
@@ -303,6 +309,13 @@ interface Block: Calculable {
      * Untuk mengganti tanda positif-negatif (+-) dari [elements] pertama.
      */
     fun setFirstElementSignum(positive: Boolean)
+
+    /**
+     * Untuk mengganti tanda positif-negatif (+-) dari semua [elements] pada `this` jika [operationLevel] == [Operation.PLUS.level].
+     * Jika [operationLevel] != [Operation.PLUS.level], maka signum yg diganti hanya element pertama
+     * atau seperti fungsi [setFirstElementSignum].
+     */
+    fun setSignum(positive: Boolean)
 
     /**
      * Return `Calculable` yang sebelumnya tergantikan oleh [element].
@@ -421,13 +434,15 @@ interface Block: Calculable {
     }
 
     override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = clone_().apply {
+        this as Block
         val numMap= mapOf(*namedCalculable)
         for((i, e) in elements.withIndex()) {
             when(e){
-                is Variable<*> -> numMap[e.name].notNull { setElementAt(i, e.replaceVars(it)) }
+                is Variable<*> -> numMap[e.name].notNull { setElementAt(i, e.replaceVars(it)) } //.also { prine("Block.replaceVars() numMap[${e.name}]= $it") }
                 is Block -> setElementAt(i, e.replaceVars(*namedCalculable))
             }
         }
+        prine("Block.replaceVars() res= $this")
     }
 
     fun resultEquals(other: Calculable): Boolean {
@@ -566,6 +581,21 @@ internal class BlockImpl(
             else -> throw UnavailableOperationExc(e::class, e, "Kelas element '$e' tidak diketahui.")
         }
     }
+
+    override fun setSignum(positive: Boolean) {
+        when(operationLevel){
+            Operation.PLUS.level -> {
+                if(!positive){ //Jika [positive], maka artinya tanda dari elemen itu tidak berubah.
+                    (operations as MutableList).apply {
+                        forEachIndexed { i, op ->
+                            this[i]= if(op == Operation.PLUS) Operation.MINUS else Operation.PLUS
+                        }
+                    }
+                }
+            }
+            else -> setFirstElementSignum(positive)
+        }
+    }
 /*
     override fun simply(n: Int): Calculable {
         var res: Calculable= this
@@ -586,7 +616,8 @@ internal class BlockImpl(
 //        prine("simply() operate res AWAL DW ==============")
 
         val elementsDupl= elements.copy().toMutableList() //Berguna untuk memproses terlebih dahulu semua nested block
-        val isOperated= BooleanArray(elements.size)
+        val opsDupl= operations.copy().toMutableList() //Berguna untuk memproses terlebih dahulu semua nested block
+        var isOperated= BooleanArray(elements.size)
         val uniqueEls= mutableListOf<Calculable>()
         val elHasOneDegreeUp= mutableListOf<Int>()
 //        val elCounts= mutableListOf<Int>() // jml dari tiap [uniqueEl]
@@ -628,11 +659,40 @@ internal class BlockImpl(
 ///*
 ///*
 ///*
-        //#1
-        //Proses yg berbentuk `Block` terlebih dahulu agar pada iterasi selanjutnya tinggal memproses hasilnya.
-        elementsDupl.forEachIndexed { i, e ->
-            if(e is Block) elementsDupl[i]= e.simply()
+        //#1.1
+        // Proses yg berbentuk `Block` terlebih dahulu agar pada iterasi selanjutnya tinggal memproses hasilnya.
+        val addedLinearBlocks= mutableMapOf<Int, Block>()
+
+        elementsDupl.forEachIndexed { i, e1 ->
+            if(e1 is Block) elementsDupl[i]= e1.simply().also { e2 ->
+                if(e2 is Block && e2.operationLevel == operationLevel)
+                    addedLinearBlocks[i]= e2
+            }
         }
+///*
+        //#1.2
+        // Jika ada block yg [operastionLevel]-nya sama dg `this` [operationLevel], maka tambahkan scr linear.
+        var diff= 0
+        for((i, block) in addedLinearBlocks){
+            val elItr= block.elements.iterator()
+            val opItr= block.operations.iterator()
+
+            elementsDupl[i + diff] = elItr.next()
+                .also { prine("=== simply() elItr.next()= $it diff= $diff") }
+
+            while(elItr.hasNext()){
+                opsDupl.add(i + diff, opItr.next()
+                    .also { prine("=== simply() WHILE elItr.next()= $it") }
+                )
+                diff++
+                elementsDupl.add(i + diff, elItr.next()
+                    .also { prine("=== simply() opItr.next()= $it") }
+                )
+            }
+            prine("=== simply() elementsDupl= $elementsDupl opsDupl= $opsDupl")
+        }
+        if(diff > 0)
+            isOperated= BooleanArray(elementsDupl.size)
 // */
 
         //#2
@@ -649,29 +709,31 @@ internal class BlockImpl(
 
                 prine("simply() isOperated.size= ${isOperated.size} elementsDupl.size= ${elementsDupl.size}")
                 try {
-                    prine("simply() e1= $e1 i= $i operations= $operations this= $this level= $operationLevel")
+                    prine("simply() e1= $e1 i= $i opsDupl= $opsDupl this= $this level= $operationLevel")
                 } catch (e: Exception) {
-                    prine("simply() e1= <error> i= $i operations= <error> this= <error> level= $operationLevel")
+                    prine("simply() e1= <error> i= $i opsDupl= <error> this= <error> level= $operationLevel")
                 }
-
+/*
                 if(i > 0)
-                    uniqueOps += operations[i-1]
+                    uniqueOps += opsDupl[i-1]
+ */
                 isOperated[i] = true
 
                 if(!isCoeficientComputed
                     && operationLevel == Operation.TIMES.level && e1 !is Block
                 ){
-                    if(i > 0 && e1 is Constant<*>)
-                        uniqueOps.removeLast()
+//                    if(i > 0 && e1 is Constant<*>) uniqueOps.removeLast()
 
                     var coeficientNum=
-                        if(i > 0 && operations[i-1] == Operation.DIVIDES) 1.0 / e1.numberComponent(false)!!
+                        if(i > 0 && opsDupl[i-1] == Operation.DIVIDES) 1.0 / e1.numberComponent(false)!!
                         else e1.numberComponent(false)!!
 
                     //#1. Menghitung angka koefisien
                     elementsDupl.forEachIndexed(i+1) { u, e2 ->
                         if(e2 is Constant<*> || e2 is Variable<*>) {
-                            when(operations[u-1]){
+                            if(e2 is Constant<*>)
+                                isOperated[u]= true
+                            when(opsDupl[u-1]){
                                 Operation.TIMES -> coeficientNum *= e2.numberComponent(false)!!
                                 Operation.DIVIDES -> coeficientNum /= e2.numberComponent(false)!!
                             }
@@ -701,31 +763,37 @@ internal class BlockImpl(
                 if(e1 is Constant<*> || e1 is Variable<*>){ // Ini untuk `Constant` dan `Variable`
                     when(operationLevel){
                         Operation.PLUS.level -> {
-                            var numSum= e1.numberComponent(false)!!
+                            val signum= if(i > 0 && opsDupl[i-1] == Operation.MINUS) -1 else 1
+                            var numSum= e1.numberComponent(false)!! * signum
                             elementsDupl.forEachIndexed(i+1) { u, e2 ->
                                 if(!isOperated[u] && conFun(e2)) {
-                                    when(operations[u-1]){
+                                    when(opsDupl[u-1]){
                                         Operation.PLUS -> numSum += e2.numberComponent(false)!!
                                         Operation.MINUS -> numSum -= e2.numberComponent(false)!!
                                     }
                                     isOperated[u]= true
                                 }
                             }
-                            if(numSum != 0) when(e1){
-                                is Constant<*> -> uniqueEls += constantOf(numSum)
-                                is Variable<*> -> uniqueEls += variableOf(e1.name, numSum)
+                            prine("simply() PLUS numSum= $numSum signum= $signum")
+                            if(numSum != 0) {
+                                when(e1){
+                                    is Constant<*> -> uniqueEls += constantOf(numSum.absoluteValue)
+                                    is Variable<*> -> uniqueEls += variableOf(e1.name, numSum.absoluteValue)
+                                }
+                                if(i > 0)
+                                    uniqueOps += if(numSum > 0) Operation.PLUS else Operation.MINUS
                             }
-//                            else { uniqueOps[i]= Operation.PLUS //.removeLastOrNull() }
+//                            else { uniqueOps[i]= Operation.PLUS.removeLastOrNull() }
                         }
                         Operation.TIMES.level -> {
                             if(e1 is Variable<*>){
                                 //#2. Menghitung pangkat variabel
                                 var powerNum=
-                                    if(i > 0 && operations[i-1] == Operation.DIVIDES) -1
+                                    if(i > 0 && opsDupl[i-1] == Operation.DIVIDES) -1
                                     else 1
                                 elementsDupl.forEachIndexed(i+1) { u, e2 ->
                                     if(!isOperated[u] && conFun(e2)) {
-                                        when(operations[u-1]){
+                                        when(opsDupl[u-1]){
                                             Operation.TIMES -> powerNum++
                                             Operation.DIVIDES -> powerNum--
                                         }
@@ -742,8 +810,10 @@ internal class BlockImpl(
                                         .also { prine("simply() TIMES powerNum= $powerNum it= $it elHasOneDegreeUp= $elHasOneDegreeUp uniqueEls= $uniqueEls") }
                                     elHasOneDegreeUp += uniqueEls.lastIndex
                                     prine("simply() TIMES after elHasOneDegreeUp= $elHasOneDegreeUp uniqueEls= $uniqueEls")
+                                    if(i > 0)
+                                        uniqueOps += opsDupl[i-1]
                                 }
-                                else { uniqueOps.removeLastOrNull() }
+//                                else { uniqueOps.removeLastOrNull() }
                             }
                         }
                         Operation.MODULO.level -> {
@@ -752,11 +822,11 @@ internal class BlockImpl(
                         }
                         Operation.POWER.level -> {
                             uniqueEls += e1
-                            if(operations.isNotEmpty())
-                                uniqueOps += operations[0]
+                            if(opsDupl.isNotEmpty())
+                                uniqueOps += opsDupl[0]
                             if(elementsDupl.size > 2) {
                                 val newEl= elementsDupl.copy(1)
-                                val newOp= operations.mapIndexedNotNull { u, op ->
+                                val newOp= opsDupl.mapIndexedNotNull { u, op ->
                                     isOperated[u+1]= true
                                     if(u > 0) {
                                         if(op == Operation.POWER) Operation.TIMES
@@ -811,32 +881,36 @@ internal class BlockImpl(
                 } else { //Untuk Block
                     when(operationLevel){
                         Operation.PLUS.level -> {
-                            var elCount= 1
+                            var elCount= if(i > 0 && opsDupl[i-1] == Operation.MINUS) -1 else 1
+//                            val signum= elCount
                             elementsDupl.forEachIndexed(i+1) { u, e2 ->
                                 if(!isOperated[u] && conFun(e2)) {
-                                    when(operations[u-1]){
+                                    when(opsDupl[u-1]){
                                         Operation.PLUS -> elCount++
                                         Operation.MINUS -> elCount--
                                     }
                                     isOperated[u]= true
                                 }
                             }
-                            if(elCount != 0)
+                            val absCount= elCount.absoluteValue //elCount * signum
+                            if(absCount != 0){
                                 uniqueEls += e1.let {
-                                    if(elCount == 1) it
+                                    if(absCount == 1) it
                                     else blockOf(e1)
-                                        .addOperation(constantOf(elCount), Operation.TIMES)
+                                        .addOperation(constantOf(absCount), Operation.TIMES)
                                 }
-                            else { uniqueOps.removeLastOrNull() }
+                                if(i > 0)
+                                    uniqueOps += if(elCount > 0) Operation.PLUS else Operation.MINUS //+= opsDupl[i-1]
+                            }
+//                            else { uniqueOps.removeLastOrNull() }
                         }
                         Operation.TIMES.level -> {
-                            var powerNum= if(i > 0 && operations[i-1] == Operation.DIVIDES) -1
-                            else 1
+                            var powerNum= if(i > 0 && opsDupl[i-1] == Operation.DIVIDES) -1 else 1
                             elementsDupl.forEachIndexed(i+1) { u, e2 ->
                                 if(!isOperated[u] && conFun(e2)) {
-                                    prine("when(operations[u-1]) u-1= ${u-1} u= $u i= $i elementsDupl[u]= ${elementsDupl[u]} elementsDupl= $elementsDupl")
+                                    prine("when(opsDupl[u-1]) u-1= ${u-1} u= $u i= $i elementsDupl[u]= ${elementsDupl[u]} elementsDupl= $elementsDupl")
 
-                                    when(operations[u-1]){
+                                    when(opsDupl[u-1]){
                                         Operation.TIMES -> powerNum++
                                         Operation.DIVIDES -> powerNum--
                                     }
@@ -852,16 +926,18 @@ internal class BlockImpl(
                                     .also { prine("simply() TIMES powerNum= $powerNum it= $it elHasOneDegreeUp= $elHasOneDegreeUp uniqueEls= $uniqueEls") }
                                 elHasOneDegreeUp += uniqueEls.lastIndex
                                 prine("simply() TIMES after elHasOneDegreeUp= $elHasOneDegreeUp uniqueEls= $uniqueEls")
+                                if(i > 0)
+                                    uniqueOps += opsDupl[i-1]
                             }
-                            else { uniqueOps.removeLastOrNull() }
+//                            else { uniqueOps.removeLastOrNull() }
                         }
                         Operation.POWER.level -> {
                             uniqueEls += e1
-                            if(operations.isNotEmpty())
-                                uniqueOps += operations[0]
+                            if(opsDupl.isNotEmpty())
+                                uniqueOps += opsDupl[0]
                             if(elementsDupl.size > 2) {
                                 val newEl= elementsDupl.copy(1)
-                                val newOp= operations.mapIndexedNotNull { u, op ->
+                                val newOp= opsDupl.mapIndexedNotNull { u, op ->
                                     isOperated[u+1]= true
                                     if(u > 0) {
                                         if(op == Operation.POWER) Operation.TIMES
@@ -932,7 +1008,7 @@ internal class BlockImpl(
 //        if(computedCoeficient != null) { }
 
 ///*
-        prine("simply() HAMPIR AKHIR elHasOneDegreeUp= $elHasOneDegreeUp elements= $elements operations= $operations level= $operationLevel")
+        prine("simply() HAMPIR AKHIR elHasOneDegreeUp= $elHasOneDegreeUp opsDupl= $opsDupl opsDupl= $opsDupl level= $operationLevel this= $this")
         for(i in 0 until elHasOneDegreeUpEnd){
             val eUp= elHasOneDegreeUp[i]
             uniqueOps[eUp + elHasOneDegreeUpIncr]= Operation.TIMES
@@ -941,13 +1017,13 @@ internal class BlockImpl(
 
         elements= uniqueEls
         operations= uniqueOps
-        operationLevel= if(operations.isNotEmpty()) operations.first().level else -1
+        operationLevel= operations.firstOrNull()?.level ?: -1
 
-        prine("SBLUM AKHIR ==== elements= $elements operations= $operations operationLevel= $operationLevel")
+        prine("SBLUM AKHIR ==== uniqueEls= $uniqueEls opsDupl= $opsDupl operationLevel= $operationLevel this= $this")
 
         if(uniqueEls.size == 1)
             return uniqueEls.first()
-        if(uniqueEls.size == 2 && operations.first() == Operation.TIMES){
+        if(uniqueEls.size == 2 && uniqueOps.first() == Operation.TIMES){
             var constCount= 0
             var varCount= 0
             var vars: Variable<*>?= null
@@ -964,7 +1040,7 @@ internal class BlockImpl(
             if(constCount == 1 && varCount == 1)
                 return variableOf(vars!!.name, vars.coeficient * const!!.number)
         }
-        prine("AKHIR ==== elements= $elements operations= $operations")
+        prine("AKHIR ==== elements= $elements opsDupl= $opsDupl this= $this")
 // */
         return this
     }
@@ -1087,11 +1163,46 @@ internal class BlockImpl(
         if(prioritizePrecedence){
             when {
                 operation.level == operationLevel -> {
+///*
+                    if(element is Block && element.operationLevel == operationLevel){
+                        val element= if(operation != Operation.MINUS) element
+                            else (element.clone_() as Block).apply { setSignum(false) }
+
+                        val elItr= element.elements.iterator()
+                        val opItr= element.operations.iterator()
+
+                        (elements as MutableList).add(elementIndex, elItr.next())
+                        (operations as MutableList).add(
+                            if(elementIndex > 1) elementIndex -1
+                            else 0,
+                            if(elementIndex > 1) operation else opItr.next()
+//                            operation
+                        )
+                        var diff= 0
+                        while(elItr.hasNext()){
+                            val op= if(opItr.hasNext()) opItr.next() else operation
+                            (operations as MutableList).add(
+                                (if(elementIndex > 1) elementIndex //-1
+                                else 0) + diff, op
+                            )
+                            diff++
+                            (elements as MutableList).add(elementIndex + diff, elItr.next())
+                        }
+                    } else {
+                        (elements as MutableList).add(elementIndex, element)
+                        (operations as MutableList).add(
+                            if(elementIndex > 1) elementIndex -1
+                            else 0, operation
+                        )
+                    }
+// */
+/*
                     (elements as MutableList).add(elementIndex, element)
                     (operations as MutableList).add(
                         if(elementIndex > 1) elementIndex -1
                         else 0, operation
                     )
+// */
                 }
                 // #1 - Ok
                 //1+2+3-4
@@ -1108,10 +1219,13 @@ internal class BlockImpl(
                         addedElement= firstElement
                         firstElement= element
                     }
-
+/*
                     val newBlock= if(firstElement !is Block) BlockImpl(firstElement, /*operation.level,*/ this)
                         .apply { addOperation(addedElement, operation) }
                     else firstElement.addOperation(addedElement, operation)
+ */
+                    val newBlock= BlockImpl(firstElement, /*operation.level,*/ this)
+                        .apply { addOperation(addedElement, operation) }
 
                     (elements as MutableList)[movedElementInd]= newBlock
                 }
