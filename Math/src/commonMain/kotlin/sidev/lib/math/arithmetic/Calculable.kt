@@ -24,11 +24,12 @@ interface Calculable: Cloneable<Calculable> {
     fun calculate(vararg namedNums: Pair<String, Number>): Number
 
     /**
-     * Menghitung hasil dari `this` [Calculable] dg mengganti variabel dg nilai sesuai [namedCalculable].
-     * [namedCalculable] tidak harus menyediakan setiap variabel dg nama berbeda yg ada pada `this`.
+     * Menghitung hasil dari `this` [Calculable] dg mengganti variabel dg nilai sesuai [namedCalculables].
+     * [namedCalculables] tidak harus menyediakan setiap variabel dg nama berbeda yg ada pada `this`.
      * Fungsi ini menghasilkan [Calculable] bentuk lain.
      */
-    fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable
+    fun replaceVars(vararg namedCalculables: Pair<String, Calculable>): Calculable
+    fun replaceCalcs(vararg namedCalculables: Pair<Calculable, Calculable>): Calculable
 
     operator fun invoke(vararg namedNums: Pair<String, Number>): Number = calculate(*namedNums)
 //    operator fun invoke(vararg namedCalculable: Pair<String, Calculable>): Calculable = calculate(*namedCalculable)
@@ -47,7 +48,10 @@ internal object NullCalculable: Calculable {
     override fun calculate(vararg namedNums: Pair<String, Number>): Number =
         throw IllegalStateExc(detMsg = "Tidak dapat menghitung `NullCalculable`, harap ganti objek ini dengan `Calculable` lainnya.")
 
-    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable =
+    override fun replaceVars(vararg namedCalculables: Pair<String, Calculable>): Calculable =
+        throw IllegalStateExc(detMsg = "Tidak dapat menghitung `NullCalculable`, harap ganti objek ini dengan `Calculable` lainnya.")
+
+    override fun replaceCalcs(vararg namedCalculables: Pair<Calculable, Calculable>): Calculable =
         throw IllegalStateExc(detMsg = "Tidak dapat menghitung `NullCalculable`, harap ganti objek ini dengan `Calculable` lainnya.")
 
     override fun plus(element: Calculable): Calculable =

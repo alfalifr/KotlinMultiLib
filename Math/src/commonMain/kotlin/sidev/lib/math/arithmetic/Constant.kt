@@ -17,7 +17,9 @@ interface Constant<T: Number>: SingleElement<T> {
     fun calculate(): Number = number
     operator fun invoke()= number
 
-    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = this
+    override fun replaceVars(vararg namedCalculables: Pair<String, Calculable>): Calculable = this
+    override fun replaceCalcs(vararg namedCalculables: Pair<Calculable, Calculable>): Calculable = this
+//        namedCalculables.firstOrNull()?.second ?: this
     fun replaceVars(): Constant<T> = this
 
     override fun plus(element: Calculable): Calculable = when(element){

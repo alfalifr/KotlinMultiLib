@@ -1,8 +1,9 @@
 package sidev.lib.math.arithmetic
 
+import sidev.lib.collection.toArrayOf
 import sidev.lib.number.compareTo
 
-interface Equation {
+interface Equation: Solvable {
     enum class Sign(val compareFun: (Number, Number) -> Boolean, vararg val symbol: String): Operationable<Boolean> {
         EQUAL({ n1, n2 -> n1 == n2 }, "="),
         LESS_THAN({ n1, n2 -> n1 < n2 }, "<"),
@@ -10,6 +11,14 @@ interface Equation {
         LESS_THAN_EQUAL({ n1, n2 -> n1 <= n2 }, "<="),
         MORE_THAN_EQUAL({ n1, n2 -> n1 >= n2 }, ">=");
 
+        val opposite: Sign get()= when(this) {
+            LESS_THAN -> MORE_THAN
+            MORE_THAN -> LESS_THAN
+            LESS_THAN_EQUAL -> MORE_THAN_EQUAL
+            MORE_THAN_EQUAL -> LESS_THAN_EQUAL
+            EQUAL -> EQUAL
+//            else -> throw NotYetSupportedExc(accessedElement = this, detailMsg = "Tanda $this belum didefinisikan `opposite`-nya.")
+        }
         override fun doOperation(n1: Number, n2: Number): Boolean = compareFun(n1, n2)
         override fun toString(): String = symbol.first().toString()
     }
@@ -37,7 +46,17 @@ interface Equation {
     fun solve(
         varName: String? = null,
         vararg varArg: Pair<String, Calculable>
+    ): List<SimpleEquation> = solveWithCalc(varName, *varArg.toArrayOf { variableForHash(it.first) to it.second })
+
+    fun solveWithCalc(
+        varName: String? = null,
+        vararg varArg: Pair<Calculable, Calculable>
     ): List<SimpleEquation>
+
+    override fun solveWithCalc(vararg varArg: Pair<Calculable, Calculable>): List<SimpleEquation> =
+        solveWithCalc(null, *varArg)
+    override fun solve(vararg varArg: Pair<String, Calculable>): List<SimpleEquation> =
+        this.solve(null, *varArg)
 
     fun test(vararg varArg: Pair<String, Number>): Boolean {
         val blockItr= blocks.iterator()

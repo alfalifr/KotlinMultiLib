@@ -6,12 +6,65 @@ import sidev.lib.number.div
 import sidev.lib.reflex.getHashCode
 import sidev.lib.collection.forEachIndexed
 import sidev.lib.console.prine
+import sidev.lib.exception.IllegalArgExc
 import sidev.lib.exception.IllegalStateExc
 
 /**
  * [Equation] yang hanya memiliki 2 block, yaitu [left] dan [right] dg 1 tanda [sign].
  */
 interface SimpleEquation: Equation {
+
+    companion object {
+        fun parse(equationStr: String): SimpleEquation {
+            var signIndex= equationStr.indexOf('=')
+            var sign= Equation.Sign.EQUAL
+
+            val leftStr: String
+            val rightStr: String
+
+            if(signIndex > 0) {
+                val startSignIndex= when(equationStr[signIndex-1]) {
+                    '<' -> {
+                        sign = Equation.Sign.LESS_THAN_EQUAL
+                        signIndex -1
+                    }
+                    '>' -> {
+                        sign = Equation.Sign.MORE_THAN_EQUAL
+                        signIndex -1
+                    }
+                    else -> signIndex
+                }
+                leftStr= equationStr.substring(0, startSignIndex)
+                rightStr= equationStr.substring(signIndex+1)
+            } else {
+                signIndex= equationStr.indexOf('<')
+                if(signIndex > 0) {
+                    sign= Equation.Sign.LESS_THAN
+                } else {
+                    signIndex= equationStr.indexOf('>')
+                    if(signIndex < 0)
+                        throw IllegalArgExc(
+                            paramExcepted = arrayOf("equationStr"),
+                            detailMsg = "Param `equationStr` tidak terdapat tanda ekuasi (=, <, >, <=, >=)."
+                        )
+                    sign= Equation.Sign.MORE_THAN
+                }
+                leftStr= equationStr.substring(0, signIndex)
+                rightStr= equationStr.substring(signIndex+1)
+            }
+
+            val left= blockOf(leftStr).let {
+                val els= it.elements
+                if(els.size > 1) it else els.first()
+            }
+            val right= blockOf(rightStr).let {
+                val els= it.elements
+                if(els.size > 1) it else els.first()
+            }
+
+            return simpleEquationOf(left, right, sign)
+        }
+    }
     /**
      * Hanya berisi dari 2 [Block], yaitu [left] dan [right].
      */
@@ -30,6 +83,12 @@ interface SimpleEquation: Equation {
     val right: Calculable
     val sign: Equation.Sign
 
+    fun solveSimple(varName: String? = null, vararg varArg: Pair<Calculable, Calculable>): SimpleEquation?
+    override fun solveWithCalc(varName: String?, vararg varArg: Pair<Calculable, Calculable>): List<SimpleEquation> =
+        solveSimple(varName, *varArg).let {
+            if(it != null) listOf(it) else listOf()
+        }
+
     override fun test(vararg varArg: Pair<String, Number>): Boolean = sign(
         left.calculate(*varArg), right.calculate(*varArg)
     )
@@ -47,67 +106,70 @@ internal class SimpleEquationImpl(
     override var right: Calculable= right
         private set
 
-    /**
-     * Menyelesaikan persamaan / pertidak-samaan yang ada pada [blocks] sehingga menghasilkan
-     * penyelesaian berupa persamaan [Variable] dg [Calculable].
-     */
-    override fun solve(
-        varName: String?,
-        vararg varArg: Pair<String, Calculable>
-    ): List<SimpleEquation> {
 
-        when(val left= left){
-            is Constant<*> -> when(val right= right){
-                is Variable<*> -> return listOf(
-                    simpleEquationOf(
-                        variableOf(right.name, 1),
-                        constantOf(left.number / right.coeficient.toDouble()),
-                        sign
-                    )
+    override fun solveSimple(
+        varName: String?,
+        vararg varArg: Pair<Calculable, Calculable>
+    ): SimpleEquation? {
+//        val replacedLeft= left.replaceVars(*varArg)
+        val replacedRight= right.replaceCalcs(*varArg)
+
+        prine("solveSImple() replacedRight= $replacedRight")
+
+        when(val replacedLeft= left.replaceCalcs(*varArg)){
+            is Constant<*> -> when(replacedRight){
+                is Variable<*> -> return simpleEquationOf(
+                    variableOf(replacedRight.name, 1),
+                    constantOf(replacedLeft.number / replacedRight.coeficient.toDouble()),
+                    if(sign == Equation.Sign.EQUAL || replacedRight.coeficient > 0) sign
+                    else sign.opposite
                 )
-                is Constant<*> -> return listOf()
+                is Constant<*> -> return null //listOf()
             }
-            is Variable<*> -> when(val right= right){
-                is Constant<*> -> return listOf(
-                    simpleEquationOf(
-                        variableOf(left.name, 1),
-                        constantOf(right.number / left.coeficient.toDouble()),
-                        sign
-                    )
+            is Variable<*> -> when(replacedRight){
+                is Constant<*> -> return simpleEquationOf(
+                    variableOf(replacedLeft.name, 1),
+                    constantOf(replacedRight.number / replacedLeft.coeficient.toDouble()),
+                    if(sign == Equation.Sign.EQUAL || replacedLeft.coeficient > 0) sign
+                    else sign.opposite
                 )
                 is Variable<*> -> {
                     val firstEl: Variable<*>
                     val solvedVar= if(varName == null) {
-                        firstEl= right
-                        left
+                        firstEl= replacedRight
+                        replacedLeft
                     } else {
-                        if(right.name == varName) {
-                            firstEl= left
-                            right
+                        if(replacedRight.name == varName) {
+                            firstEl= replacedLeft
+                            replacedRight
                         } else {
-                            firstEl= right
-                            left
+                            firstEl= replacedRight
+                            replacedLeft
                         }
                     }
 
-                    return listOf(
-                        simpleEquationOf(
-                            variableOf(solvedVar.name, 1),
-                            blockOf(firstEl).addOperation(constantOf(solvedVar.coeficient), Operation.DIVIDES),
-                            sign
-                        )
+                    return simpleEquationOf(
+                        variableOf(solvedVar.name, 1),
+                        blockOf(firstEl).addOperation(constantOf(solvedVar.coeficient), Operation.DIVIDES),
+                        if(sign == Equation.Sign.EQUAL || solvedVar.coeficient > 0) sign
+                        else sign.opposite
                     )
                 }
             }
         }
 
-        val left= if(left is Block){
+        val usedLeft= (if(left is Block){
             (left as Block).simply().also { left= it }
-        } else left
+        } else left)
+            .replaceCalcs(*varArg)
 
-        val right= if(right is Block){
+        val usedRight= (if(right is Block){
             (right as Block).simply().also { right= it }
-        } else right
+        } else replacedRight)
+            .replaceCalcs(*varArg)
+
+        prine("solveSImple() usedLeft= $usedLeft")
+        prine("solveSImple() usedRight= $usedRight")
 
 
         // 2x - 3 = 5
@@ -139,11 +201,11 @@ internal class SimpleEquationImpl(
         // 2x + (1/x) = ((5y + (y^2)) * y) + 3
         // x.(2 + (1/(x^2))) = ((5y + (y^2)) * y) + 3
 
-        val solvedVarName= if(varName != null && (left.hasVarName(varName) || right.hasVarName(varName))){
+        val solvedVarName= if(varName != null && (usedLeft.hasVarName(varName) || usedRight.hasVarName(varName))){
             varName
         } else {
             ////////
-            val varNameCounts= left.varNameCounts + right.varNameCounts
+            val varNameCounts= usedLeft.varNameCounts + usedRight.varNameCounts
 
             var minVarName= ""
             var countItr= Int.MAX_VALUE
@@ -159,16 +221,17 @@ internal class SimpleEquationImpl(
         prine("Equation.solve() solvedVarName= $solvedVarName")
 
         val otherCalc: Calculable
-        val calcHasVarName= if(left.hasVarName(solvedVarName)) {
-            otherCalc= right.clone_()
-            left.clone_()
+        val calcHasVarName= if(usedLeft.hasVarName(solvedVarName)) {
+            otherCalc= usedRight.clone_()
+            usedLeft.clone_()
         }  else {
-            otherCalc= left.clone_()
-            right.clone_()
+            otherCalc= usedLeft.clone_()
+            usedRight.clone_()
         }
 
-        var leftCalc: Calculable= calcHasVarName
-        var rightCalc: Calculable= otherCalc
+        var resLeft: Calculable= calcHasVarName
+        var resRight: Calculable= otherCalc
+        var resSign= sign
 
         when(calcHasVarName){
             is Block -> {
@@ -182,8 +245,8 @@ internal class SimpleEquationImpl(
                             if (i > 0) calcHasVarName.operations[i - 1].opposite
                             else {
                                 val num = e1.numberComponent() ?: 1
-                                if (num >= 0) Operation.PLUS
-                                else Operation.MINUS
+                                if (num >= 0) Operation.MINUS
+                                else Operation.PLUS
                             },
                             prioritizePrecedence = false
                         )
@@ -195,34 +258,37 @@ internal class SimpleEquationImpl(
 
                 prine("SimpleEquation.solve() SBLUM AKHIR calcHasVarName= $calcHasVarName")
 
-                leftCalc = calcHasVarName.simply()
-                if (leftCalc is Variable<*> && leftCalc.coeficient != 1) {
+                resLeft = calcHasVarName.simply()
+                if (resLeft is Variable<*> && resLeft.coeficient != 1) {
                     otherBlock.addOperation(
-                        constantOf(leftCalc.coeficient),
+                        constantOf(resLeft.coeficient),
                         Operation.DIVIDES,
                         prioritizePrecedence = false
                     )
-                    leftCalc = variableOf(leftCalc.name, 1)
+                    resSign= if(sign == Equation.Sign.EQUAL || resLeft.coeficient > 0) sign
+                    else sign.opposite
+
+                    resLeft = variableOf(resLeft.name, 1)
                 }
 
-                prine("SimpleEquation.solve() SBLUM AKHIR leftCalc:class= ${leftCalc::class}")
-                prine("SimpleEquation.solve() SBLUM AKHIR leftCalc= $leftCalc")
-                rightCalc = otherBlock.simply()
+                prine("SimpleEquation.solve() SBLUM AKHIR leftCalc:class= ${resLeft::class}")
+                prine("SimpleEquation.solve() SBLUM AKHIR leftCalc= $resLeft")
+                resRight = otherBlock.simply()
             }
             is Variable<*> -> {
-                leftCalc= variableOf(calcHasVarName.name, 1)
+                resLeft= variableOf(calcHasVarName.name, 1)
                 val otherBlock= if(otherCalc is Block) otherCalc else blockOf(otherCalc)
-                rightCalc= otherBlock
+                resRight= otherBlock
                     .addOperation(constantOf(calcHasVarName.coeficient), Operation.DIVIDES, prioritizePrecedence = false)
                     .simply()
+
+                resSign= if(sign == Equation.Sign.EQUAL || calcHasVarName.coeficient > 0) sign
+                else sign.opposite
             }
             else -> throw IllegalStateExc(currentState = "`calcHasVarName` brp Constant<*>", expectedState = "`calcHasVarName` tidak mungkin brp Constant<*>")
         }
 
-
-        return listOf(
-            simpleEquationOf(leftCalc, rightCalc, sign)
-        )
+        return simpleEquationOf(resLeft, resRight, resSign)
     }
 
     override fun hashCode(): Int = getHashCode(left, right, sign, calculateOrder = false)

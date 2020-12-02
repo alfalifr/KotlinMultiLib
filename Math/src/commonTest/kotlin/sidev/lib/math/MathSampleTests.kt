@@ -544,5 +544,58 @@ class MathSampleTests {
         prin(block3)
         prin(block3.replaceVars("x" to block5))
         prin((block3.replaceVars("x" to block5) as Block).simply())
+
+
+        prin("============== block 6 =================")
+        val block6= Block.parse("-2x-3")
+        val block7= constantOf(5)
+
+        val simpleEq3= simpleEquationOf(block6, block7, Equation.Sign.LESS_THAN_EQUAL)
+
+        prin(block6)
+        prin(block6.simply())
+        prin(block7)
+        prin(simpleEq3)
+        prin(simpleEq3.solve())
+    }
+
+    @Test
+    fun systemEqTest(){
+        val eq1= simpleEquationOf("2x -3 = 5")
+        val eq2= simpleEquationOf("2x - 4y = 0")
+        val eq3= simpleEquationOf("x - (5y / 2) + 4z = 14")
+//        val eq2= simpleEquationOf("2x - 4y = 5")
+        prin("eq1= $eq1")
+        prin("eq1= ${eq1.left.replaceCalcs()}")
+        prin("eq2= $eq2")
+
+        prin("========== eq1.left.varNames ===========")
+        for((i, name) in eq1.left.varNames.withIndex()){
+            prin("i= $i name= $name")
+        }
+
+        val sysEq1= systemEquationOf(eq1, eq2, eq3)
+        prin("sysEq1= $sysEq1")
+        prin("sysEq1.solve()= ${sysEq1.solve()}")
+    }
+
+    @Test
+    fun systemEqTest_2(){
+        val eq1= simpleEquationOf("5x -3y +2z = 3")
+        val eq2= simpleEquationOf("8x - 5y +6z= 7")
+        val eq3= simpleEquationOf("3x + 4y - 3z = 15")
+//        val eq2= simpleEquationOf("2x - 4y = 5")
+        prin("eq1= $eq1")
+        prin("eq1= ${eq1.left.replaceCalcs()}")
+        prin("eq2= $eq2")
+
+        prin("========== eq1.left.varNames ===========")
+        for((i, name) in eq1.left.varNames.withIndex()){
+            prin("i= $i name= $name")
+        }
+
+        val sysEq1= systemEquationOf(eq1, eq2, eq3)
+        prin("sysEq1= $sysEq1")
+        prin("sysEq1.solve()= ${sysEq1.solve()}")
     }
 }

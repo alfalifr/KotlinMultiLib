@@ -551,3 +551,8 @@ fun <T> stackOf(vararg elements: T): Stack<T> = StackImpl<T>(elements.size +5).a
 fun <T> queueOf(vararg elements: T): Queue<T> = QueueImpl<T>(elements.size +5).apply {
     elements.forEach { push(it) }
 }
+
+val Iterable<*>.size: Int get()= when(this){
+    is Collection<*> -> size
+    else -> toList().size
+}

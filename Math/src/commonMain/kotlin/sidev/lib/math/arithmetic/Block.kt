@@ -2,6 +2,7 @@ package sidev.lib.math.arithmetic
 
 import sidev.lib.collection.forEachIndexed
 import sidev.lib.annotation.TooExpensiveForBackingField
+import sidev.lib.check.isNull
 import sidev.lib.check.notNull
 import sidev.lib.collection.addIfAbsent
 import sidev.lib.collection.copy
@@ -12,7 +13,6 @@ import sidev.lib.exception.IllegalArgExc
 import sidev.lib.exception.IllegalStateExc
 import sidev.lib.exception.UnavailableOperationExc
 import sidev.lib.number.*
-import sidev.lib.reflex.getHashCode
 import sidev.lib.structure.data.value.Val
 import sidev.lib.text.*
 import kotlin.jvm.JvmStatic
@@ -33,6 +33,10 @@ interface Block: Calculable {
          */
         @JvmStatic
         fun parse(blockStr: String): Block {
+            val blockStr=
+                (if(!blockStr.startsWith(' ')) blockStr
+                    else blockStr.trimStart()) + " "
+
             var resBlock= blockOf()
             var block= resBlock
             var openingBracket= 0
@@ -42,7 +46,7 @@ interface Block: Calculable {
             var currOpParent: Operation?= null
             var currOp: Operation?= null
             var currSignum: Int= 1 //untuk tanda - +
-            var currNum: Int?= null
+            var currNum: Number?= null
             var currName: String?= null
             var currElement: Calculable?= null
             var isCurrentlyChangeBlock= false
@@ -85,7 +89,7 @@ interface Block: Calculable {
 //                resBlock= res
             }
 
-            val lastIndex= blockStr.length -1
+//            val lastIndex= blockStr.length -1
             val len= blockStr.length
             while(i < len){
                 val ch= blockStr[i]
@@ -137,7 +141,7 @@ interface Block: Calculable {
 
                     ch.isMathOperator() -> {
                         prine("ch == '-' && ,, ch= $ch currOp= $currOp currNum= $currNum currName= $currName isCurrentlyChangeBlock= $isCurrentlyChangeBlock")
-                        if(ch == '-' && isCurrentlyChangeBlock
+                        if(ch == '-' && (isCurrentlyChangeBlock || i == 0)
                             && currNum == null && currName == null)
                         {
 //                            block= block.parentBlock!!
@@ -173,18 +177,20 @@ interface Block: Calculable {
                         }
                     }
                     ch.isDigit() -> {
-                        val u = if(i < lastIndex) blockStr.indexOfWhere(i+1) { !it.isDigit() }
-                        else len
+                        val u =  blockStr.indexOfWhere(i+1) { !it.isDigit() }
+                        prine("parse() ch.isDigit() ch= $ch i= $i u= $u str= $blockStr'")
+//                        if(i < lastIndex) else len
 
                         if(u.isNotNegative()){
-                            currNum= blockStr.substring(i, u).toInt()
+                            currNum= blockStr.substring(i, u).toNumber()
                             i= u-1
                         }
 //                        isCurrentlyChangeBlock= false
                     }
                     ch.isLetter() -> {
-                        val u = if(i < lastIndex) blockStr.indexOfWhere(i+1) { !it.isLetter() }
-                        else len
+                        val u = blockStr.indexOfWhere(i+1) { !it.isLetter() }
+                        prine("parse() ch.isLetter() ch= $ch i= $i u= $u str= $blockStr'")
+//                        if(i < lastIndex) else len
 
                         if(u.isNotNegative()){
                             currName= blockStr.substring(i, u)
@@ -433,16 +439,38 @@ interface Block: Calculable {
         return res
     }
 
-    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = clone_().apply {
+    override fun replaceVars(vararg namedCalculables: Pair<String, Calculable>): Calculable = clone_().apply {
         this as Block
-        val numMap= mapOf(*namedCalculable)
+        val numMap= mapOf(*namedCalculables)
         for((i, e) in elements.withIndex()) {
             when(e){
                 is Variable<*> -> numMap[e.name].notNull { setElementAt(i, e.replaceVars(it)) } //.also { prine("Block.replaceVars() numMap[${e.name}]= $it") }
-                is Block -> setElementAt(i, e.replaceVars(*namedCalculable))
+                is Block -> setElementAt(i, e.replaceVars(*namedCalculables))
             }
         }
         prine("Block.replaceVars() res= $this")
+    }
+
+    override fun replaceCalcs(vararg namedCalculables: Pair<Calculable, Calculable>): Calculable = clone_().apply {
+        this as Block
+        val numMap= mapOf(*namedCalculables)
+        for((i, e) in elements.withIndex()) {
+            when(e){
+                is Variable<*> -> numMap[e.forHash()].notNull { setElementAt(i, e.replaceVars(it)) } //.also { prine("Block.replaceVars() numMap[${e.name}]= $it") }
+                    .isNull { numMap[e].notNull { setElementAt(i, it) } }
+/*
+                is Block -> {
+                    numMap[e].notNull { setElementAt(i, it) }
+                        .isNull { setElementAt(i, e.replaceCalcs(*namedCalculables)) }
+                }
+ */
+                else -> numMap[e].notNull { setElementAt(i, it) }
+                    .isNull {
+                        if(e is Block) setElementAt(i, e.replaceCalcs(*namedCalculables))
+                    }
+            }
+        }
+        prine("Block.replaceVars(Calc) res= $this")
     }
 
     fun resultEquals(other: Calculable): Boolean {
@@ -468,6 +496,14 @@ interface Block: Calculable {
             }
         }
         return true
+    }
+
+    fun absolutelyEquals(other: Block, compareEqualityFirst: Boolean= true): Boolean {
+        if(compareEqualityFirst && this == other)
+            return true
+        return this == other.clone_().apply {
+            setSignum(false)
+        }
     }
 
 //    operator fun equals(other: Calculable): Boolean
@@ -629,27 +665,19 @@ internal class BlockImpl(
             Operation.PLUS.level -> { e1 -> when (e1) {
                 is Constant<*> -> { e2 -> e2 is Constant<*> }
                 is Variable<*> -> { e2 -> e2 is Variable<*> && e2.name == e1.name }
-                else -> { e2 ->
-//                    if(e2 is Block) e2.simply()
-                    e2.hashCode() == e1.hashCode()
-                }
+                else -> { e2 -> e2 == e1 }
             }}
             Operation.TIMES.level, Operation.POWER.level -> { e1 -> when(e1){
                 is Variable<*> -> { e2 -> e2 is Variable<*> && e2.name == e1.name }
                 is Constant<*> -> { e2 -> false }  // Karena constant semuanya udah dihitung pada saat perhitungan coeficient.
-                else -> { e2 ->
-//                    if(e2 is Block) e2.simply()
-                    e2.hashCode() == e1.hashCode()
-                }
+                else -> { e2 -> e2 == e1 }
             }}
+            //TODO 2 Des 2020
             Operation.MODULO.level -> { e1 -> { e2 -> false } }
             else -> { e1 -> when(e1){
                 is Constant<*>, is Variable<*> -> { e2 -> e2 is Constant<*> }
 //                is Variable<*> -> { e2 -> e2 is Constant<*> }
-                else -> { e2 ->
-//                    if(e2 is Block) e2.simply()
-                    false
-                }
+                else -> { e2 -> false }
             }}
         }
 
@@ -699,6 +727,7 @@ internal class BlockImpl(
         //Proses hasil simplikasi `Block` pada tahap sebelumnya.
         var isCoeficientComputed= false
         var computedCoeficient: Number?= null
+        var inversedE1: Block?= null
         val breakRef= Val(false)
         elementsDupl.forEachIndexed(breakRef = breakRef) { i, e1 ->
             if(!isOperated[i]){
@@ -735,21 +764,21 @@ internal class BlockImpl(
                                 isOperated[u]= true
                             when(opsDupl[u-1]){
                                 Operation.TIMES -> coeficientNum *= e2.numberComponent(false)!!
-                                Operation.DIVIDES -> coeficientNum /= e2.numberComponent(false)!!
+                                Operation.DIVIDES -> coeficientNum /= e2.numberComponent(false)!!.toDouble()
                             }
                         }
                     }
                     prine("simply() coeficient computation res= $coeficientNum this= $this")
                     when {
                         coeficientNum == 0 -> {
-                            uniqueEls += constantOf(0)
+                            uniqueEls.add(0, constantOf(0))
                             uniqueOps.clear()
                             breakRef.value= true
                             return@forEachIndexed
 //                            prine("simply() coeficient computation res= $coeficientNum this= $this coeficientNum == 0")
                         }
                         coeficientNum != 1 -> {
-                            uniqueEls += constantOf(coeficientNum)
+                            uniqueEls.add(0, constantOf(coeficientNum))
                             computedCoeficient= coeficientNum
                         }
                         else -> {
@@ -777,8 +806,12 @@ internal class BlockImpl(
                             prine("simply() PLUS numSum= $numSum signum= $signum")
                             if(numSum != 0) {
                                 when(e1){
-                                    is Constant<*> -> uniqueEls += constantOf(numSum.absoluteValue)
-                                    is Variable<*> -> uniqueEls += variableOf(e1.name, numSum.absoluteValue)
+                                    is Constant<*> -> uniqueEls += constantOf(
+                                        if(i > 0) numSum.absoluteValue else numSum
+                                    )
+                                    is Variable<*> -> uniqueEls += variableOf(e1.name,
+                                        if(i > 0) numSum.absoluteValue else numSum
+                                    )
                                 }
                                 if(i > 0)
                                     uniqueOps += if(numSum > 0) Operation.PLUS else Operation.MINUS
@@ -897,7 +930,9 @@ internal class BlockImpl(
                                 uniqueEls += e1.let {
                                     if(absCount == 1) it
                                     else blockOf(e1)
-                                        .addOperation(constantOf(absCount), Operation.TIMES)
+                                        .addOperation(constantOf(
+                                            if(i > 0) absCount else elCount
+                                        ), Operation.TIMES)
                                 }
                                 if(i > 0)
                                     uniqueOps += if(elCount > 0) Operation.PLUS else Operation.MINUS //+= opsDupl[i-1]
@@ -907,14 +942,28 @@ internal class BlockImpl(
                         Operation.TIMES.level -> {
                             var powerNum= if(i > 0 && opsDupl[i-1] == Operation.DIVIDES) -1 else 1
                             elementsDupl.forEachIndexed(i+1) { u, e2 ->
-                                if(!isOperated[u] && conFun(e2)) {
+                                if(!isOperated[u] && e2 is Block) {
                                     prine("when(opsDupl[u-1]) u-1= ${u-1} u= $u i= $i elementsDupl[u]= ${elementsDupl[u]} elementsDupl= $elementsDupl")
-
-                                    when(opsDupl[u-1]){
-                                        Operation.TIMES -> powerNum++
-                                        Operation.DIVIDES -> powerNum--
+                                    //TODO 2 Des 2020: Test apakah alur baru bisa berfungsi dg baik.
+                                    var continueCompare= e2 == e1
+                                    if(!continueCompare){
+                                        if(inversedE1 == null)
+                                            inversedE1= e1.clone_().apply { setSignum(false) } as Block
+                                        continueCompare= inversedE1 == e2
+                                        if(continueCompare && uniqueEls.firstOrNull() is Constant<*>){
+                                            val firstEl= uniqueEls.firstOrNull()
+                                            if(firstEl is Constant<*>){
+                                                uniqueEls[0]= constantOf(firstEl.number * -1)
+                                            }
+                                        }
                                     }
-                                    isOperated[u]= true
+                                    if(continueCompare) {
+                                        when(opsDupl[u-1]){
+                                            Operation.TIMES -> powerNum++
+                                            Operation.DIVIDES -> powerNum--
+                                        }
+                                        isOperated[u]= true
+                                    }
                                 }
                             }
                             if(powerNum != 0){
@@ -1397,6 +1446,17 @@ internal class BlockImpl(
      * Anggapannya jika 1 `Block` terdiri dari operasi dg level yg sama,
      */
     override fun hashCode(): Int {
+        val ops= operations
+        var res= 0
+        for((i, e) in elements.withIndex()){
+            val op= if(i > 0) ops[i-1] else null
+            val eHash= e.hashCode()
+            res += eHash * (eHash - op.hashCode())
+        }
+        return res
+    }
+/*
+    {
         if(elements.size <= 1)
             return getHashCode(elements)
 
@@ -1432,9 +1492,64 @@ internal class BlockImpl(
 
         return hash
     }
+ */
 
-    override fun equals(other: Any?): Boolean = when(other){
-        is Calculable -> hashCode() == other.hashCode()
-        else -> super.equals(other)
+    override fun equals(other: Any?): Boolean {
+        return when(other){
+            is Block -> {
+                if(operationLevel != other.operationLevel)
+                    return false
+
+                val otherElements= other.elements
+                val otherOps= other.operations
+                val ops= operations
+                if (elements.size != otherElements.size)
+                    return false
+
+                when(operationLevel){
+                    Operation.PLUS.level -> {
+                        for((i, e1) in elements.withIndex()) {
+                            val op1= if(i > 0) ops[i-1] else null
+                            val trueCoe1= if(op1 != Operation.MINUS) e1.numberComponent() ?: 1
+                                else e1.numberComponent()?.times(-1) ?: -1
+                            val trueName1= e1.nameComponent()
+
+                            var bool= false
+                            for((u, e2) in otherElements.withIndex()){
+                                val op2= if(u > 0) otherOps[u-1] else null
+                                val trueCoe2= if(op2 != Operation.MINUS) e2.numberComponent() ?: 1
+                                    else e2.numberComponent()?.times(-1) ?: -1
+                                val trueName2= e2.nameComponent()
+
+                                if(trueCoe1 == trueCoe2 && trueName1 == trueName2){
+                                    bool= true
+                                    break
+                                }
+                            }
+                            if(!bool)
+                                return false
+                        }
+                        true
+                    }
+                    else -> {
+                        for((i, e1) in elements.withIndex()) {
+                            val op1= if(i > 0) ops[i-1] else null
+                            var bool= false
+                            for((u, e2) in otherElements.withIndex()){
+                                val op2= if(u > 0) otherOps[u-1] else null
+                                if(e1 == e2 && op1 == op2){
+                                    bool= true
+                                    break
+                                }
+                            }
+                            if(!bool)
+                                return false
+                        }
+                        true
+                    }
+                }
+            }
+            else -> super.equals(other)
+        }
     }
 }

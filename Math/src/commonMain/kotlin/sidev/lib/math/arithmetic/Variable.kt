@@ -17,7 +17,8 @@ interface Variable<T: Number>: SingleElement<T> {
     fun calculate(n: Number): Number = n * coeficient
     operator fun invoke(n: Number): Number = calculate(n)
 
-    override fun replaceVars(vararg namedCalculable: Pair<String, Calculable>): Calculable = replaceVars(namedCalculable.first().second)
+    override fun replaceVars(vararg namedCalculables: Pair<String, Calculable>): Calculable = replaceVars(namedCalculables.first().second)
+    override fun replaceCalcs(vararg namedCalculables: Pair<Calculable, Calculable>): Calculable = namedCalculables.first().second //replaceVars(namedCalculables.first().second)
     fun replaceVars(calc: Calculable): Calculable = when(calc){
         is Constant<*> -> constantOf(coeficient * calc.number)
         is Variable<*> -> variableOf(calc.name, coeficient * calc.coeficient)
@@ -124,7 +125,7 @@ interface Variable<T: Number>: SingleElement<T> {
 // */
 }
 
-data class VariableImpl<T: Number>(override val name: String, override val coeficient: T): Variable<T> {
+internal open class VariableImpl<T: Number>(override val name: String, override val coeficient: T): Variable<T> {
     override fun toString(): String = when(coeficient){
         1 -> name
         -1 -> "-$name"
