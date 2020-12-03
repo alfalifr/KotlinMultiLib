@@ -68,3 +68,35 @@ fun <K, V> MutableMap<K, V>.removeAllValue(value: V): Boolean {
         }
     return res
 }
+
+
+fun <K, V> Map<K, V>.find(predicate: (Map.Entry<K, V>) -> Boolean): Map.Entry<K, V>? {
+    for(e in this)
+        if(predicate(e))
+            return e
+    return null
+}
+
+fun <K, V> Map<K, V>.findIndexed(predicate: (index: Int, Map.Entry<K, V>) -> Boolean): Map.Entry<K, V>? {
+    for((i, e) in this.iterator().withIndex())
+        if(predicate(i, e))
+            return e
+    return null
+}
+
+
+fun <K, V> Map<K, V>.findLast(predicate: (Map.Entry<K, V>) -> Boolean): Map.Entry<K, V>? {
+    var res: Map.Entry<K, V>?= null
+    for(e in this)
+        if(predicate(e))
+            res= e
+    return res
+}
+
+fun <K, V> Map<K, V>.findLastIndexed(predicate: (index: Int, Map.Entry<K, V>) -> Boolean): Map.Entry<K, V>? {
+    var res: Map.Entry<K, V>?= null
+    for((i, e) in this.iterator().withIndex())
+        if(predicate(i, e))
+            res= e
+    return res
+}

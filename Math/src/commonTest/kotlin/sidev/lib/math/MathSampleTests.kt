@@ -579,6 +579,7 @@ class MathSampleTests {
         prin("sysEq1.solve()= ${sysEq1.solve()}")
     }
 
+    //TODO 2 Des 2020: Sempurnakan cara penyelesaian yg membutuhkan perulangan dalam penyelesaian variabel.
     @Test
     fun systemEqTest_2(){
         val eq1= simpleEquationOf("5x -3y +2z = 3")
