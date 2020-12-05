@@ -17,7 +17,7 @@ fun <T> List<T>.binarySearch(
 
     var index= -1
     var low= fromIndex
-    var high= toIndex
+    var high= toIndex -1
 
     @Suppress(SuppressLiteral.UNCHECKED_CAST)
     while(low <= high){

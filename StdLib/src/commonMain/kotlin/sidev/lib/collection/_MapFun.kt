@@ -100,3 +100,16 @@ fun <K, V> Map<K, V>.findLastIndexed(predicate: (index: Int, Map.Entry<K, V>) ->
             res= e
     return res
 }
+
+
+fun <K, V> Map<K, V>.joinToString(
+    separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "",
+    limit: Int = -1, truncated: CharSequence = "...",
+    transform: ((Map.Entry<K, V>) -> CharSequence)? = null
+): String = entries.joinToString(separator, prefix, postfix, limit, truncated, transform)
+
+fun <K, V, A : Appendable> Map<K, V>.joinTo(
+    buffer: A, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "",
+    limit: Int = -1, truncated: CharSequence = "...",
+    transform: ((Map.Entry<K, V>) -> CharSequence)? = null
+): A = entries.joinTo(buffer, separator, prefix, postfix, limit, truncated, transform)
