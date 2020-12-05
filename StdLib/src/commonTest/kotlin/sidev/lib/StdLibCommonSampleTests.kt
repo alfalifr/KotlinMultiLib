@@ -436,4 +436,10 @@ class StdLibCommonSampleTests {
             prin(e)
         }
     }
+
+    @Test
+    fun searcTest(){
+        val ls= listOf(1,3,3,7,8,12,21)
+        ls.sorted()
+    }
 }

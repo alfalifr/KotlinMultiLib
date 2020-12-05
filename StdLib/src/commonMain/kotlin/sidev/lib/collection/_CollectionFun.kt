@@ -4,6 +4,7 @@ import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.console.log
 import sidev.lib.console.prine
+import sidev.lib.exception.IllegalArgExc
 import sidev.lib.structure.data.value.Val
 import kotlin.jvm.JvmOverloads
 import sidev.lib.collection.array.get as stdSubArray
@@ -555,4 +556,13 @@ fun <T> queueOf(vararg elements: T): Queue<T> = QueueImpl<T>(elements.size +5).a
 val Iterable<*>.size: Int get()= when(this){
     is Collection<*> -> size
     else -> toList().size
+}
+
+
+fun rangeCheck(size: Int, fromIndex: Int, toIndex: Int) {
+    when {
+        fromIndex > toIndex -> throw IllegalArgExc(paramExcepted = arrayOf("fromIndex", "toIndex"), detailMsg = "`fromIndex`='$fromIndex' lebih besar dari `toIndex`='$toIndex'.")
+        fromIndex < 0 -> throw IndexOutOfBoundsException("`fromIndex`='$fromIndex' kurang dari 0.")
+        toIndex > size -> throw IndexOutOfBoundsException("`toIndex`='$toIndex' lebih dari `size`='$size'")
+    }
 }
