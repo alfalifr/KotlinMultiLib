@@ -18,7 +18,10 @@ fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
     }
 }
 
-inline fun <reified T> Iterable<T>.toTypedArray(): Array<T> = toList().kToTypedArray()
+inline fun <reified T> Iterable<T>.toTypedArray(): Array<T> = when(this){
+    is Collection<*> -> this as Collection<T>
+    else -> toList()
+}.kToTypedArray()
 
 
 
@@ -250,21 +253,22 @@ inline fun <T> MutableList<T>.addAllIfAbsent(vararg element: T, chekcFun: ((exis
 }
 
 
-inline fun <reified T> Array<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): Array<T> {
+inline fun <reified T> Array<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): Array<T> = copyTo(arrayOfNulls<T>(end - start) as Array<T>, start, end, reversed)
+inline fun <reified T> Array<T>.copyTo(dest: Array<T>, start: Int= 0, end: Int= size, reversed: Boolean= false): Array<T> {
+    rangeCheck(end - start, start, end)
+
     val rangeItr= (if(!reversed) start until end
         else end-1 downTo start).iterator()
-    return Array(end - start){ this[rangeItr.nextInt()] }
-/*
-    return if(!reversed) this.copyOf(end - start).also {
-        for(i in start until end){
-
-        }
-    } as Array<T>
-    else Array(this.size){this[size -it -1]}
- */
+    var i= 0
+    for(u in rangeItr)
+        dest[i++]= this[u]
+    return dest //Array(end - start){ this[rangeItr.nextInt()] }
 }
 
-fun <T> List<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): List<T> {
+inline fun <reified T> List<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): List<T> = kToTypedArray().copy(start, end, reversed).asList()
+
+/*
+{
     val newList= mutableListOf<T>()
     val range= if(!reversed) start until end
         else end-1 downTo start
@@ -272,6 +276,7 @@ fun <T> List<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): L
         newList.add(this[i])
     return newList
 }
+ */
 
 
 /*
