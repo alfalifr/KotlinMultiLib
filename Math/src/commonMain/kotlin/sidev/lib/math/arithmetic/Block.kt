@@ -1,12 +1,10 @@
 package sidev.lib.math.arithmetic
 
-import sidev.lib.collection.forEachIndexed
 import sidev.lib.annotation.TooExpensiveForBackingField
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
 import sidev.lib.collection.addIfAbsent
-import sidev.lib.collection.copy
-import sidev.lib.collection.indexOfWhere
+import sidev.lib.collection.array.indexOfWhere
 import sidev.lib.console.prine
 import sidev.lib.console.prinw
 import sidev.lib.exception.IllegalArgExc
@@ -1365,9 +1363,9 @@ internal class BlockImpl(
                 // #4 - Ok
                 //1*3*2/4
                 //((1*3)-10)*2/4
-                val headElements= if(elementIndex > 0) elements.copy(end = elementIndex).toMutableList() //.subList(0, elementIndex).toMutableList()
+                val headElements= if(elementIndex > 0) elements.copy(until = elementIndex).toMutableList() //.subList(0, elementIndex).toMutableList()
                     else mutableListOf(elements[0])
-                val headOps= if(elementIndex > 1) operations.copy(end = elementIndex-1).toMutableList() //.subList(0, elementIndex-1).toMutableList()
+                val headOps= if(elementIndex > 1) operations.copy(until = elementIndex-1).toMutableList() //.subList(0, elementIndex-1).toMutableList()
                     else null
 
                 val innerHeadBlock= blockOf(

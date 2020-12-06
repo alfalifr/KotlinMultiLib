@@ -1,6 +1,5 @@
 package main
 
-import sidev.lib.collection.forEachIndexed
 import sidev.lib.collection.duplicatUnion
 import sidev.lib.console.prin
 import sidev.lib.math.*

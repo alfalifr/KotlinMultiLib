@@ -1,6 +1,5 @@
 package sidev.lib.math.arithmetic
 
-import sidev.lib.collection.copy
 import sidev.lib.math.fpb
 import sidev.lib.number.*
 

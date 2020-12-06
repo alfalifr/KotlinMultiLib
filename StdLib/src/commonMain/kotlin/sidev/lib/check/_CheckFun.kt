@@ -4,6 +4,7 @@ import sidev.lib.collection.toTypedArray
 import sidev.lib.console.prine
 import sidev.lib.exception.isUninitializedExc
 import kotlin.Exception
+//import kotlin.collections.toTypedArray as kToTypedArray
 
 /**
  * Cara aman untuk mendapatkan  nilai dari `lateinit var` dari `this.extension` [I].

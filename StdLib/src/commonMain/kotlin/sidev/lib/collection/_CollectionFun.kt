@@ -1,15 +1,65 @@
 package sidev.lib.collection
 
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.collection.array.forEach
 import sidev.lib.collection.sequence.toOtherSequence
-import sidev.lib.console.log
-import sidev.lib.console.prine
 import sidev.lib.exception.IllegalArgExc
 import sidev.lib.structure.data.value.Val
 import kotlin.jvm.JvmOverloads
 import sidev.lib.collection.array.get as stdSubArray
 import kotlin.collections.toTypedArray as kToTypedArray
+import kotlin.collections.toList as kToList
 
+
+inline fun <reified T> Collection<T>.toTypedArray(): Array<T> = kToTypedArray()
+inline fun <reified T> Iterable<T>.toTypedArray(): Array<T> = toTypedArray(false)
+inline fun <reified T> Iterable<T>.toTypedArray(reversed: Boolean = false): Array<T> {
+    val arr= when(this){
+        is Collection<T> -> this
+        else -> kToList()
+    }.kToTypedArray()
+    if(reversed)
+        arr.reverse()
+    return arr
+}
+inline fun <reified T> List<T>.toTypedArray(from: Int = 0, until: Int = size, reversed: Boolean = false): Array<T> =
+    if(!reversed) Array(until - from){ this[it +from] }
+    else {
+        val lastIndex= until -1
+        Array(until - from){ this[lastIndex -it] }
+    }
+inline fun <reified T> Iterable<T>.toTypedArray(from: Int = 0, until: Int = size, reversed: Boolean = false): Array<T> = when {
+    from == 0 && until == size -> toTypedArray(reversed)
+    this is List<T> -> toTypedArray(from, until, reversed)
+    else -> {
+        val itr= iterator()
+        val range= from until until
+        val arr= arrayOfNulls<T>(until - from)
+        var i= 0
+        while(itr.hasNext()){
+            val e= itr.next()
+            if(i in range)
+                arr[i++]= e
+            else if(i > range.last)
+                break
+        }
+        if(reversed)
+            arr.reverse()
+        arr as Array<T>
+    }
+}
+
+fun Iterable<*>.toArray(): Array<Any?> = toTypedArray()
+fun Iterable<*>.toArray(reversed: Boolean = false): Array<Any?> = toTypedArray(reversed)
+fun Iterable<*>.toArray(from: Int = 0, until: Int = size, reversed: Boolean = false): Array<Any?> = toTypedArray(from, until, reversed)
+fun List<*>.toArray(from: Int, until: Int, reversed: Boolean): Array<Any?> = toTypedArray(from, until, reversed)
+fun Collection<*>.toArray(): Array<Any?> = kToTypedArray()
+
+
+fun <T> Collection<T>.asMutableList(): MutableList<T> = when(this){
+    is MutableList<*> -> this as MutableList<T>
+    else -> toMutableList()
+}
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
     return arrayListOf<T>().apply {
@@ -17,11 +67,6 @@ fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{
             add(init(i))
     }
 }
-
-inline fun <reified T> Iterable<T>.toTypedArray(): Array<T> = when(this){
-    is Collection<*> -> this as Collection<T>
-    else -> toList()
-}.kToTypedArray()
 
 
 
@@ -253,19 +298,22 @@ inline fun <T> MutableList<T>.addAllIfAbsent(vararg element: T, chekcFun: ((exis
 }
 
 
-inline fun <reified T> Array<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): Array<T> = copyTo(arrayOfNulls<T>(end - start) as Array<T>, start, end, reversed)
-inline fun <reified T> Array<T>.copyTo(dest: Array<T>, start: Int= 0, end: Int= size, reversed: Boolean= false): Array<T> {
-    rangeCheck(end - start, start, end)
 
-    val rangeItr= (if(!reversed) start until end
-        else end-1 downTo start).iterator()
+/*
+inline fun <reified T> Array<T>.copyTo(dest: Array<T>, from: Int= 0, until: Int= size, reversed: Boolean= false): Array<T> {
+    rangeCheck(until - from, from, until)
+
+    val rangeItr= (if(!reversed) from until until
+        else until-1 downTo from).iterator()
     var i= 0
     for(u in rangeItr)
         dest[i++]= this[u]
     return dest //Array(end - start){ this[rangeItr.nextInt()] }
 }
+ */
 
-inline fun <reified T> List<T>.copy(start: Int= 0, end: Int= size, reversed: Boolean= false): List<T> = kToTypedArray().copy(start, end, reversed).asList()
+fun <T> List<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): List<T> =
+    toArray(from, until, reversed).asList() as List<T>
 
 /*
 {
@@ -363,23 +411,6 @@ fun <T> Sequence<T>.findLastIndexed(predicate: (IndexedValue<T>) -> Boolean): In
 }
 
 
-fun <T> Array<T>.findIndexed(predicate: (IndexedValue<T>) -> Boolean): IndexedValue<T>?{
-    for(vals in this.withIndex()){
-        if(predicate(vals))
-            return vals
-    }
-    return null
-}
-
-fun <T> Array<T>.findLastIndexed(predicate: (IndexedValue<T>) -> Boolean): IndexedValue<T>?{
-    var foundElement: IndexedValue<T>?= null
-    for(vals in this.withIndex()){
-        if(predicate(vals))
-            foundElement= vals
-    }
-    return foundElement
-}
-
 
 fun <T> Iterable<T>.filterIndexed(predicate: (IndexedValue<T>) -> Boolean): List<IndexedValue<T>>{
     val res= ArrayList<IndexedValue<T>>()
@@ -392,24 +423,7 @@ fun <T> Sequence<T>.filterIndexed(predicate: (IndexedValue<T>) -> Boolean): Sequ
     var index= 0
     return toOtherSequence { IndexedValue(index++, it) }.filter(predicate)
 }
-fun <T> Array<T>.filterIndexed(predicate: (IndexedValue<T>) -> Boolean): List<IndexedValue<T>>{
-    val res= ArrayList<IndexedValue<T>>()
-    for(vals in this.withIndex()){
-        if(predicate(vals)){
-            res += vals
-        }
-    }
-    return res
-}
 
-
-fun <T> Array<T>.filterContainedIn(array: Array<T>): List<T> {
-    val out= ArrayList<T>()
-    for(e in this)
-        if(e in array)
-            out.add(e)
-    return out
-}
 fun <T> Iterable<T>.filterContainedIn(array: Array<T>): List<T> {
     val out= ArrayList<T>()
     for(e in this)
@@ -547,8 +561,6 @@ operator fun <C: Collection<T>, T> C.get(range: IntRange): C {
     return (if(this is List<*>) this else toList()).subList(range.first, range.last) as C
 }
 
-operator fun <T> Array<T>.get(range: IntRange): Array<T> = stdSubArray(range)
-
 
 fun <T> stackOf(vararg elements: T): Stack<T> = StackImpl<T>(elements.size +5).apply {
     elements.forEach { push(it) }
@@ -566,7 +578,10 @@ val Iterable<*>.size: Int get()= when(this){
 
 fun rangeCheck(size: Int, fromIndex: Int, toIndex: Int) {
     when {
-        fromIndex > toIndex -> throw IllegalArgExc(paramExcepted = arrayOf("fromIndex", "toIndex"), detailMsg = "`fromIndex`='$fromIndex' lebih besar dari `toIndex`='$toIndex'.")
+        fromIndex > toIndex -> throw IllegalArgExc(paramExcepted = sidev.lib.collection.array.arrayOf(
+            "fromIndex",
+            "toIndex"
+        ), detailMsg = "`fromIndex`='$fromIndex' lebih besar dari `toIndex`='$toIndex'.")
         fromIndex < 0 -> throw IndexOutOfBoundsException("`fromIndex`='$fromIndex' kurang dari 0.")
         toIndex > size -> throw IndexOutOfBoundsException("`toIndex`='$toIndex' lebih dari `size`='$size'")
     }

@@ -2,7 +2,13 @@ package sidev.lib
 
 import sidev.lib.`val`.NumberOperationMode
 import sidev.lib.`val`.RoundingMode
+import sidev.lib.algo.insertionSort
+import sidev.lib.algo.mergeSort
+import sidev.lib.algo.quickSort
+import sidev.lib.algo.selectionSort
 import sidev.lib.collection.*
+import sidev.lib.collection.array.copy
+import sidev.lib.collection.array.forEach
 import sidev.lib.collection.common.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
@@ -14,11 +20,14 @@ import sidev.lib.number.*
 import sidev.lib.progression.*
 import sidev.lib.reflex.getHashCode
 import sidev.lib.util.Locale
+import sidev.lib.collection.array.get
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class StdLibCommonSampleTests {
 
@@ -291,7 +300,7 @@ class StdLibCommonSampleTests {
 
         prin(listOf(1,2,3,4,5).subList(1,3))
 
-        val array= arrayOf(1,2,3,4,5)
+        val array= sidev.lib.collection.array.arrayOf(1, 2, 3, 4, 5)
         val arr2= array[1..3]
         val mutList2= mutList[1 .. 1]
 
@@ -441,5 +450,129 @@ class StdLibCommonSampleTests {
     fun searcTest(){
         val ls= listOf(1,3,3,7,8,12,21)
         ls.sorted()
+    }
+
+    @ExperimentalTime
+    @Test
+    fun sortTest(){
+        val arr= sidev.lib.collection.array.arrayOf(1, 2, 4, 1, 5, 1, 5, 12, 42, 23, 11, 10, 15, 14)
+        val arrk = arr.copyOf()
+        val arr1: Array<Int> = arr.copyOf()
+        val arr2: Array<Int> = arr.copyOf()
+        val arr3: Array<Int> = arr.copyOf()
+        val arr4: Array<Int> = arr.copyOf()
+
+        val tk= measureTime { arrk.sort() }
+        val t1= measureTime { arr1.selectionSort() }
+        val t2= measureTime { arr2.insertionSort() }
+        val t3= measureTime { arr3.mergeSort() }
+        val t4= measureTime { arr4.quickSort() }
+
+        prin("\n\n ========== size=14 ============ \n\n ")
+        prin("arr= ${arr.joinToString()}")
+        prin("arrk= ${arrk.joinToString()} \n tk= $tk")
+        prin("arr1= ${arr1.joinToString()} \n t1= $t1")
+        prin("arr2= ${arr2.joinToString()} \n t2= $t2")
+        prin("arr3= ${arr3.joinToString()} \n t3= $t3")
+        prin("arr4= ${arr4.joinToString()} \n t4= $t4")
+
+        val arr_= arr.copyGrowTimely(20).toTypedArray()
+        val arr_k= arr_.copyOf()
+        val arr5: Array<Int> = arr_.copyOf()
+        val arr6: Array<Int> = arr_.copyOf()
+        val arr7: Array<Int> = arr_.copyOf()
+        val arr8: Array<Int> = arr_.copyOf()
+
+        val t_k= measureTime { arr_k.sort() }
+        val t5= measureTime { arr5.selectionSort() }
+        val t6= measureTime { arr6.insertionSort() }
+        val t7= measureTime { arr7.mergeSort() }
+        val t8= measureTime { arr8.quickSort() }
+
+        prin("\n\n ========== size=280 ============ \n\n ")
+        prin("arr_= ${arr_.joinToString()}")
+        prin("arr_K= ${arr_k.joinToString()} \n t_k= $t_k")
+        prin("arr5= ${arr5.joinToString()} \n t5= $t5")
+        prin("arr6= ${arr6.joinToString()} \n t6= $t6")
+        prin("arr7= ${arr7.joinToString()} \n t7= $t7")
+        prin("arr8= ${arr8.joinToString()} \n t8= $t8")
+
+        val arr__= arr.copyGrowTimely(100).toTypedArray()
+        val arr__k= arr__.copyOf()
+        val arr9: Array<Int> = arr__.copyOf()
+        val arr10: Array<Int> = arr__.copyOf()
+        val arr11: Array<Int> = arr__.copyOf()
+        val arr12: Array<Int> = arr__.copyOf()
+
+        val t__k= measureTime { arr__k.sort() }
+        val t9= measureTime { arr9.selectionSort() }
+        val t10= measureTime { arr10.insertionSort() }
+        val t11= measureTime { arr11.mergeSort() }
+        val t12= measureTime { arr12.quickSort() }
+
+        prin("\n\n ========== size=1400 ============ \n\n ")
+        prin("arr__= ${arr__.joinToString()}")
+        prin("arr__k= ${arr__k.joinToString()} \n t__k= $t__k")
+        prin("arr9= ${arr9.joinToString()} \n t9= $t9")
+        prin("arr10= ${arr10.joinToString()} \n t10= $t10")
+        prin("arr11= ${arr11.joinToString()} \n t11= $t11")
+        prin("arr12= ${arr12.joinToString()} \n t12= $t12")
+
+        val arr___= arr.copyGrowTimely(2000).toTypedArray()
+        val arr___k= arr___.copyOf()
+        val arr13: Array<Int> = arr___.copyOf()
+        val arr14: Array<Int> = arr___.copyOf()
+        val arr15: Array<Int> = arr___.copyOf()
+        val arr16: Array<Int> = arr___.copyOf()
+
+        val t___k= measureTime { arr___k.sort() }
+        val t13= measureTime { arr13.selectionSort() }
+        val t14= measureTime { arr14.insertionSort() }
+        val t15= measureTime { arr15.mergeSort() }
+        val t16= measureTime { arr16.quickSort() }
+
+        prin("\n\n ========== size=28000 ============ \n\n ")
+        prin("arr___= ${arr___.joinToString()}")
+        prin("arr___k= ${arr___k.joinToString()} \n t___k= $t___k")
+        prin("arr13= ${arr13.joinToString()} \n t13= $t13")
+        prin("arr14= ${arr14.joinToString()} \n t14= $t14")
+        prin("arr15= ${arr15.joinToString()} \n t15= $t15")
+        prin("arr16= ${arr16.joinToString()} \n t16= $t16")
+    }
+
+    @Test
+    fun toArrayTest(){
+        val ls= listOf(1,2,3,4,1,3)
+        val arr1= ls.toArray()
+        val arr2= ls.toTypedArray(3)
+
+        prin("arr1= '${arr1.joinToString()}'")
+        prin("arr2= '${arr2.joinToString()}'")
+
+        val arr= arrayOf(1, 2, 3, 1, 4, 5)
+        val arr3= arr.copy(3)
+        val arr4= arr.copy(3, reversed = true)
+
+        prin("arr= '${arr.joinToString()}'")
+        prin("arr3= '${arr3.joinToString()}'")
+        prin("arr4= '${arr4.joinToString()}'")
+    }
+
+    @Test
+    fun sortNSearchTest(){
+        val arr= arrayOf(1,2,41,4,3,6,12,5,7,8,14)
+        val arr1= arr.copyOf()
+        arr1.fastSort()
+        val ind0= arr.fastIndexOf(5, true)
+        val ind1= arr1.fastIndexOf(5, true)
+        val ind2= arr1.fastIndexOf(9, true)
+        val ind3= arr1.fastIndexOf(9)
+
+        prin("arr= ${arr.joinToString()}")
+        prin("arr1= ${arr1.joinToString()}")
+        prin("ind1= $ind1")
+        prin("ind2= $ind2")
+        prin("ind3= $ind3")
+        prin("ind0= $ind0")
     }
 }

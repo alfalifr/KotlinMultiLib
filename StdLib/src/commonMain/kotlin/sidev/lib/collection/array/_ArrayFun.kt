@@ -2,7 +2,6 @@ package sidev.lib.collection.array
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
-import sidev.lib.collection.toList
 import sidev.lib.progression.asEndExclusive
 import sidev.lib.structure.data.value.Val
 import kotlin.jvm.JvmOverloads
@@ -212,4 +211,145 @@ fun <T> Array<T>.forEachIndexed(
     }
     for(i in range)
         block(i, this[i])
+}
+
+
+fun <T> Array<T>.findIndexed(predicate: (IndexedValue<T>) -> Boolean): IndexedValue<T>?{
+    for(vals in this.withIndex()){
+        if(predicate(vals))
+            return vals
+    }
+    return null
+}
+
+fun <T> Array<T>.findLastIndexed(predicate: (IndexedValue<T>) -> Boolean): IndexedValue<T>?{
+    var foundElement: IndexedValue<T>?= null
+    for(vals in this.withIndex()){
+        if(predicate(vals))
+            foundElement= vals
+    }
+    return foundElement
+}
+
+
+fun <T> Array<T>.filterIndexed(predicate: (IndexedValue<T>) -> Boolean): List<IndexedValue<T>>{
+    val res= ArrayList<IndexedValue<T>>()
+    for(vals in this.withIndex()){
+        if(predicate(vals)){
+            res += vals
+        }
+    }
+    return res
+}
+
+
+fun <T> Array<T>.filterContainedIn(array: Array<T>): List<T> {
+    val out= ArrayList<T>()
+    for(e in this)
+        if(e in array)
+            out.add(e)
+    return out
+}
+
+
+//operator fun <T> Array<T>.get(range: IntRange): Array<T> = stdSubArray(range)
+
+
+inline fun <reified T> Array<T>.copy(): Array<T> = copyOf()
+inline fun <reified T> Array<T>.copy(reversed: Boolean= false): Array<T> {
+    val arr= copyOf()
+    if(reversed)
+        arr.reverse()
+    return arr
+}
+inline fun <reified T> Array<T>.copy(from: Int= 0, until: Int= size): Array<T> = Array(until - from){ this[it +from] }
+inline fun <reified T> Array<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Array<T> = when {
+    from == 0 && until == size -> copy(reversed)
+    !reversed -> Array(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        Array(until - from){ this[lastIndex -it] }
+    }
+}
+
+
+
+fun ByteArray.copy(): ByteArray = copyOf()
+fun ByteArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): ByteArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> ByteArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        ByteArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun ShortArray.copy(): ShortArray = copyOf()
+fun ShortArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): ShortArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> ShortArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        ShortArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun IntArray.copy(): IntArray = copyOf()
+fun IntArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): IntArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> IntArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        IntArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun LongArray.copy(): LongArray = copyOf()
+fun LongArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): LongArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> LongArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        LongArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun FloatArray.copy(): FloatArray = copyOf()
+fun FloatArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): FloatArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> FloatArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        FloatArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun DoubleArray.copy(): DoubleArray = copyOf()
+fun DoubleArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): DoubleArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> DoubleArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        DoubleArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun CharArray.copy(): CharArray = copyOf()
+fun CharArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): CharArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> CharArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        CharArray(until - from){ this[lastIndex -it] }
+    }
+}
+
+fun BooleanArray.copy(): BooleanArray = copyOf()
+fun BooleanArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): BooleanArray = when {
+    from == 0 && until == size -> copyOf()
+    !reversed -> BooleanArray(until - from){ this[it +from] }
+    else -> {
+        val lastIndex= until -1
+        BooleanArray(until - from){ this[lastIndex -it] }
+    }
 }

@@ -20,4 +20,7 @@ class MathSampleTestsJVM {
         Int.MAX_VALUE
     }
  */
+    fun sortJvmTest(){
+//        java.util.Arrays.sort()
+    }
 }

@@ -10,4 +10,5 @@ object SuppressLiteral {
     const val EMPTY_BODY_CONTROL_FLOW= "ControlFlowWithEmptyBody"
     const val NAME_SHADOWING= "NAME_SHADOWING"
     const val EXTENSION_SHADOWED_BY_MEMBER= "EXTENSION_SHADOWED_BY_MEMBER"
+    const val NO_ACTUAL_FOR_EXPECT= "NO_ACTUAL_FOR_EXPECT"
 }

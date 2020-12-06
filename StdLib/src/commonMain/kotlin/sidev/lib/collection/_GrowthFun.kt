@@ -27,14 +27,14 @@ fun <T> MutableList<T>.growExponentially(factor: Int){
                 this.add(this[e])
 }
 
-fun <T> MutableList<T>.copyGrowIncremental(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
+fun <T> List<T>.copyGrowIncremental(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
     val newList= collIn ?: ArrayList(this)
     val initSize= this.size
     for(i in 0 until factor)
         newList.add(this[i % initSize])
     return newList
 }
-fun <T> MutableList<T>.copyGrowTimely(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
+fun <T> List<T>.copyGrowTimely(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
     val newList= collIn ?: ArrayList(this)
     val initSize= this.size
     for(i in 0 until factor)
@@ -42,7 +42,7 @@ fun <T> MutableList<T>.copyGrowTimely(factor: Int, collIn: MutableCollection<T>?
             newList.add(this[u])
     return newList
 }
-fun <T> MutableList<T>.copyGrowExponentially(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
+fun <T> List<T>.copyGrowExponentially(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
     val newList= collIn ?: ArrayList(this)
     val initSize= this.size
     for(i in 0 until factor)
@@ -54,14 +54,14 @@ fun <T> MutableList<T>.copyGrowExponentially(factor: Int, collIn: MutableCollect
 
 //======Array==========
 fun <T> Array<T>.copyGrowIncremental(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
-    val newList= collIn ?: ArrayList(this.toList())
+    val newList= collIn ?: ArrayList(asList())
     val initSize= this.size
     for(i in 0 until factor)
         newList.add(this[i % initSize])
     return newList
 }
 fun <T> Array<T>.copyGrowTimely(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
-    val newList= collIn ?: ArrayList(this.toList())
+    val newList= collIn ?: ArrayList(asList())
     val initSize= this.size
     for(i in 0 until factor)
         for(u in 0 until initSize)
@@ -69,7 +69,7 @@ fun <T> Array<T>.copyGrowTimely(factor: Int, collIn: MutableCollection<T>?= null
     return newList
 }
 fun <T> Array<T>.copyGrowExponentially(factor: Int, collIn: MutableCollection<T>?= null): MutableCollection<T>{
-    val newList= collIn ?: ArrayList(this.toList())
+    val newList= collIn ?: ArrayList(asList())
     val initSize= this.size
     for(i in 0 until factor)
         for(u in 0 until factor)

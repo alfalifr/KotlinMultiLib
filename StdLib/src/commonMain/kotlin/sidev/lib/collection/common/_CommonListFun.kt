@@ -1,6 +1,6 @@
 package sidev.lib.collection.common
 
-import sidev.lib.collection.sort
+//import sidev.lib.collection.sort
 import sidev.lib.collection.string
 import sidev.lib.`val`.SuppressLiteral
 import kotlin.reflect.KProperty
@@ -327,10 +327,11 @@ operator fun <K, V> CommonMutableList<K, V>.minusAssign(other: Map<out K, V>){
 }
 
 
-
+/*
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <C: CommonIndexedMutableList<V>, V: Comparable<V>> C.sort(func: (V, V) -> Boolean): C
         = (this as MutableList<V>).sort(func) as C
+ */
 
 /** Untuk indexed access dari [CommonMutableList]. */
 operator fun <K, V> CommonMutableList<K, V>.set(key: K, element: V){
