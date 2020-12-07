@@ -1,6 +1,7 @@
 package sidev.lib.math.arithmetic
 
 import sidev.lib.annotation.ComputedProperty
+import sidev.lib.collection.forEachIndexed
 import sidev.lib.number.compareTo
 import sidev.lib.number.div
 import sidev.lib.reflex.getHashCode

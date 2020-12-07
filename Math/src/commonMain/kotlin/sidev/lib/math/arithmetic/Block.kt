@@ -5,6 +5,7 @@ import sidev.lib.check.isNull
 import sidev.lib.check.notNull
 import sidev.lib.collection.addIfAbsent
 import sidev.lib.collection.array.indexOfWhere
+import sidev.lib.collection.copy
 import sidev.lib.console.prine
 import sidev.lib.console.prinw
 import sidev.lib.exception.IllegalArgExc
@@ -13,6 +14,8 @@ import sidev.lib.exception.UnavailableOperationExc
 import sidev.lib.number.*
 import sidev.lib.structure.data.value.Val
 import sidev.lib.text.*
+import sidev.lib.collection.forEachIndexed
+import sidev.lib.collection.indexOfWhere
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 

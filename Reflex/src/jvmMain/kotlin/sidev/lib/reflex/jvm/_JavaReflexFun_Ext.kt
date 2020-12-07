@@ -396,7 +396,7 @@ Named Map - Berguna untuk interoperability terhadap Flutter Dart, yaitu dengan m
 @get:JvmName("javaNestedPrimitiveFieldValuesTreeNamedMap")
 val Any.javaNestedPrimitiveFieldValuesTreeNamedMap: Map<String, Any?>
     get()= mutableMapOf<String, Any?>().apply {
-        val a: MutableMap
+//        val a: MutableMap
 //        var isItrInNested= false
         var currLevel= 0
         val mapHierarchy= mutableListOf<MutableMap<String, Any?>>()
