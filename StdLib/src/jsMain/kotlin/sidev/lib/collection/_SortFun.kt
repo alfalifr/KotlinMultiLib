@@ -7,6 +7,8 @@ actual fun <T: Comparable<T>> Array<T>.fastSort(from: Int, until: Int, order: Or
     sort(from, until)
     if(order == Order.DESC) reverse()
 }
+actual fun <T> Array<T>.fastSortBy(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
+    sortWith(comparator, from, until)
 actual fun CharArray.fastSort(from: Int, until: Int, order: Order){
     sort(from, until)
     if(order == Order.DESC) reverse()
@@ -39,6 +41,8 @@ actual fun <T: Comparable<T>> MutableList<T>.fastSort(order: Order) {
     sort()
     if(order == Order.DESC) reverse()
 }
+
+actual fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int) = sortWith(comparator)
 
 /*
 ===============

@@ -1,11 +1,8 @@
 package sidev.lib.algo
 
 import sidev.lib.`val`.Order
-import sidev.lib.console.prine
-import sidev.lib.number.univLessThan
-import sidev.lib.number.univLessThanEqual
-import sidev.lib.number.univMoreThan
-import sidev.lib.number.univMoreThanEqual
+import sidev.lib.number.*
+
 
 fun <T> Array<T>.swap(i: Int, u: Int) {
     val tmp= this[i]
@@ -13,13 +10,16 @@ fun <T> Array<T>.swap(i: Int, u: Int) {
     this[u]= tmp
 }
 
+inline fun <R: Comparable<R>> inlineCompareFun(func: (R, R) -> Boolean, n1: R, n2: R): Boolean = func(n1, n2)
+
 fun <T: Comparable<T>> Array<T>.selectionSort(from: Int = 0, until: Int = size, order: Order= Order.ASC) =
     selectionSortBy (from, until, order) { it }
 fun <T, R: Comparable<R>> Array<T>.selectionSortBy(
     from: Int = 0, until: Int = size,
     order: Order= Order.ASC, toComparableFun: (T) -> R
 ){
-    val replaceFun: (R, R) -> Boolean = if(order == Order.ASC) ::univMoreThan else ::univLessThan
+    val replaceFun: (R, R) -> Boolean = if(order == Order.ASC) ::moreThan else ::lessThan
+//        if(order == Order.ASC) { n1, n2 -> n1 > n2 } else { n1, n2 -> n1 < n2 }
     for(i in from until until){
         var iVal= this[i]
         var iValComparable= toComparableFun(iVal)
@@ -41,7 +41,7 @@ fun <T, R: Comparable<R>> Array<T>.insertionSortBy(
     from: Int = 0, until: Int = size,
     order: Order= Order.ASC, toComparableFun: (T) -> R
 ){
-    val replaceFun: (R, R) -> Boolean = if(order == Order.ASC) ::univMoreThan else ::univLessThan
+    val replaceFun: (R, R) -> Boolean = if(order == Order.ASC) ::moreThan else ::lessThan
     for(i in from until until-1){
         val tailVal= this[i+1]
         val tailValComparable= toComparableFun(tailVal)
@@ -69,7 +69,7 @@ fun <T, R: Comparable<R>> Array<T>.mergeSortBy(
     from: Int = 0, until: Int = size,
     order: Order= Order.ASC, toComparableFun: (T) -> R
 ){
-    val checkFun: (R, R) -> Boolean = if(order == Order.ASC) ::univLessThanEqual else ::univMoreThanEqual
+    val checkFun: (R, R) -> Boolean = if(order == Order.ASC) ::lessThanEqual else ::moreThanEqual
 
     fun Array<T>.merge(left: Int, middle: Int, right: Int){
 //        prine("mergeSort.merge() left= $left right= $right size= $size")
@@ -146,7 +146,7 @@ fun <T, R: Comparable<R>> Array<T>.quickSortBy(
     from: Int = 0, until: Int = size,
     order: Order= Order.ASC, toComparableFun: (T) -> R
 ){
-    val replaceFun: (R, R) -> Boolean = if(order == Order.ASC) ::univLessThan else ::univMoreThan
+    val replaceFun: (R, R) -> Boolean = if(order == Order.ASC) ::lessThan else ::moreThan
 
     /**
      * Return index dari pembatas partisi.

@@ -21,6 +21,7 @@ import sidev.lib.collection.toTypedArray
 import kotlin.collections.ArrayList
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 import java.util.Arrays.sort as jsort
@@ -297,7 +298,7 @@ class SampleTestsJVM {
         val t3= measureTime { arr3.mergeSort() }
         val t4= measureTime { arr4.quickSort() }
 
-        prin("\n\n ========== size=14 ============ \n\n ")
+        prin("\n\n ========== size=${arr.size} ============ \n\n ")
         prin("arr= ${arr.joinToString()}")
         prin("arrk= ${arrk.joinToString()} \n tk= $tk")
         prin("arrj= ${arrj.joinToString()} \n tj= $tj")
@@ -321,7 +322,7 @@ class SampleTestsJVM {
         val t7= measureTime { arr7.mergeSort() }
         val t8= measureTime { arr8.quickSort() }
 
-        prin("\n\n ========== size=280 ============ \n\n ")
+        prin("\n\n ========== size=${arr_.size} ============ \n\n ")
         prin("arr_= ${arr_.joinToString()}")
         prin("arr_K= ${arr_k.joinToString()} \n t_k= $t_k")
         prin("arr_j= ${arr_j.joinToString()} \n t_j= $t_j")
@@ -383,6 +384,8 @@ class SampleTestsJVM {
     @ExperimentalTime
     @Test
     fun jvmSortDescTest(){
+        val timeMap= mutableMapOf<String, Duration>()
+
         val arr= arrayOf(1,2,4,1,5,1,5,12,42,23,11,10,15,14)
         val arrk = arr.copyOf()
         val arrj = arr.copyOf()
@@ -391,14 +394,14 @@ class SampleTestsJVM {
         val arr3: Array<Int> = arr.copyOf()
         val arr4: Array<Int> = arr.copyOf()
 
-        val tk= measureTime { arrk.sortDescending() }
-        val tj= measureTime { arrj.fastSort(order = Order.DESC) }
-        val t1= measureTime { arr1.selectionSort(order = Order.DESC) }
-        val t2= measureTime { arr2.insertionSort(order = Order.DESC) }
-        val t3= measureTime { arr3.mergeSort(order = Order.DESC) }
-        val t4= measureTime { arr4.quickSort(order = Order.DESC) }
+        val tk= measureTime { arrk.sortDescending() }.also { timeMap["arrk"]= it }
+        val tj= measureTime { arrj.fastSort(order = Order.DESC) }.also { timeMap["arrj"]= it }
+        val t1= measureTime { arr1.selectionSort(order = Order.DESC) }.also { timeMap["arr1"]= it }
+        val t2= measureTime { arr2.insertionSort(order = Order.DESC) }.also { timeMap["arr2"]= it }
+        val t3= measureTime { arr3.mergeSort(order = Order.DESC) }.also { timeMap["arr3"]= it }
+        val t4= measureTime { arr4.quickSort(order = Order.DESC) }.also { timeMap["arr4"]= it }
 
-        prin("\n\n ========== size=14 ============ \n\n ")
+        prin("\n\n ========== size=${arr.size} ============ \n\n ")
         prin("arr= ${arr.joinToString()}")
         prin("arrk= ${arrk.joinToString()} \n tk= $tk")
         prin("arrj= ${arrj.joinToString()} \n tj= $tj")
@@ -407,7 +410,7 @@ class SampleTestsJVM {
         prin("arr3= ${arr3.joinToString()} \n t3= $t3")
         prin("arr4= ${arr4.joinToString()} \n t4= $t4")
 
-        val arr_= arr.copyGrowTimely(20).toTypedArray()
+        val arr_= arr.copyGrowTimely((20..90).random()).toTypedArray()
         val arr_k= arr_.copyOf()
         val arr_j= arr_.copyOf()
         val arr5: Array<Int> = arr_.copyOf()
@@ -415,14 +418,14 @@ class SampleTestsJVM {
         val arr7: Array<Int> = arr_.copyOf()
         val arr8: Array<Int> = arr_.copyOf()
 
-        val t_k= measureTime { arr_k.sortDescending() }
-        val t_j= measureTime { arr_j.fastSort(order = Order.DESC) }
-        val t5= measureTime { arr5.selectionSort(order = Order.DESC) }
-        val t6= measureTime { arr6.insertionSort(order = Order.DESC) }
-        val t7= measureTime { arr7.mergeSort(order = Order.DESC) }
-        val t8= measureTime { arr8.quickSort(order = Order.DESC) }
+        val t_k= measureTime { arr_k.sortDescending() }.also { timeMap["arr_k"]= it }
+        val t_j= measureTime { arr_j.fastSort(order = Order.DESC) }.also { timeMap["arr_j"]= it }
+        val t5= measureTime { arr5.selectionSort(order = Order.DESC) }.also { timeMap["arr5"]= it }
+        val t6= measureTime { arr6.insertionSort(order = Order.DESC) }.also { timeMap["arr6"]= it }
+        val t7= measureTime { arr7.mergeSort(order = Order.DESC) }.also { timeMap["arr7"]= it }
+        val t8= measureTime { arr8.quickSort(order = Order.DESC) }.also { timeMap["arr8"]= it }
 
-        prin("\n\n ========== size=280 ============ \n\n ")
+        prin("\n\n ========== size=${arr_.size} ============ \n\n ")
         prin("arr_= ${arr_.joinToString()}")
         prin("arr_K= ${arr_k.joinToString()} \n t_k= $t_k")
         prin("arr_j= ${arr_j.joinToString()} \n t_j= $t_j")
@@ -431,7 +434,7 @@ class SampleTestsJVM {
         prin("arr7= ${arr7.joinToString()} \n t7= $t7")
         prin("arr8= ${arr8.joinToString()} \n t8= $t8")
 
-        val arr__= arr.copyGrowTimely(100).toTypedArray()
+        val arr__= arr.copyGrowTimely((100..700).random()).toTypedArray()
         val arr__k= arr__.copyOf()
         val arr__j= arr__.copyOf()
         val arr9: Array<Int> = arr__.copyOf()
@@ -439,14 +442,14 @@ class SampleTestsJVM {
         val arr11: Array<Int> = arr__.copyOf()
         val arr12: Array<Int> = arr__.copyOf()
 
-        val t__k= measureTime { arr__k.sortDescending() }
-        val t__j= measureTime { arr__j.fastSort(order = Order.DESC) }
-        val t9= measureTime { arr9.selectionSort(order = Order.DESC) }
-        val t10= measureTime { arr10.insertionSort(order = Order.DESC) }
-        val t11= measureTime { arr11.mergeSort(order = Order.DESC) }
-        val t12= measureTime { arr12.quickSort(order = Order.DESC) }
+        val t__k= measureTime { arr__k.sortDescending() }.also { timeMap["arr__k"]= it }
+        val t__j= measureTime { arr__j.fastSort(order = Order.DESC) }.also { timeMap["arr__j"]= it }
+        val t9= measureTime { arr9.selectionSort(order = Order.DESC) }.also { timeMap["arr9"]= it }
+        val t10= measureTime { arr10.insertionSort(order = Order.DESC) }.also { timeMap["arr10"]= it }
+        val t11= measureTime { arr11.mergeSort(order = Order.DESC) }.also { timeMap["arr11"]= it }
+        val t12= measureTime { arr12.quickSort(order = Order.DESC) }.also { timeMap["arr12"]= it }
 
-        prin("\n\n ========== size=1400 ============ \n\n ")
+        prin("\n\n ========== size=${arr__.size} ============ \n\n ")
         prin("arr__= ${arr__.joinToString()}")
         prin("arr__k= ${arr__k.joinToString()} \n t__k= $t__k")
         prin("arr__j= ${arr__j.joinToString()} \n t__j= $t__j")
@@ -455,7 +458,7 @@ class SampleTestsJVM {
         prin("arr11= ${arr11.joinToString()} \n t11= $t11")
         prin("arr12= ${arr12.joinToString()} \n t12= $t12")
 
-        val arr___= arr.copyGrowTimely(2000).toTypedArray()
+        val arr___= arr.copyGrowTimely((2000..7000).random()).toTypedArray()
         val arr___k= arr___.copyOf()
         val arr___j= arr___.copyOf()
         val arr13: Array<Int> = arr___.copyOf()
@@ -463,14 +466,14 @@ class SampleTestsJVM {
         val arr15: Array<Int> = arr___.copyOf()
         val arr16: Array<Int> = arr___.copyOf()
 
-        val t___k= measureTime { arr___k.sortDescending() }
-        val t___j= measureTime { arr___j.fastSort(order = Order.DESC) }
-        val t13= measureTime { arr13.selectionSort(order = Order.DESC) }
-        val t14= measureTime { arr14.insertionSort(order = Order.DESC) }
-        val t15= measureTime { arr15.mergeSort(order = Order.DESC) }
-        val t16= measureTime { arr16.quickSort(order = Order.DESC) }
+        val t___k= measureTime { arr___k.sortDescending() }.also { timeMap["arr___k"]= it }
+        val t___j= measureTime { arr___j.fastSort(order = Order.DESC) }.also { timeMap["arr___j"]= it }
+        val t13= measureTime { arr13.selectionSort(order = Order.DESC) }.also { timeMap["arr13"]= it }
+        val t14= measureTime { arr14.insertionSort(order = Order.DESC) }.also { timeMap["arr14"]= it }
+        val t15= measureTime { arr15.mergeSort(order = Order.DESC) }.also { timeMap["arr15"]= it }
+        val t16= measureTime { arr16.quickSort(order = Order.DESC) }.also { timeMap["arr16"]= it }
 
-        prin("\n\n ========== size=28000 ============ \n\n ")
+        prin("\n\n ========== size=${arr___.size} ============ \n\n ")
         prin("arr___= ${arr___.joinToString()}")
         prin("arr___k= ${arr___k.joinToString()} \n t___k= $t___k")
         prin("arr___j= ${arr___j.joinToString()} \n t___j= $t___j")
@@ -479,6 +482,13 @@ class SampleTestsJVM {
         prin("arr15= ${arr15.joinToString()} \n t15= $t15")
         prin("arr16= ${arr16.joinToString()} \n t16= $t16")
 
+        prin("arr.size = ${arr.size}")
+        prin("arr_.size = ${arr_.size}")
+        prin("arr__.size = ${arr__.size}")
+        prin("arr___.size = ${arr___.size}")
+        for((name, t) in timeMap){
+            prin("name= $name t= $t")
+        }
 //        Arrays.copyOf()
 //        Collections.reverseOrder<>()
     }

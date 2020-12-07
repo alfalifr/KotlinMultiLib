@@ -10,6 +10,8 @@ import java.util.Collections.sort as jsortList
 actual fun <T: Comparable<T>> Array<T>.fastSort(from: Int, until: Int, order: Order) =
     if(order == Order.ASC) jsort(this, from, until)
     else jsort(this, from, until, Collections.reverseOrder())
+actual fun <T> Array<T>.fastSortBy(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
+    jsort(this, from, until, comparator)
 actual fun CharArray.fastSort(from: Int, until: Int, order: Order){
     jsort(this, from, until)
     if(order == Order.DESC) reverse()
@@ -41,6 +43,8 @@ actual fun DoubleArray.fastSort(from: Int, until: Int, order: Order){
 actual fun <T: Comparable<T>> MutableList<T>.fastSort(order: Order) =
     if(order == Order.ASC) jsortList(this)
     else jsortList(this, Collections.reverseOrder())
+
+actual fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int) = jsortList(this, comparator)
 
 /*
 ===============

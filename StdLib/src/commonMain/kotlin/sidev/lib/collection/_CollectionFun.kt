@@ -312,8 +312,9 @@ inline fun <reified T> Array<T>.copyTo(dest: Array<T>, from: Int= 0, until: Int=
 }
  */
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> List<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): List<T> =
-    toArray(from, until, reversed).asList() as List<T>
+    (this as List<*>).toTypedArray(from, until, reversed).asList() as List<T>
 
 /*
 {
