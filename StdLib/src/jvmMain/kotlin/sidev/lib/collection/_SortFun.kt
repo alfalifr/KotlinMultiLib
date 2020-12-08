@@ -2,12 +2,16 @@
 package sidev.lib.collection
 
 import sidev.lib.`val`.Order
+import sidev.lib.collection.comparator.NaturalOrderComparator
+import sidev.lib.collection.comparator.NumberNaturalOrderComparator
+import sidev.lib.collection.comparator.NumberReversedOrderComparator
+import sidev.lib.collection.comparator.ReversedOrderComparator
 import java.util.*
 import java.util.Arrays.sort as jsort
 import java.util.Collections.sort as jsortList
 
 
-actual fun <T: Comparable<T>> Array<T>.fastSort(from: Int, until: Int, order: Order) =
+actual fun <T: Comparable<*>> Array<T>.fastSort(from: Int, until: Int, order: Order) =
     if(order == Order.ASC) jsort(this, from, until)
     else jsort(this, from, until, Collections.reverseOrder())
 actual fun <T> Array<T>.fastSortBy(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
@@ -40,9 +44,17 @@ actual fun DoubleArray.fastSort(from: Int, until: Int, order: Order){
     jsort(this, from, until)
     if(order == Order.DESC) reverse()
 }
-actual fun <T: Comparable<T>> MutableList<T>.fastSort(order: Order) =
-    if(order == Order.ASC) jsortList(this)
-    else jsortList(this, Collections.reverseOrder())
+actual fun <T: Comparable<*>> MutableList<T>.fastSort(order: Order, withNumberSafety: Boolean) {
+    val comparator= if(!withNumberSafety){
+        if(order == Order.ASC) NaturalOrderComparator
+        else ReversedOrderComparator
+    } else {
+        if(order == Order.ASC) NumberNaturalOrderComparator
+        else NumberReversedOrderComparator
+    }
+    jsortList(this, comparator as Comparator<in T>)
+}
+//actual fun <T: Comparable<*>> MutableList<T>.fastSortWith(c: Comparator<in T>) = jsortList(this, c)
 
 actual fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int) = jsortList(this, comparator)
 

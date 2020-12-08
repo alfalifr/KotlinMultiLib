@@ -41,19 +41,27 @@ fun CharArray.asWrapped(): MutableArrayWrapper<Char> =
         copyOf()
     )
 
-
-fun <T> arrayWrapperOf(vararg element: T): ArrayWrapper<T>
-        = object : ArrayWrapper<T> {
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> arrayWrapperOf(vararg element: T): ArrayWrapper<T> = ArrayWrapperImpl(element as Array<T>)
+/*
+    object : ArrayWrapper<T> {
     @Suppress(SuppressLiteral.UNCHECKED_CAST)
     private val array= element as Array<T>
 
     override fun get(index: Int): T = array[index]
     override val size: Int get() = array.size
     override fun iterator(): Iterator<T> = array.iterator()
-//    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
+    override fun copy(from: Int, until: Int, reversed: Boolean): ArrayWrapper<T> {
+        TODO("Not yet implemented")
+    }
+    //    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
 }
+ */
 
-fun <T> mutableArrayWrapperOf(vararg element: T): MutableArrayWrapper<T>
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> mutableArrayWrapperOf(vararg element: T): MutableArrayWrapper<T> = MutableArrayWrapperImpl(element as Array<T>)
+
+/*
         = object : MutableArrayWrapper<T> {
     @Suppress(SuppressLiteral.UNCHECKED_CAST)
     private val array= element as Array<T>
@@ -68,3 +76,4 @@ fun <T> mutableArrayWrapperOf(vararg element: T): MutableArrayWrapper<T>
     override fun iterator(): Iterator<T> = array.iterator()
 //    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
 }
+ */

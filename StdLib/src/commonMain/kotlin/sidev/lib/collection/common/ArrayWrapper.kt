@@ -1,5 +1,10 @@
 package sidev.lib.collection.common
 
+import sidev.lib.collection.array.copy
+import sidev.lib.structure.data.Arrangeable
+import sidev.lib.structure.data.FiniteIndexable
+import sidev.lib.structure.data.RangeCopyable
+
 /** Digunakan sbg interface common yg menunjukan sifat iterable dari [Array]. */
 interface ArrayIterable<out T>: Iterable<T>
 
@@ -8,8 +13,8 @@ interface ArrayIterable<out T>: Iterable<T>
  * elemen pada tipe data yg scr umum dapat berisi bbrp elemen.
  * Interface ini bersifat immutable agar sesuai dg konsep pada [CommonList].
  */
-interface ArrayWrapper<T>: CommonIterable<T> {
-/*
+interface ArrayWrapper<T>: CommonIterable<T>, FiniteIndexable<T>, RangeCopyable<ArrayWrapper<T>> {
+    /*
     /** Array yg dibungkus dalam interface ini. */
     val array: Array<T>
  */
@@ -23,6 +28,8 @@ interface ArrayWrapper<T>: CommonIterable<T> {
      */
     public inline constructor(size: Int, init: (Int) -> T)
  */
+    override val maxRange: Int
+        get() = size
 
     /**
      * Returns the array element at the specified [index]. This method can be called using the
@@ -34,21 +41,24 @@ interface ArrayWrapper<T>: CommonIterable<T> {
      * If the [index] is out of bounds of this array, throws an [IndexOutOfBoundsException] except in Kotlin/JS
      * where the behavior is unspecified.
      */
-    operator fun get(index: Int): T
+    override operator fun get(index: Int): T
 
     /**
      * Returns the number of elements in the array.
      */
-    val size: Int
+    override val size: Int
 
     /**
      * Creates an iterator for iterating over the elements of the array.
      */
     override operator fun iterator(): Iterator<T>
+
+    override fun copy(): ArrayWrapper<T> = copy(0)
+    override fun copy(from: Int, until: Int, reversed: Boolean): ArrayWrapper<T>
 }
 
-interface MutableArrayWrapper<T>:
-    ArrayWrapper<T> {
+interface MutableArrayWrapper<T>: ArrayWrapper<T>, Arrangeable<T> {
+
     /**
      * Sets the array element at the specified [index] to the specified [element]. This method can
      * be called using the index operator.
@@ -62,7 +72,13 @@ interface MutableArrayWrapper<T>:
      * @return element sebelumnya pada [index]
      *   Tujuan dari pengembalian elemen adalah agar kompatibel dg [MutableList].
      */
-    operator fun set(index: Int, element: T): T
+    override operator fun set(index: Int, element: T): T
+    override fun set_(index: Int, element: T) {
+        this[index]= element
+    }
+
+    override fun copy(): MutableArrayWrapper<T> = copy(0)
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<T>
 }
 
 
@@ -72,7 +88,9 @@ internal open class ArrayWrapperImpl<T>(val array: Array<T>): ArrayWrapper<T> {
     override fun get(index: Int): T = array[index]
     override val size: Int get() = array.size
     override fun iterator(): Iterator<T> = array.iterator()
-//    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
+    override fun copy(from: Int, until: Int, reversed: Boolean): ArrayWrapper<T> =
+        (array as Array<Any?>).copy(from, until, reversed).asWrapped() as ArrayWrapper<T>
+    //    override fun getValue(owner: Any?, prop: KProperty<*>): Array<T> = array
 }
 
 internal class MutableArrayWrapperImpl<T>(array: Array<T>): ArrayWrapperImpl<T>(array), MutableArrayWrapper<T> {
@@ -81,6 +99,8 @@ internal class MutableArrayWrapperImpl<T>(array: Array<T>): ArrayWrapperImpl<T>(
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<T> =
+        (array as Array<Any?>).copy(from, until, reversed).asWrapped() as MutableArrayWrapper<T>
 }
 
 
@@ -96,6 +116,8 @@ internal class MutableArrayWrapperImpl_Int(array: IntArray): ArrayWrapperImpl_In
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Int> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -111,6 +133,8 @@ internal class MutableArrayWrapperImpl_Long(array: LongArray): ArrayWrapperImpl_
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Long> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -126,6 +150,8 @@ internal class MutableArrayWrapperImpl_Short(array: ShortArray): ArrayWrapperImp
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Short> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -141,6 +167,8 @@ internal class MutableArrayWrapperImpl_Float(array: FloatArray): ArrayWrapperImp
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Float> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -156,6 +184,8 @@ internal class MutableArrayWrapperImpl_Double(array: DoubleArray): ArrayWrapperI
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Double> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -171,6 +201,8 @@ internal class MutableArrayWrapperImpl_Byte(array: ByteArray): ArrayWrapperImpl_
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Byte> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -186,6 +218,8 @@ internal class MutableArrayWrapperImpl_Boolean(array: BooleanArray): ArrayWrappe
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Boolean> =
+        array.copy(from, until, reversed).asWrapped()
 }
 
 /*
@@ -201,4 +235,6 @@ internal class MutableArrayWrapperImpl_Char(array: CharArray): ArrayWrapperImpl_
         array[index]= element
         return prevVal
     }
+    override fun copy(from: Int, until: Int, reversed: Boolean): MutableArrayWrapper<Char> =
+        array.copy(from, until, reversed).asWrapped()
 }

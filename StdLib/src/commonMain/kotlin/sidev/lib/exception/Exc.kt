@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 //import java.lang.Exception
 
-open class Exc(relatedClass: KClass<*>?, commonMsg: String= "", detMsg: String= "",
+open class Exc(relatedClass: KClass<*>?, private val commonMsg: String= "", private val detMsg: String= "",
                override var cause: Throwable?= null, var code: Int= 1)
     : Exception("=================== \n" +
         "======================================================================= \n" +
@@ -13,11 +13,20 @@ open class Exc(relatedClass: KClass<*>?, commonMsg: String= "", detMsg: String= 
         "Message        : ${if(commonMsg.isNotBlank()) commonMsg else "<empty>"} \n" +
         "Detail Message : ${if(detMsg.isNotBlank()) detMsg else "<empty>"} \n" +
         "Code           : $code \n" +
+        "Cause          : $cause \n" +
         "======================================================================= "
     ){
 //    override var cause: Throwable?= cause
     override var message: String?= null
-        get()= field ?: super.message
+//        get()= field ?: super.message
+        get()= field ?: "=================== \n" +
+                        "======================================================================= \n" +
+                        "Related Class  : ${(relatedClass ?: cause?.clazz ?: Exc::class.simpleName)} \n" +
+                        "Message        : ${if(commonMsg.isNotBlank()) commonMsg else "<empty>"} \n" +
+                        "Detail Message : ${if(detMsg.isNotBlank()) detMsg else "<empty>"} \n" +
+                        "Code           : $code \n" +
+                        "Cause          : $cause \n" +
+                        "======================================================================= "
 
     open val relatedClass: KClass<*>? =
         relatedClass ?: this::class

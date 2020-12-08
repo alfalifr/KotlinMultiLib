@@ -1,11 +1,9 @@
 package sidev.lib
 
 import sidev.lib.`val`.NumberOperationMode
+import sidev.lib.`val`.Order
 import sidev.lib.`val`.RoundingMode
-import sidev.lib.algo.insertionSort
-import sidev.lib.algo.mergeSort
-import sidev.lib.algo.quickSort
-import sidev.lib.algo.selectionSort
+import sidev.lib.algo.*
 import sidev.lib.collection.*
 import sidev.lib.collection.array.copy
 import sidev.lib.collection.array.forEach
@@ -574,5 +572,43 @@ class StdLibCommonSampleTests {
         prin("ind2= $ind2")
         prin("ind3= $ind3")
         prin("ind0= $ind0")
+    }
+
+    @Test
+    fun commonListSortTest(){
+        arrayOf(1,31,31,13,4).toMutableList().sortDescending()
+        val ls= mutableListOf(1,31,41,21,42,1)
+//        ls.sort()
+
+        val list= commonIndexedMutableListOf(1,2,4.1,13,2,1,4,15,3,1.2,3.2,12.5)
+        val list1= list.copy()
+        val list2= list.copy()
+        val list3= list.copy()
+
+        prin("list3= $list3")
+        list3 += 13
+/*
+        val list2= list.copy()
+        val list3= list.copy()
+        val list4= list.copy()
+ */
+//        reverseOrder<>()
+//        list.sort(withNumberSafety = true)
+//        list.sortDescending(withNumberSafety = true)
+        list1.selectionSort()
+        list2.selectionSort(order = Order.DESC)
+        list3.fastSort(withNumberSafety = true)
+
+        val ind2= list2.binarySearch(1.2, order = Order.DESC, withNumberSafety = true)
+        val ind3= list3.binarySearch(1.2, withNumberSafety = true)
+//        list3.sort()
+
+        prin("list= $list")
+        prin("list1= $list1")
+        prin("list2= $list2")
+        prin("list3= $list3")
+
+        prin("ind2= $ind2")
+        prin("ind3= $ind3")
     }
 }

@@ -9,7 +9,7 @@ FastSort - Tidak menjamin stabilitas
 ===============
  */
 
-expect fun <T: Comparable<T>> Array<T>.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
+expect fun <T: Comparable<*>> Array<T>.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
 expect fun <T> Array<T>.fastSortBy(from: Int = 0, until: Int = size, comparator: (n1: T, n2: T) -> Int)
 expect fun CharArray.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
 expect fun ByteArray.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
@@ -18,11 +18,12 @@ expect fun IntArray.fastSort(from: Int = 0, until: Int = size, order: Order = Or
 expect fun LongArray.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
 expect fun FloatArray.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
 expect fun DoubleArray.fastSort(from: Int = 0, until: Int = size, order: Order = Order.ASC)
-expect fun <T: Comparable<T>> MutableList<T>.fastSort(order: Order = Order.ASC)
+expect fun <T: Comparable<*>> MutableList<T>.fastSort(order: Order = Order.ASC, withNumberSafety: Boolean = false)
+//expect fun <T: Comparable<*>> MutableList<T>.fastSortWith(c: Comparator<in T>)
 expect fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int)
 
 
-fun <T: Comparable<T>> Array<T>.fastSorted(from: Int = 0, until: Int = size, order: Order = Order.ASC): Array<T> =
+fun <T: Comparable<*>> Array<T>.fastSorted(from: Int = 0, until: Int = size, order: Order = Order.ASC): Array<T> =
     copyOfRange(from, until).apply { fastSort(order = order) }
 fun <T> Array<T>.fastSorted(from: Int = 0, until: Int = size, comparator: (n1: T, n2: T) -> Int): Array<T> =
     copyOfRange(from, until).apply { fastSortBy(comparator = comparator) }
@@ -40,9 +41,9 @@ fun FloatArray.fastSorted(from: Int = 0, until: Int = size, order: Order = Order
     copyOfRange(from, until).apply { fastSort(order = order) }
 fun DoubleArray.fastSorted(from: Int = 0, until: Int = size, order: Order = Order.ASC): DoubleArray =
     copyOfRange(from, until).apply { fastSort(order = order) }
-fun <T: Comparable<T>> List<T>.fastSorted(from: Int = 0, until: Int = size, order: Order = Order.ASC): List<T> =
+fun <T: Comparable<*>> List<T>.fastSorted(from: Int = 0, until: Int = size, order: Order = Order.ASC): List<T> =
     copy(from, until).asMutableList().apply { fastSort(order = order) }
-fun <T: Comparable<T>> List<T>.fastSortedBy(from: Int = 0, until: Int = size, comparator: (n1: T, n2: T) -> Int): List<T> =
+fun <T: Comparable<*>> List<T>.fastSortedBy(from: Int = 0, until: Int = size, comparator: (n1: T, n2: T) -> Int): List<T> =
     copy(from, until).asMutableList().apply { fastSortBy(comparator = comparator) }
 
 

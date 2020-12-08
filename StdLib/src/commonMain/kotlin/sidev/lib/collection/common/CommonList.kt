@@ -2,11 +2,17 @@ package sidev.lib.collection.common
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
+import sidev.lib.annotation.Unused
+import sidev.lib.collection.copy
+import sidev.lib.collection.fastSort
 import sidev.lib.collection.newUniqueValueIn
 import sidev.lib.collection.removeValue
 import sidev.lib.console.prine
+import sidev.lib.console.prinw
+import sidev.lib.exception.ClassCastExc
 import sidev.lib.structure.data.MapEntry
 import sidev.lib.structure.data.MutableMapEntry
+import sidev.lib.reflex.clazz
 
 /**
  * Struktur data yg menunjukan semua jenis tipe yg dapat menyimpan banyak data dg jenis [V] dan key [K].
@@ -24,6 +30,8 @@ interface CommonList<K, V> : CommonIterable<V>, List<V>, Map<K, V>, ArrayWrapper
  */
 
     override fun iterator(): Iterator<V>
+    override fun copy(): CommonList<K, V> = copy(0)
+    override fun copy(from: Int, until: Int, reversed: Boolean): CommonList<K, V>
 }
 /** [CommonList] dg key merupakan [Int]. */
 interface CommonIndexedList<T> : CommonList<Int, T> {
@@ -31,6 +39,8 @@ interface CommonIndexedList<T> : CommonList<Int, T> {
     /** Override dg return non-nullable bertujuan agar tidak terjadi ambiguity saat operasi [get]. */
     @Suppress(SuppressLiteral.PARAMETER_NAME_CHANGED_ON_OVERRIDE)
     override fun get(index: Int): T
+    override fun copy(): CommonIndexedList<T> = copy(0)
+    override fun copy(from: Int, until: Int, reversed: Boolean): CommonIndexedList<T>
 }
 
 /**
@@ -86,7 +96,12 @@ interface CommonMutableList<K, V>: CommonList<K, V>, MutableList<V>, Map<K, V>, 
      * @return `true` jika [element] sebelumnya ada di `this` dan berhasil dihapus.
      */
     fun removeAll(element: V): Boolean
-//    fun remove(key: K, element: V): Boolean
+
+    fun sort_(c: Comparator<in V>?= null)
+
+    //    fun remove(key: K, element: V): Boolean
+    override fun copy(): CommonMutableList<K, V> = copy(0)
+    override fun copy(from: Int, until: Int, reversed: Boolean): CommonMutableList<K, V>
 }
 /** [CommonMutableList] dg key merupakan [Int]. */
 interface CommonIndexedMutableList<T> : CommonIndexedList<T>, CommonMutableList<Int, T> {
@@ -95,6 +110,8 @@ interface CommonIndexedMutableList<T> : CommonIndexedList<T>, CommonMutableList<
     @Suppress(SuppressLiteral.PARAMETER_NAME_CHANGED_ON_OVERRIDE)
     override fun get(index: Int): T
     override fun addAll(elements: Collection<T>): Boolean
+    override fun copy(): CommonIndexedMutableList<T> = copy(0)
+    override fun copy(from: Int, until: Int, reversed: Boolean): CommonIndexedMutableList<T>
 }
 
 //class CommonMutableListMapDelegate<K, V>(val mutableMap: MutableMap<K, V>): CommonMutableListImpl_Map<K, V>
@@ -139,6 +156,8 @@ internal open class CommonListImpl_List<V>(open val list: List<V>): CommonIndexe
     override fun listIterator(): ListIterator<V> = list.listIterator()
     override fun listIterator(index: Int): ListIterator<V> = list.listIterator(index)
     override fun subList(fromIndex: Int, toIndex: Int): List<V> = list.subList(fromIndex, toIndex)
+    override fun copy(from: Int, until: Int, reversed: Boolean): CommonIndexedList<V> =
+        CommonListImpl_List(list.copy(from, until, reversed))
 }
 internal open class CommonMutableListImpl_List<V>(override val list: MutableList<V>)
     : CommonListImpl_List<V>(list), CommonIndexedMutableList<V> {
@@ -208,6 +227,21 @@ internal open class CommonMutableListImpl_List<V>(override val list: MutableList
     override fun iterator(): MutableIterator<V> = list.iterator()
     override fun listIterator(): MutableListIterator<V> = list.listIterator()
     override fun listIterator(index: Int): MutableListIterator<V> = list.listIterator(index)
+
+    override fun sort_(c: Comparator<in V>?) =
+        if(c != null) list.sortWith(c) else {
+            try {
+                (list as MutableList<Comparable<V>>).fastSort()
+            } catch (e: ClassCastException){
+                throw ClassCastExc(
+                    fromClass = firstOrNul()?.clazz, toClass = Comparable::class,
+                    msg = "MutableList `this` bkn merupakan MutableList<Comparable<V>>."
+                ).apply { cause= e }
+            }
+        }
+
+    override fun copy(from: Int, until: Int, reversed: Boolean): CommonIndexedMutableList<V> =
+        CommonMutableListImpl_List(list.copy(from, until, reversed).toMutableList().also { prine("CommonList.copy() it= $it cls= ${it::class}") })
 }
 
 internal open class CommonListImpl_Array<V>(array: Array<V>): CommonListImpl_List<V>(array.toList())
@@ -251,6 +285,11 @@ internal open class CommonListImpl_Map<K, V>(open val map: Map<K, V>): CommonLis
         override fun previousIndex(): Int = this.index -1
     }
     override fun subList(fromIndex: Int, toIndex: Int): List<V> = map.values.toList().subList(fromIndex, toIndex)
+    override fun copy(
+        from: Int, until: Int,
+        @Unused("`Map` tidak memakai index, sehingga urutan tidak dapat dipastikan")
+        reversed: Boolean
+    ): CommonList<K, V> = CommonListImpl_Map(map.copy(from, until))
 }
 internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap<K, V>)
     : CommonListImpl_Map<K, V>(map), CommonMutableList<K, V> {
@@ -262,7 +301,7 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
     override fun toString(): String = "CommonMutableList$map"
 
     @Unsafe("Nilai key baru dapat berupa apa saja.")
-    override fun add(element: V): Boolean{
+    override fun add(element: V): Boolean {
         val newKey= newUniqueValueIn(keys, defaultKey)
             .also { if(it == null) return false }!!
         put(newKey, element)
@@ -403,5 +442,14 @@ internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap
         }
     }
 
+    override fun sort_(c: Comparator<in V>?) {
+        prinw("Elemen `Map` tidak dapat diurutkan karena tidak menggunakan index.")
+    }
+
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<V> = map.values.toMutableList().subList(fromIndex, toIndex)
+    override fun copy(
+        from: Int, until: Int,
+        @Unused("`Map` tidak memakai index, sehingga urutan tidak dapat dipastikan")
+        reversed: Boolean
+    ): CommonMutableList<K, V> = CommonMutableListImpl_Map(map.copy(from, until) as MutableMap)
 }

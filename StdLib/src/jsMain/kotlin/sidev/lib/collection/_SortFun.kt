@@ -1,10 +1,14 @@
 package sidev.lib.collection
 
 import sidev.lib.`val`.Order
+import sidev.lib.collection.comparator.NaturalOrderComparator
+import sidev.lib.collection.comparator.NumberNaturalOrderComparator
+import sidev.lib.collection.comparator.NumberReversedOrderComparator
+import sidev.lib.collection.comparator.ReversedOrderComparator
 
 
-actual fun <T: Comparable<T>> Array<T>.fastSort(from: Int, until: Int, order: Order){
-    sort(from, until)
+actual fun <T: Comparable<*>> Array<T>.fastSort(from: Int, until: Int, order: Order){
+    (this as Array<Comparable<Any?>>).sort(from, until)
     if(order == Order.DESC) reverse()
 }
 actual fun <T> Array<T>.fastSortBy(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
@@ -37,10 +41,17 @@ actual fun DoubleArray.fastSort(from: Int, until: Int, order: Order){
     sort(from, until)
     if(order == Order.DESC) reverse()
 }
-actual fun <T: Comparable<T>> MutableList<T>.fastSort(order: Order) {
-    sort()
-    if(order == Order.DESC) reverse()
+actual fun <T: Comparable<*>> MutableList<T>.fastSort(order: Order, withNumberSafety: Boolean) {
+    val comparator= if(!withNumberSafety){
+        if(order == Order.ASC) NaturalOrderComparator
+        else ReversedOrderComparator
+    } else {
+        if(order == Order.ASC) NumberNaturalOrderComparator
+        else NumberReversedOrderComparator
+    }
+    sortWith(comparator as Comparator<in T>)
 }
+//actual fun <T: Comparable<*>> MutableList<T>.fastSortWith(c: Comparator<in T>) = sortWith(this, c)
 
 actual fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int) = sortWith(comparator)
 

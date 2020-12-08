@@ -1,5 +1,6 @@
 package sidev.lib.collection
 
+import sidev.lib.collection.common.CommonMutableList
 import sidev.lib.structure.data.MapEntry
 import sidev.lib.structure.data.MutableMapEntry
 
@@ -113,3 +114,18 @@ fun <K, V, A : Appendable> Map<K, V>.joinTo(
     limit: Int = -1, truncated: CharSequence = "...",
     transform: ((Map.Entry<K, V>) -> CharSequence)? = null
 ): A = entries.joinTo(buffer, separator, prefix, postfix, limit, truncated, transform)
+
+
+fun <K, V> Map<K, V>.copy(from: Int= 0, until: Int= size): Map<K, V> {
+    val res= mutableMapOf<K, V>()
+    val itr= iterator()
+    val range= if(from == 0 && until == size) null else from until until
+
+    var i= -1
+    while(itr.hasNext()){
+        val (k, v)= itr.next()
+        if(range == null || ++i in range)
+            res[k]= v
+    }
+    return res
+}

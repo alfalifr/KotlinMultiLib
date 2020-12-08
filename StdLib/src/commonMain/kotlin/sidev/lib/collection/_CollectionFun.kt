@@ -22,12 +22,14 @@ inline fun <reified T> Iterable<T>.toTypedArray(reversed: Boolean = false): Arra
         arr.reverse()
     return arr
 }
-inline fun <reified T> List<T>.toTypedArray(from: Int = 0, until: Int = size, reversed: Boolean = false): Array<T> =
-    if(!reversed) Array(until - from){ this[it +from] }
-    else {
+inline fun <reified T> List<T>.toTypedArray(from: Int = 0, until: Int = size, reversed: Boolean = false): Array<T> = when {
+    from == 0 && until == size -> kToTypedArray()
+    !reversed -> Array(until - from){ this[it +from] }
+    else -> {
         val lastIndex= until -1
         Array(until - from){ this[lastIndex -it] }
     }
+}
 inline fun <reified T> Iterable<T>.toTypedArray(from: Int = 0, until: Int = size, reversed: Boolean = false): Array<T> = when {
     from == 0 && until == size -> toTypedArray(reversed)
     this is List<T> -> toTypedArray(from, until, reversed)
@@ -59,6 +61,10 @@ fun Collection<*>.toArray(): Array<Any?> = kToTypedArray()
 fun <T> Collection<T>.asMutableList(): MutableList<T> = when(this){
     is MutableList<*> -> this as MutableList<T>
     else -> toMutableList()
+}
+fun <T> Collection<T>.asList(): List<T> = when(this){
+    is List<*> -> this as List<T>
+    else -> kToList()
 }
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{

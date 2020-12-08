@@ -1,8 +1,13 @@
 package sidev.lib.collection.common
 
 //import sidev.lib.collection.sort
+import sidev.lib.`val`.Order
 import sidev.lib.collection.string
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.collection.comparator.NaturalOrderComparator
+import sidev.lib.collection.comparator.NumberNaturalOrderComparator
+import sidev.lib.collection.comparator.NumberReversedOrderComparator
+import sidev.lib.collection.comparator.ReversedOrderComparator
 import kotlin.reflect.KProperty
 
 
@@ -383,3 +388,46 @@ val Any.isCommonIterable: Boolean get()= when(this){
     is Array<*> -> true
     else -> false
 }
+
+
+fun <K, V : Comparable<*>> CommonMutableList<K, V>.sort(order: Order= Order.ASC, withNumberSafety: Boolean = false) {
+    sortWith(
+        if(!withNumberSafety) {
+            if(order == Order.ASC) NaturalOrderComparator
+            else ReversedOrderComparator
+        } else {
+            if(order == Order.ASC) NumberNaturalOrderComparator
+            else NumberReversedOrderComparator
+        } as Comparator<in V>
+    )
+}
+fun <K, V : Comparable<*>> CommonMutableList<K, V>.sortDescending(withNumberSafety: Boolean = false) {
+    sortWith(
+        (if(!withNumberSafety) ReversedOrderComparator
+        else NumberReversedOrderComparator) as Comparator<in V>
+    )
+}
+fun <K, V : Comparable<*>> CommonMutableList<K, V>.sortWith(c: Comparator<in V>) = sort_(c)
+fun <K, V : Comparable<*>> CommonMutableList<K, V>.fastSort(order: Order= Order.ASC, withNumberSafety: Boolean= false) =
+    sort(order, withNumberSafety)
+
+fun <E : Comparable<*>> CommonIndexedMutableList<E>.sort(order: Order= Order.ASC, withNumberSafety: Boolean = false) {
+    sortWith(
+        if(!withNumberSafety) {
+            if(order == Order.ASC) NaturalOrderComparator
+            else ReversedOrderComparator
+        } else {
+            if(order == Order.ASC) NumberNaturalOrderComparator
+            else NumberReversedOrderComparator
+        } as Comparator<in E>
+    )
+}
+fun <E : Comparable<*>> CommonIndexedMutableList<E>.sortDescending(withNumberSafety: Boolean = false) {
+    sortWith(
+        (if(!withNumberSafety) ReversedOrderComparator
+        else NumberReversedOrderComparator) as Comparator<in E>
+    )
+}
+fun <E : Comparable<*>> CommonIndexedMutableList<E>.sortWith(c: Comparator<in E>) = sort_(c)
+fun <E : Comparable<*>> CommonIndexedMutableList<E>.fastSort(order: Order= Order.ASC, withNumberSafety: Boolean= false) =
+    sort(order, withNumberSafety)
