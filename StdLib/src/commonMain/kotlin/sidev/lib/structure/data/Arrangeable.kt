@@ -12,7 +12,7 @@ import sidev.lib.structure.prop.SizeProp
  * banyak element yang dapat diakses melalui index, seperti [Array], [MutableList], [MutableArrayWrapper], dan [CommonMutableList].
  * [List], [CommonList], dan [ArrayWrapper] tidak termasuk interface ini karena tidak memiliki fungsi `set`.
  */
-interface Arrangeable<T>: Indexable<T>, SizeProp /*: RangeCopyable<Arrangeable<*>>*/ {
+interface Arrangeable<T>: FiniteIndexable<T> /*Indexable<T>, SizeProp*/ /*: RangeCopyable<Arrangeable<*>>*/ {
     override val size: Int
     //    val origin: Any
     override operator fun get(index: Int): T
@@ -26,26 +26,6 @@ interface Arrangeable<T>: Indexable<T>, SizeProp /*: RangeCopyable<Arrangeable<*
 //    override fun copy(from: Int, until: Int, reversed: Boolean): Arrangeable<T>
 }
 
-internal class ArrayArrangeable<T>(val array: Array<T>): Arrangeable<T> {
-    constructor(size: Int, init: (Int) -> T): this(Array<Any?>(size, init) as Array<T>)
-
-    override val size: Int
-        get() = array.size
-//    override val origin: Any get() = array
-    override fun get(index: Int): T = array[index]
-    override fun set(index: Int, element: T): T {
-        val old= array[index]
-        array[index]= element
-        return old
-    }
-    override fun set_(index: Int, element: T) {
-        array[index]= element
-    }
-
-    override fun equals(other: Any?): Boolean = array.equals(other)
-    override fun hashCode(): Int = array.hashCode()
-    override fun toString(): String = array.joinToString(prefix = "Array[", postfix = "]")
-}
 
 internal class ListArrangeable<T>(val list: MutableList<T>): Arrangeable<T> {
     constructor(origin: Array<T>): this(origin.toMutableList())
@@ -70,20 +50,4 @@ internal class ListArrangeable<T>(val list: MutableList<T>): Arrangeable<T> {
     override fun toString(): String = list.toString()
 }
 
-/*
-interface ArrayArrangeable<T>: Arrangeable<T> {
-    /**
-     * Array yang dikembalikan pada fungsi ini merupakan satu referensi dg yg ada pada `this`.
-     */
-    val array: Array<T>
-}
 
-interface ListArrangeable<T>: Arrangeable<T> {
-    /**
-     * Array yang dikembalikan pada fungsi ini merupakan satu referensi dg yg ada pada `this`.
-     */
-    val list: MutableList<T>
-}
- */
-
-//interface ArrayArrangeable<T>: Arrangeable<T>

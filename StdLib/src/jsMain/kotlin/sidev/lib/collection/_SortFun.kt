@@ -11,8 +11,12 @@ actual fun <T: Comparable<*>> Array<T>.fastSort(from: Int, until: Int, order: Or
     (this as Array<Comparable<Any?>>).sort(from, until)
     if(order == Order.DESC) reverse()
 }
-actual fun <T> Array<T>.fastSortBy(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
+actual fun <T> Array<T>.fastSortWith(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) = sortWith(comparator, from, until)
+actual fun <T, R: Comparable<*>> Array<T>.fastSortBy(from: Int, until: Int, order: Order, toComparableFun: (T) -> R) {
+    val comparator= if(order == Order.ASC) Comparator<T> { n1, n2 -> compareValuesBy(n1, n2, toComparableFun) }
+        else Comparator { n1, n2 -> compareValuesBy(n2, n1, toComparableFun) }
     sortWith(comparator, from, until)
+}
 actual fun CharArray.fastSort(from: Int, until: Int, order: Order){
     sort(from, until)
     if(order == Order.DESC) reverse()
@@ -53,7 +57,14 @@ actual fun <T: Comparable<*>> MutableList<T>.fastSort(order: Order, withNumberSa
 }
 //actual fun <T: Comparable<*>> MutableList<T>.fastSortWith(c: Comparator<in T>) = sortWith(this, c)
 
-actual fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int) = sortWith(comparator)
+actual fun <T> MutableList<T>.fastSortWith(comparator: (n1: T, n2: T) -> Int) = sortWith(comparator)
+actual fun <T, R: Comparable<*>> MutableList<T>.fastSortBy(
+    order: Order, toComparableFun: (T) -> R
+) {
+    val comparator= if(order == Order.ASC) Comparator<T> { n1, n2 -> compareValuesBy(n1, n2, toComparableFun) }
+        else Comparator { n1, n2 -> compareValuesBy(n2, n1, toComparableFun) }
+    sortWith(comparator)
+}
 
 /*
 ===============

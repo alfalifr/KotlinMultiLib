@@ -353,3 +353,6 @@ fun BooleanArray.copy(from: Int= 0, until: Int= size, reversed: Boolean= false):
         BooleanArray(until - from){ this[lastIndex -it] }
     }
 }
+
+fun BooleanArray.toIntArray(): IntArray = IntArray(size){ if(this[it]) 1 else 0 }
+fun IntArray.toBooleanArray(): BooleanArray = BooleanArray(size){ this[it] > 0 }

@@ -36,3 +36,12 @@ internal object NumberReversedOrderComparator: Comparator<Comparable<Number>> {
     @Suppress(SuppressLiteral.VIRTUAL_MEMBER_HIDDEN)
     fun reversed(): NumberNaturalOrderComparator= NumberNaturalOrderComparator
 }
+
+
+internal class SelectorComparator<T, R: Comparable<R>>(val selector: (T) -> R): Comparator<T> {
+    constructor(selector: (T) -> R, origin: Comparator<R>): this(selector){
+        compareFun= { n1, n2 -> origin.compare(n1, n2) }
+    }
+    private var compareFun: (n1: R, n2: R) -> Int = { n1, n2 -> n1.compareTo(n2) }
+    override fun compare(a: T, b: T): Int = compareFun(selector(a), selector(b))
+}

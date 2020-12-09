@@ -2,6 +2,7 @@
 package sidev.lib.collection
 
 import sidev.lib.`val`.Order
+import sidev.lib.collection.array.toIntArray
 import sidev.lib.collection.comparator.NaturalOrderComparator
 import sidev.lib.collection.comparator.NumberNaturalOrderComparator
 import sidev.lib.collection.comparator.NumberReversedOrderComparator
@@ -10,12 +11,27 @@ import java.util.*
 import java.util.Arrays.sort as jsort
 import java.util.Collections.sort as jsortList
 
-
+/**
+ * Mengurutkan `this.extension` [Array<Any?>].
+ * Throws [ClassCastException] jika terdapat elemen yang bkn [Comparable].
+ * Knp kok receiver gak dijadikan sebagai Array<Comparable<T>>?
+ *  -Karena kelas [Array] akan dubah menjaditipe kelas [T] scr langsung
+ *  dan java dapat mengecek tipe [T] yang sesungguhnya.
+ *  Contoh: Object[] tidak dapat dicast ke A[] walau semua isinya berkelas A.
+ */
+fun <T> Array<T>.fastSort(from: Int, until: Int, order: Order) =
+    if(order == Order.ASC) jsort(this, from, until)
+    else jsort(this, from, until, Collections.reverseOrder())
 actual fun <T: Comparable<*>> Array<T>.fastSort(from: Int, until: Int, order: Order) =
     if(order == Order.ASC) jsort(this, from, until)
     else jsort(this, from, until, Collections.reverseOrder())
-actual fun <T> Array<T>.fastSortBy(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
+actual fun <T> Array<T>.fastSortWith(from: Int, until: Int, comparator: (n1: T, n2: T) -> Int) =
     jsort(this, from, until, comparator)
+actual fun <T, R: Comparable<*>> Array<T>.fastSortBy(from: Int, until: Int, order: Order, toComparableFun: (T) -> R) {
+    val comparator= if(order == Order.ASC) Comparator<T> { n1, n2 -> compareValuesBy(n1, n2, toComparableFun) }
+        else Comparator { n1, n2 -> compareValuesBy(n2, n1, toComparableFun) }
+    jsort(this, from, until, comparator)
+}
 actual fun CharArray.fastSort(from: Int, until: Int, order: Order){
     jsort(this, from, until)
     if(order == Order.DESC) reverse()
@@ -55,8 +71,19 @@ actual fun <T: Comparable<*>> MutableList<T>.fastSort(order: Order, withNumberSa
     jsortList(this, comparator as Comparator<in T>)
 }
 //actual fun <T: Comparable<*>> MutableList<T>.fastSortWith(c: Comparator<in T>) = jsortList(this, c)
-
-actual fun <T> MutableList<T>.fastSortBy(comparator: (n1: T, n2: T) -> Int) = jsortList(this, comparator)
+/*
+actual fun <T, R:Comparable<*>> MutableList<T>.fastSortBy(comparator: Int, until: Int, order: Order, toComparableFun: (T) -> R) = jsortList(this,
+    comparator
+)
+ */
+actual fun <T> MutableList<T>.fastSortWith(comparator: (n1: T, n2: T) -> Int) = jsortList(this, comparator)
+actual fun <T, R: Comparable<*>> MutableList<T>.fastSortBy(
+    order: Order, toComparableFun: (T) -> R
+) {
+    val comparator= if(order == Order.ASC) Comparator<T> { n1, n2 -> compareValuesBy(n1, n2, toComparableFun) }
+    else Comparator { n1, n2 -> compareValuesBy(n2, n1, toComparableFun) }
+    jsortList(this, comparator)
+}
 
 /*
 ===============
