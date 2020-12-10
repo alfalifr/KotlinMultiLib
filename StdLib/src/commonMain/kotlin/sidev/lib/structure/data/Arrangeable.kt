@@ -4,7 +4,6 @@ import sidev.lib.collection.common.ArrayWrapper
 import sidev.lib.collection.common.CommonList
 import sidev.lib.collection.common.CommonMutableList
 import sidev.lib.collection.common.MutableArrayWrapper
-import sidev.lib.structure.prop.SizeProp
 
 
 /**

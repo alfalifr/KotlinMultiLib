@@ -3,9 +3,9 @@ package sidev.lib.collection
 import sidev.lib.algo.binarySearch
 
 
-fun <T: Comparable<T>> List<T>.fastIndexOf(e: T, isListSorted: Boolean = false): Int =
+fun <T: Comparable<T>> List<T>.fastSearch(e: T, isListSorted: Boolean = false): Int =
     if(!isListSorted) indexOf(e) else binarySearch { it.compareTo(e) }
-fun <T> List<T>.fastIndexOf(e: T, comparator: Comparator<T>?= null): Int =
+fun <T> List<T>.fastSearch(e: T, comparator: Comparator<T>?= null): Int =
     if(comparator == null) indexOf(e) else binarySearch(e, comparator)
 /*
     else {
@@ -18,9 +18,9 @@ fun <T> List<T>.fastIndexOf(e: T, comparator: Comparator<T>?= null): Int =
  */
 
 
-fun <T: Comparable<T>> Array<T>.fastIndexOf(e: T, isListSorted: Boolean = false): Int =
+fun <T: Comparable<T>> Array<T>.fastSearch(e: T, isListSorted: Boolean = false): Int =
     if(!isListSorted) indexOf(e) else binarySearch { it.compareTo(e) }
-fun <T> Array<T>.fastIndexOf(e: T, comparator: Comparator<T>?= null): Int =
+fun <T> Array<T>.fastSearch(e: T, comparator: Comparator<T>?= null): Int =
     if(comparator == null) indexOf(e) else binarySearch(e, comparator)
 /*
     else {
