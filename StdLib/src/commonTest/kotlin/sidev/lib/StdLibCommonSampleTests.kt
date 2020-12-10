@@ -19,6 +19,7 @@ import sidev.lib.progression.*
 import sidev.lib.reflex.getHashCode
 import sidev.lib.util.Locale
 import sidev.lib.collection.array.get
+import sidev.lib.structure.util.Filter
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
@@ -28,6 +29,11 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 class StdLibCommonSampleTests {
+
+    @Test
+    fun cobTest(){
+        Filter<Int> { true }
+    }
 
     @Test
     fun nestedSeqTest(){

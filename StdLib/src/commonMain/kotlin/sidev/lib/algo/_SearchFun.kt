@@ -77,7 +77,7 @@ fun <T, R: Comparable<R>> List<T>.binarySearchBy(
     toComparableFun: (T) -> R
 ): Int //= binarySearch(from, until) { toComparableFun(it).compareTo(toComparableFun(e)) }
 {
-    val comparator= if(!withNumberSafety) naturalComparator<R>() else numberNaturalComparator<Double>() as Comparator<R>
+    val comparator= if(!withNumberSafety) naturalComparator() else numberNaturalComparator<Double>() as Comparator<R>
     val comparableE= toComparableFun(e)
     return binarySearch(from, until, order) { comparator.compare(toComparableFun(it), comparableE) }
 }
