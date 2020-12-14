@@ -4,10 +4,15 @@ rootProject.name = 'SidevLibKt'
 enableFeaturePreview('GRADLE_METADATA')
 
 include(":SidevLibKt-StdLib")
-project(":SidevLibKt-StdLib").projectDir= new File("/StdLib")
+project(":SidevLibKt-StdLib").projectDir= new File("/_StdLib")
 
 include(":SidevLibKt-Math")
-project(":SidevLibKt-Math").projectDir= new File("/Math")
+project(":SidevLibKt-Math").projectDir= new File("/_Math")
 
 include(":SidevLibKt-Reflex")
-project(":SidevLibKt-Reflex").projectDir= new File("/Reflex")
+project(":SidevLibKt-Reflex").projectDir= new File("/_Reflex")
+
+///*
+include(":SidevLibKt-Async")
+project(":SidevLibKt-Async").projectDir= new File("/_Async")
+// */
