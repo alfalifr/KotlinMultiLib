@@ -1,13 +1,13 @@
 package sidev.lib.async
 
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import sidev.lib.async.`val`.AsyncConst
-import sidev.lib.structure.data.iteration.RefIteration
-import sidev.lib.structure.data.iteration.refIterationOf
+import sidev.lib.console.prine
+import sidev.lib.exception.IllegalStateExc
+import sidev.lib.structure.data.iteration.MutableIteration
+import sidev.lib.structure.data.iteration.mutableIterationOf
 import sidev.lib.structure.data.value.*
+import kotlin.coroutines.CoroutineContext
 
 //import kotlinx.coroutines.run
 
@@ -22,12 +22,13 @@ fun whileAndWait(
 //    conditionCheckVal: Var<Boolean> = true.asBoxed(),
     delayMillis: Long = 5000,
     exceptionWaitCheck: (Exception) -> Boolean = { true },
+    maxRep: Int= 20,
     stateContainer: MutableMap<String, Any>? = null,
     delayMsg: String = "Menunggu",
-    block: (condition: Var<Boolean>, itr: RefIteration) -> Unit
+    block: (condition: Var<Boolean>, itr: MutableIteration) -> Unit
 ) {
     val conditionCheckVal= true.asBoxed()
-    whileAndWait({ conditionCheckVal.value }, delayMillis, exceptionWaitCheck, stateContainer, delayMsg) {
+    whileAndWait({ conditionCheckVal.value }, delayMillis, exceptionWaitCheck, maxRep, stateContainer, delayMsg) {
         block(conditionCheckVal, it)
     }
 }
@@ -39,31 +40,45 @@ fun whileAndWait(
  *  -[exceptionWaitCheck] return `false` maka fungsi akan men-throw exception yang terjadi.
  */
 fun whileAndWait(
-    conditionCheck: (itr: RefIteration) -> Boolean,
+    conditionCheck: (itr: MutableIteration) -> Boolean,
     delayMillis: Long = 5000,
     exceptionWaitCheck: (Exception) -> Boolean = { true },
+    maxRep: Int= 20,
     stateContainer: MutableMap<String, Any>? = null,
     delayMsg: String = "Menunggu",
-    block: (itr: RefIteration) -> Unit
+    block: (itr: MutableIteration) -> Unit
 ){
     val i= (stateContainer?.get(AsyncConst.Config.KEY_LAST_ITERATION) as? Int) ?: 0
     val rep= (stateContainer?.get(AsyncConst.Config.KEY_LAST_REPETITION) as? Int) ?: 0
-    val state= refIterationOf(i, rep, values = stateContainer) //i refIndexes stateContainer
+    val state= mutableIterationOf(i, rep, values = stateContainer) //i refIndexes stateContainer
     var loop= true
+    var currRep= 0
+    var currExc: Exception?= null
     while(loop){
+        if(currRep >= maxRep){
+            throw IllegalStateExc(
+                currentState = "repetisi ($currRep) >= maxRep ($maxRep)",
+                expectedState = "repetisi ($currRep) < maxRep ($maxRep)",
+                detMsg = "repetisi='$currRep' melebihi batas='$maxRep'"
+            ).apply { cause= currExc!! }
+        }
         try {
+//            delay()
             while(conditionCheck(state)){
+                prine("whileAndWait() i= $i")
                 block(state)
-//            prine("whileAndWait() i= $i")
 //            state= refIterationOf(++i, rep) //++i refIndexes stateContainer
-                state.indexBox += 1
-                state.repetitionBox.value = 0
+                state.index += 1
+                currRep= 0
+                state.repetition = currRep
             }
             loop= false
         } catch (e: Exception){
+            prine("whileAndWait() i= $i e= $e")
             if(exceptionWaitCheck(e)){
                 runBlocking { printDelay(delayMillis, delayMsg) }
-                state.repetitionBox += 1
+                state.repetition = ++currRep
+                currExc= e
 /*
                 whileAndWait(
                     conditionCheck, delayMillis, exceptionWaitCheck,
@@ -80,10 +95,12 @@ fun whileAndWait(
 }
 
 suspend fun printDelay(delay: Long = 5000, msg: String= "Menunggu") = coroutineScope {
+//    val loop= true.asBoxed()
     val job= launch {
         var dotLen= -1
         var dot: String
         while(true){
+//    for(i in 0 until 10){
 //            for(i in 0 until dotLen) {
             print("\r")
 //            }
@@ -95,7 +112,7 @@ suspend fun printDelay(delay: Long = 5000, msg: String= "Menunggu") = coroutineS
             for(i in 0 until dotLen)
                 dot += "."
             print("$msg$dot")
-            delay(500)
+            delay(40)
         }
     }
     delay(delay)

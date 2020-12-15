@@ -28,8 +28,8 @@ open class Exc(relatedClass: KClass<*>?, private val commonMsg: String= "", priv
                         "Cause          : $cause \n" +
                         "======================================================================= "
 
-    open val relatedClass: KClass<*>? =
-        relatedClass ?: this::class
+    var relatedClass: KClass<*>? = relatedClass
+        get()= field ?: this::class
 
     constructor(msg: String?= null, cause: Throwable?= null, code: Int= 1)
             : this(null, msg ?: "", cause = cause, code = code)

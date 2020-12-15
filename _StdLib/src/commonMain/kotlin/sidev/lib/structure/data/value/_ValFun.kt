@@ -33,6 +33,9 @@ fun <T> T.asRefIndexed(index: Int= 0): RefIndexedValue<T> = RefIndexedValueImpl(
 fun <T> KIndexedValue<T>.toSiIndexed(): IndexedValue<T> = IndexedValueImpl(index, value)
 fun <T> T.asKIndexed(index: Int= 0): KIndexedValue<T> = KIndexedValue(index, this)
 
+fun <T> Val<T>.asVar(): Var<T> = if(this is Var) this else VarImpl(value)
+fun <T> Var<T>.toVal(): Val<T> = ValImpl(value)
+
 infix fun <T> Int.levels(any: T): LeveledValue<T> = LeveledValue(this, any)
 infix fun <T> Int.indexes(any: T): IndexedValue<T> = IndexedValueImpl(this, any)
 infix fun <T> Int.refIndexes(any: T): RefIndexedValue<T> = RefIndexedValueImpl(this, any)

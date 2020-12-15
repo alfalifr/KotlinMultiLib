@@ -10,11 +10,12 @@ class AsyncSampleTests {
     @Test
     fun whileAndWaitTest(){
         val limit= 20
-        whileAndWait { condition, indexedState ->
+        val delay= 3000L
+        whileAndWait(delay) { condition, indexedState ->
             val i= indexedState.index
             condition.value= i < limit
             if(i % 6 == 0){
-                indexedState.indexBox += 1
+                indexedState.index += 1
                 throw Exception()
             }
             prin("i= $i condition.value= $condition")
@@ -22,13 +23,13 @@ class AsyncSampleTests {
 
         prin("\n\n ============= ganti ================ \n\n")
 
-        whileAndWait({ it.index < limit }) {
+        whileAndWait({ it.index < limit }, delayMillis = delay) {
             val i= it.index
             if(i % 6 == 0){
-                it.indexBox += 1
+                it.index += 1
                 throw Exception()
             }
-            prin("i= $i condition.value= $it rep= ${it.repetition}")
+            prin("i= $i itr= $it rep= ${it.repetition}")
         }
     }
 }
