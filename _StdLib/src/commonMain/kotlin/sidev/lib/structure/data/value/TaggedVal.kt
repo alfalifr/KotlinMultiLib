@@ -3,13 +3,10 @@ package sidev.lib.structure.data.value
 import sidev.lib.reflex.getHashCode
 import sidev.lib.structure.prop.TagProp
 
-interface TaggedVal<T, V>: NullableVal<V>, TagProp<T>
+interface TaggedVal<T, V>: Val<V>, TagProp<T>
 
-internal open class TaggedValImpl<T, V>(override val tag: T?, override val value: V?): TaggedVal<T, V> {
-    override fun equals(other: Any?): Boolean = when(other){
-        is TaggedVal<*, *> -> tag == other.tag && value == other.value
-        else -> super.equals(other)
-    }
+internal open class TaggedValImpl<T, V>(override val tag: T?, override val value: V): TaggedVal<T, V> {
+    override fun equals(other: Any?): Boolean = other is TaggedVal<*, *> && tag == other.tag && value == other.value
     override fun hashCode(): Int = getHashCode(tag, value, calculateOrder = false)
     override fun toString(): String = "TaggedVal(tag=$tag, value=$value)"
 }

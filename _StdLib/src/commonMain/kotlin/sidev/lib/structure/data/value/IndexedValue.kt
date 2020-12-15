@@ -2,7 +2,7 @@ package sidev.lib.structure.data.value
 
 import sidev.lib.reflex.getHashCode
 
-interface IndexedValue<T> {
+interface IndexedValue<out T> {
     val index: Int
     val value: T
 }

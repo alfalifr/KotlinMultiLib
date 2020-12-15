@@ -1,5 +1,6 @@
 package sidev.lib.math.arithmetic
 
+import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.TooExpensiveForBackingField
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
@@ -11,10 +12,10 @@ import sidev.lib.exception.IllegalArgExc
 import sidev.lib.exception.IllegalStateExc
 import sidev.lib.exception.UnavailableOperationExc
 import sidev.lib.number.*
-import sidev.lib.structure.data.value.VarImpl
 import sidev.lib.text.*
 import sidev.lib.collection.forEachIndexed
 import sidev.lib.collection.indexOfWhere
+import sidev.lib.structure.data.value.asBoxed
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 
@@ -728,7 +729,7 @@ internal class BlockImpl(
         var isCoeficientComputed= false
         var computedCoeficient: Number?= null
         var inversedE1: Block?= null
-        val breakRef= VarImpl(false)
+        val breakRef= false.asBoxed()
         elementsDupl.forEachIndexed(breakRef = breakRef) { i, e1 ->
             if(!isOperated[i]){
                 val conFun: (e2: Calculable) -> Boolean = conFunGenerator(e1)

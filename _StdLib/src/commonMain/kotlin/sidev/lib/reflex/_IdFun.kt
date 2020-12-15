@@ -44,6 +44,7 @@ fun getHashCode(vararg fromObj: Any?, calculateOrder: Boolean= true): Int{
         result = (factor * result) + when(obj){
             is Iterable<*> -> getContentHashCode(obj, calculateOrder)
             is Array<*> -> getHashCode(*obj, calculateOrder = calculateOrder)
+            is Map<*, *> -> getContentHashCode(obj, calculateOrder)
             else -> obj.hashCode()
         }
     return result

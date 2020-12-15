@@ -22,10 +22,10 @@ fun <T> T.asBoxed(): Var<T> = VarImpl(this)
 fun <T> T.asBoxedVal(): Val<T> = ValImpl(this)
 
 fun <T> T?.asNullableBoxed(): NullableVar<T> = NullableVarImpl(this)
-fun <T> T?.asNullableBoxedVal(): NullableVal<T> = NullableValImpl(this)
+//fun <T> T?.asNullableBoxedVal(): NullableVal<T> = NullableValImpl(this)
 
 fun <T> nullableVarOf(value: T?= null): NullableVar<T> = value.asNullableBoxed()
-fun <T> nullableValOf(value: T?= null): NullableVal<T> = value.asNullableBoxedVal()
+//fun <T> nullableValOf(value: T?= null): NullableVal<T> = value.asNullableBoxedVal()
 
 fun <T> T.asLeveled(level: Int= 0): LeveledValue<T> = LeveledValue(level, this)
 fun <T> T.asIndexed(index: Int= 0): IndexedValue<T> = IndexedValueImpl(index, this)

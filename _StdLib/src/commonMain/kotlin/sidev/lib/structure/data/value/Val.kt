@@ -5,10 +5,7 @@ interface Val<T> {
 }
 
 internal open class ValImpl<T>(override val value: T): Val<T> {
-    override fun equals(other: Any?): Boolean = when(other){
-        is Val<*> -> value == other.value
-        else -> super.equals(other)
-    }
+    override fun equals(other: Any?): Boolean = other is Val<*> && value == other.value
     override fun hashCode(): Int = value.hashCode()
     override fun toString(): String = "Val($value)"
 }

@@ -28,7 +28,7 @@ class AsyncSampleTests {
                 it.indexBox += 1
                 throw Exception()
             }
-            prin("i= $i condition.value= $it")
+            prin("i= $i condition.value= $it rep= ${it.repetition}")
         }
     }
 }

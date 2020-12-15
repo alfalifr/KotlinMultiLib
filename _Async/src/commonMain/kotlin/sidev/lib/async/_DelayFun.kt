@@ -5,7 +5,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sidev.lib.async.`val`.AsyncConst
-import sidev.lib.console.prine
+import sidev.lib.structure.data.iteration.RefIteration
+import sidev.lib.structure.data.iteration.refIterationOf
 import sidev.lib.structure.data.value.*
 
 //import kotlinx.coroutines.run
@@ -19,14 +20,14 @@ import sidev.lib.structure.data.value.*
  */
 fun whileAndWait(
 //    conditionCheckVal: Var<Boolean> = true.asBoxed(),
-    delay: Long = 5000,
+    delayMillis: Long = 5000,
     exceptionWaitCheck: (Exception) -> Boolean = { true },
-    stateContainer: MutableMap<String, Any?>? = null,
+    stateContainer: MutableMap<String, Any>? = null,
     delayMsg: String = "Menunggu",
-    block: (condition: Var<Boolean>, indexedState: RefIndexedValue<MutableMap<String, Any?>?>) -> Unit
+    block: (condition: Var<Boolean>, itr: RefIteration) -> Unit
 ) {
     val conditionCheckVal= true.asBoxed()
-    whileAndWait({ conditionCheckVal.value }, delay, exceptionWaitCheck, stateContainer, delayMsg) {
+    whileAndWait({ conditionCheckVal.value }, delayMillis, exceptionWaitCheck, stateContainer, delayMsg) {
         block(conditionCheckVal, it)
     }
 }
@@ -38,30 +39,43 @@ fun whileAndWait(
  *  -[exceptionWaitCheck] return `false` maka fungsi akan men-throw exception yang terjadi.
  */
 fun whileAndWait(
-    conditionCheck: (indexedState: RefIndexedValue<MutableMap<String, Any?>?>) -> Boolean,
-    delay: Long = 5000,
+    conditionCheck: (itr: RefIteration) -> Boolean,
+    delayMillis: Long = 5000,
     exceptionWaitCheck: (Exception) -> Boolean = { true },
-    stateContainer: MutableMap<String, Any?>? = null,
+    stateContainer: MutableMap<String, Any>? = null,
     delayMsg: String = "Menunggu",
-    block: (indexedState: RefIndexedValue<MutableMap<String, Any?>?>) -> Unit
+    block: (itr: RefIteration) -> Unit
 ){
-    var i= (stateContainer?.get(AsyncConst.Config.KEY_LAST_ITERATION) as? Int) ?: 0
-    var state= i refIndexes stateContainer
-    try {
-        while(conditionCheck(state)){
-            block(state)
+    val i= (stateContainer?.get(AsyncConst.Config.KEY_LAST_ITERATION) as? Int) ?: 0
+    val rep= (stateContainer?.get(AsyncConst.Config.KEY_LAST_REPETITION) as? Int) ?: 0
+    val state= refIterationOf(i, rep, values = stateContainer) //i refIndexes stateContainer
+    var loop= true
+    while(loop){
+        try {
+            while(conditionCheck(state)){
+                block(state)
 //            prine("whileAndWait() i= $i")
-            state= ++i refIndexes stateContainer
+//            state= refIterationOf(++i, rep) //++i refIndexes stateContainer
+                state.indexBox += 1
+                state.repetitionBox.value = 0
+            }
+            loop= false
+        } catch (e: Exception){
+            if(exceptionWaitCheck(e)){
+                runBlocking { printDelay(delayMillis, delayMsg) }
+                state.repetitionBox += 1
+/*
+                whileAndWait(
+                    conditionCheck, delayMillis, exceptionWaitCheck,
+                    (stateContainer ?: mutableMapOf()).apply {
+                        this[AsyncConst.Config.KEY_LAST_ITERATION]= state.index
+                        this[AsyncConst.Config.KEY_LAST_REPETITION]= state.repetition +1
+                    },
+                    delayMsg, block
+                )
+ */
+            } else throw e
         }
-    } catch (e: Exception){
-        if(exceptionWaitCheck(e)){
-            runBlocking { printDelay(delay, delayMsg) }
-            whileAndWait(
-                conditionCheck, delay, exceptionWaitCheck,
-                (stateContainer ?: mutableMapOf()).apply { this[AsyncConst.Config.KEY_LAST_ITERATION]= state.index },
-                delayMsg, block
-            )
-        } else throw e
     }
 }
 
