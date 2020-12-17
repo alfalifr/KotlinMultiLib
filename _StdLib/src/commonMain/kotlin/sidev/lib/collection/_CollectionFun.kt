@@ -5,10 +5,11 @@ import sidev.lib.collection.array.forEach
 import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.exception.IllegalArgExc
 import sidev.lib.structure.data.value.Var
-import sidev.lib.structure.data.value.VarImpl
 import kotlin.jvm.JvmOverloads
 import kotlin.collections.toTypedArray as kToTypedArray
 import kotlin.collections.toList as kToList
+import sidev.lib.number.compareTo
+import sidev.lib.number.minus
 
 
 inline fun <reified T> Collection<T>.toTypedArray(): Array<T> = kToTypedArray()
@@ -592,4 +593,136 @@ fun rangeCheck(size: Int, fromIndex: Int, toIndex: Int) {
         fromIndex < 0 -> throw IndexOutOfBoundsException("`fromIndex`='$fromIndex' kurang dari 0.")
         toIndex > size -> throw IndexOutOfBoundsException("`toIndex`='$toIndex' lebih dari `size`='$size'")
     }
+}
+
+
+/*
+fun <T, R> Iterable<T>.countBy(selector: (T) -> R): Map<R, Int> {
+    val map= mutableMapOf<R, Int>()
+    for(e in this){
+        val key= selector(e)
+        map[key]= map[key]?.plus(1) ?: 1
+    }
+    return map
+}
+ */
+
+/**
+ * Menghitung jumlah duplikat. Jml yang dikembalikan adalah jml duplikat,
+ * tidak termasuk jml elemen unik yng pertama. Jadi jika elemen e berjumlah hanya 1 di
+ * `this.extension` `Iterable`, maka jml duplikasinya aalah 0.
+ */
+fun <T, R> Iterable<T>.countDuplicationBy(selector: (T) -> R): Map<R, Int> {
+    val map= mutableMapOf<R, Int>()
+    for(e in this){
+        val key= selector(e)
+        map[key]= map[key]?.plus(1) ?: 0
+    }
+    return map
+}
+
+fun <T> Iterable<T>.countDuplication(): Map<T, Int> = countDuplicationBy { it }
+
+
+/**
+ * Menentukan apakah semua elemen pada `this.extension` `Iterable` semuanya unik.
+ */
+fun <T> Iterable<T>.isUnique(): Boolean = isUniqueBy { it }
+/**
+ * Menentukan apakah semua elemen pada `this.extension` `Iterable` semuanya unik berdasarkan [selector]
+ */
+fun <T, R> Iterable<T>.isUniqueBy(selector: (T) -> R): Boolean {
+    val set= HashSet<R>()
+    for(e in this){
+        if(!set.add(selector(e)))
+            return false
+    }
+    return true
+}
+
+
+/**
+ * [start] inklusif dan [end] eksklusif.
+ */
+//fun <T: Number> Iterable<T>.gaps(start: T?= null, end: T?= null): List<Int> {}
+fun Iterable<Int>.gaps(start: Int= -1, end: Int= -1): List<Int> {
+    var start= start
+    var end= end
+
+    if(start < 0 || end < 0){
+        var max= 0
+        var min= Int.MAX_VALUE
+        for(e in this){
+            if(max < e)
+                max= e
+            if(min > e)
+                min= e
+        }
+
+        if(start < 0)
+            start= min
+        if(end < 0)
+            end= max //+ 1
+    }
+
+    val size= end - start +1
+    if(size <= 1)
+        return emptyList()
+
+    val presents= BooleanArray(size)
+
+    for(e in this)
+        presents[e - start]= true
+
+    val gaps= mutableListOf<Int>()
+    for((i, bool) in presents.withIndex()){
+        if(!bool){
+            gaps += i + start
+        }
+    }
+    return gaps
+}
+
+
+/**
+ * [start] inklusif dan [end] eksklusif.
+ */
+//fun <T: Number> Iterable<T>.gaps(start: T?= null, end: T?= null): List<Int> {}
+fun <T> Iterable<T>.gapsBy(start: Int= -1, end: Int= -1, selector: (T) -> Int): List<Int> {
+    var start= start
+    var end= end
+
+    if(start < 0 || end < 0){
+        var max= 0
+        var min= Int.MAX_VALUE
+        for(e in this){
+            val int= selector(e)
+            if(max < int)
+                max= int
+            if(min > int)
+                min= int
+        }
+
+        if(start < 0)
+            start= min
+        if(end < 0)
+            end= max //+ 1
+    }
+
+    val size= end - start +1
+    if(size <= 1)
+        return emptyList()
+
+    val presents= BooleanArray(size)
+
+    for(e in this)
+        presents[selector(e) - start]= true
+
+    val gaps= mutableListOf<Int>()
+    for((i, bool) in presents.withIndex()){
+        if(!bool){
+            gaps += i + start
+        }
+    }
+    return gaps
 }

@@ -617,4 +617,13 @@ class StdLibCommonSampleTests {
         prin("ind2= $ind2")
         prin("ind3= $ind3")
     }
+
+    @Test
+    fun gapTest(){
+        val ls= listOf(2,1,20,1,4,8,5)
+        val dups= ls.countDuplication()
+        val gaps= ls.gaps()
+        prin("gaps= $gaps")
+        prin("dups= $dups")
+    }
 }
