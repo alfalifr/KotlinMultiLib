@@ -3,6 +3,7 @@ package sidev.lib
 import sidev.lib.`val`.NumberOperationMode
 import sidev.lib.`val`.Order
 import sidev.lib.`val`.RoundingMode
+import sidev.lib.`val`.StringLiteral
 import sidev.lib.algo.*
 import sidev.lib.collection.*
 import sidev.lib.collection.array.copy
@@ -20,6 +21,7 @@ import sidev.lib.reflex.getHashCode
 import sidev.lib.util.Locale
 import sidev.lib.collection.array.get
 import sidev.lib.structure.util.Filter
+import sidev.lib.text.Charset
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
@@ -625,5 +627,17 @@ class StdLibCommonSampleTests {
         val gaps= ls.gaps()
         prin("gaps= $gaps")
         prin("dups= $dups")
+    }
+
+    @Test
+    fun consoleTest(){
+        val charset= Charset.UTF_8
+        val byteArray= charset.encode("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم")
+        val str= "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيم" //charset.decode(byteArray).concatToString()
+        prin(str, charset = Charset.UTF_16)
+        prin(str, StringLiteral.ANSI_YELLOW, charset = Charset.UTF_8)
+        prin(str, charset = Charset.US_ASCII)
+        prin(str, charset = Charset.ISO_8859_1)
+        prin(str)
     }
 }
