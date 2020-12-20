@@ -129,3 +129,5 @@ fun <K, V> Map<K, V>.copy(from: Int= 0, until: Int= size): Map<K, V> {
     }
     return res
 }
+
+fun <K, V> Map<K, V>.asReadOnly(copyFirst: Boolean = true): ReadOnlyMap<K, V> = ReadOnlyMap(this, copyFirst)

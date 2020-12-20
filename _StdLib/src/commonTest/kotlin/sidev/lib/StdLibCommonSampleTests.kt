@@ -640,4 +640,44 @@ class StdLibCommonSampleTests {
         prin(str, charset = Charset.ISO_8859_1)
         prin(str)
     }
+
+    @Test
+    fun roListTest(){
+        val mutList= mutableListOf(1,2,4)
+        val list= mutList.toList()
+        (list as MutableList).add(10)
+        prin(list)
+
+        val roList= ReadOnlyList(mutList, false)//.asReadOnly()
+//        (roList as MutableList<*>)//.add(10)
+        prin(roList)
+        mutList.add(100)
+        prin(roList)
+
+        val roList2= mutList.asReadOnly()
+//        (roList as MutableList<*>)//.add(10)
+        prin(roList2)
+        mutList.add(1002)
+        prin(roList2)
+        prin(mutList)
+    }
+
+    @Test
+    fun roMapTest(){
+        val mutMap= mutableMapOf(
+            "a" to 1, "b" to 3
+        )
+        val map= mutMap.toMap()
+        (map as MutableMap)["c"]= 7
+        prin(map)
+        prin(mutMap)
+
+        val roMap= mutMap.asReadOnly()
+//        (roMap as MutableMap<String, Int>)["c"]= 7
+        prin(roMap)
+
+        mutMap["d"]= 100
+        prin(roMap)
+        prin(mutMap)
+    }
 }

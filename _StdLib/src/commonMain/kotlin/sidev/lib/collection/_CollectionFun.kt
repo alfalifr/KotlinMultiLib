@@ -323,6 +323,22 @@ inline fun <reified T> Array<T>.copyTo(dest: Array<T>, from: Int= 0, until: Int=
 fun <T> List<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): List<T> =
     (this as List<*>).toTypedArray(from, until, reversed).asList() as List<T>
 
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Set<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Set<T> =
+    (this as Set<*>).toTypedArray(from, until, reversed).toSet() as Set<T>
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Collection<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Collection<T> =
+    (this as Collection<*>).toTypedArray(from, until, reversed).asList() as Collection<T>
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Iterable<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Iterable<T> = when(this) {
+    is List<*> -> (this as List<T>).copy(from, until, reversed)
+    is Set<*> -> (this as Set<T>).copy(from, until, reversed)
+    is Collection<*> -> (this as Collection<T>).copy(from, until, reversed)
+    else -> (this as Iterable<*>).toTypedArray(from, until, reversed).asList() as Iterable<T>
+}
+
 /*
 {
     val newList= mutableListOf<T>()
@@ -594,6 +610,15 @@ fun rangeCheck(size: Int, fromIndex: Int, toIndex: Int) {
         toIndex > size -> throw IndexOutOfBoundsException("`toIndex`='$toIndex' lebih dari `size`='$size'")
     }
 }
+
+@JvmOverloads
+fun <T> Iterable<T>.asReadOnly(copyFirst: Boolean = true): ReadOnlyList<T> {
+    val list= if(this is List<*>) this as List else kToList()
+    return ReadOnlyList(list, copyFirst)
+}
+
+@JvmOverloads
+fun <T> Set<T>.asReadOnly(copyFirst: Boolean = true): ReadOnlySet<T> = ReadOnlySet(this, copyFirst)
 
 
 /*
