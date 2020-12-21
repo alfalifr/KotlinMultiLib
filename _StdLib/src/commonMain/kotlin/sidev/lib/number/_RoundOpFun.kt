@@ -5,15 +5,15 @@ import sidev.lib.`val`.SuppressLiteral
 
 
 infix fun Int.roundClosest(range: IntRange): Int{
-    val diffToFirst= (this -range.first).asNumber().absoluteValue //Dijadikan number agar Int.MIN_VALUE dan Long.MIN_VLAUE dapat diubah jadi absolute value.
-    val diffToLast= (this -range.last).asNumber().absoluteValue
+    val diffToFirst= (this -range.first).asNumber().absoluteValueCast //Dijadikan number agar Int.MIN_VALUE dan Long.MIN_VLAUE dapat diubah jadi absolute value.
+    val diffToLast= (this -range.last).asNumber().absoluteValueCast
 
     return if(diffToFirst < diffToLast) range.first
     else range.last
 }
 infix fun Number.roundClosest(range: IntRange): Int{
-    val diffToFirst= (this -range.first).absoluteValue
-    val diffToLast= (this -range.last).absoluteValue
+    val diffToFirst= (this -range.first).absoluteValueCast
+    val diffToLast= (this -range.last).absoluteValueCast
 
     return if(diffToFirst < diffToLast) range.first
     else range.last

@@ -1,6 +1,5 @@
 package sidev.lib.math.arithmetic
 
-import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.TooExpensiveForBackingField
 import sidev.lib.check.isNull
 import sidev.lib.check.notNull
@@ -808,10 +807,10 @@ internal class BlockImpl(
                             if(numSum != 0) {
                                 when(e1){
                                     is Constant<*> -> uniqueEls += constantOf(
-                                        if(i > 0) numSum.absoluteValue else numSum
+                                        if(i > 0) numSum.absoluteValueCast else numSum
                                     )
                                     is Variable<*> -> uniqueEls += variableOf(e1.name,
-                                        if(i > 0) numSum.absoluteValue else numSum
+                                        if(i > 0) numSum.absoluteValueCast else numSum
                                     )
                                 }
                                 if(i > 0)
@@ -926,7 +925,7 @@ internal class BlockImpl(
                                     isOperated[u]= true
                                 }
                             }
-                            val absCount= elCount.absoluteValue //elCount * signum
+                            val absCount= elCount.absoluteValueCast //elCount * signum
                             if(absCount != 0){
                                 uniqueEls += e1.let {
                                     if(absCount == 1) it

@@ -675,6 +675,7 @@ class StdLibCommonSampleTests {
         val roMap= mutMap.asReadOnly()
 //        (roMap as MutableMap<String, Int>)["c"]= 7
         prin(roMap)
+        listOf(1,2).random()
 
         mutMap["d"]= 100
         prin(roMap)

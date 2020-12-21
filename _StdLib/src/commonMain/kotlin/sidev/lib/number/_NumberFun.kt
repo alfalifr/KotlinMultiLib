@@ -3,7 +3,6 @@ package sidev.lib.number
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
 import sidev.lib.structure.data.value.Var
-import sidev.lib.structure.data.value.VarImpl
 import kotlin.math.absoluteValue
 import kotlin.reflect.KClass
 
@@ -61,25 +60,43 @@ fun String.toNumber(): Number{
 }
 
 fun Number.asNumber(): Number = this
+
 /**
  * Mengambil nilai absolut dari `this.extension` [Number] apapun formatnya.
  * Special Case:
- *   - `Int.MIN_VALUE` dan `Long.MIN_VALUE` akan menghasilkan MIN_VALUE +1 agar bisa jadi positif.
+ *   - `Int.MIN_VALUE` dan `Long.MIN_VALUE` akan menghasilkan MIN_VALUE karena overflow.
  */
-val <T: Number> T.absoluteValue: T
+val <T: Number> T.absoluteValueCast: T
     get(){
         val res= when(this){
             is Int -> absoluteValue
             is Long -> absoluteValue
             is Float -> absoluteValue
             is Double -> absoluteValue
+            is Short -> toInt().absoluteValue.toShort()
+            is Byte -> toInt().absoluteValue.toByte()
             else -> if(!isNegative()) this else -this
         }
 
-        @Suppress(SuppressLiteral.UNCHECKED_CAST) //Kotlin dapat meng-cast sendiri tipe data number.
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
+        return res as T
+/*
         return if(res.isNotNegative()) res as T
         else (res +1).absoluteValue as T
+ */
     }
+/**
+ * Mengambil nilai absolut dari `this.extension` [Number] apapun formatnya.
+ * Special Case:
+ *   - `Int.MIN_VALUE` dan `Long.MIN_VALUE` akan menghasilkan MIN_VALUE karena overflow.
+ */
+val Number.absoluteValue: Number get()= when(this){
+    is Int -> absoluteValue
+    is Long -> absoluteValue
+    is Float -> absoluteValue
+    is Double -> absoluteValue
+    else -> if(!isNegative()) this else -this
+}
 
 infix fun Var<Int>.or(num: Int): Var<Int> = apply { value= value or num }
 

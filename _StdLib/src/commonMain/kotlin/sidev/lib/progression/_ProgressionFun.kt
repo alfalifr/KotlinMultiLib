@@ -3,7 +3,8 @@ package sidev.lib.progression
 import sidev.lib.`val`.Exclusiveness
 import sidev.lib.`val`.NumberOperationMode
 import sidev.lib.`val`.SuppressLiteral
-import sidev.lib.number.toFormatLike
+import sidev.lib.number.*
+import kotlin.math.absoluteValue as kAbsoluteValue
 import kotlin.ranges.CharProgression as CharProgressionKt
 import kotlin.ranges.until as untilKt
 
@@ -42,6 +43,7 @@ infix fun <T> T.quartileUntil(other: Number): NumberProgression<Float> where T :
     this.toFloat().progressTo(other.toFloat(), 0.25f, endExclusiveness = Exclusiveness.EXCLUSIVE)
 
 
+infix fun <T> T.progressTo(other: Number): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 1)
 fun <T> T.progressTo(
     other: Number,
     step: Number = 1,
@@ -56,6 +58,7 @@ fun <T> T.progressTo(
 )
 //infix fun <T> T.until(other: T): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 1 as T)
 
+infix fun Char.progressTo(other: Char): CharProgression = progressTo(other, 1)
 fun Char.progressTo(
     other: Char,
     step: Int = 1,
@@ -70,22 +73,63 @@ fun <T> Progression<T>.toList(): List<T>{
     return list
 }
 
+fun <T> Progression<T>.slice(range: IntRange): List<T> = slice(range.first, range.last)
 fun <T> Progression<T>.slice(from: Int, to: Int): List<T>{
-    val indexRange= from until to
+    val indexRange= from untilKt to
     val list= ArrayList<T>()
     for((i, e) in this.withIndex()){
         if(i in indexRange){
             list += e
-        } else if(i > to)
+        } else if(i >= to)
             break
     }
     return list
 }
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> NumberProgression<T>.slice(range: IntRange): NumberProgression<T> where T: Number, T: Comparable<T> = slice(range.first, range.last)
+fun <T> NumberProgression<T>.slice(from: Int, to: Int): NumberProgression<T> where T: Number, T: Comparable<T> {
+    val first= first
+    val firstInt= (first +step *from) as T
+    val finalInt= (first +step *(to -1)) as T
+    return firstInt progressTo finalInt //IntProgression.fromClosedRange(firstInt, finalInt, step)
+}
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun CharProgression.slice(range: IntRange): CharProgression = slice(range.first, range.last)
+fun CharProgression.slice(from: Int, to: Int): CharProgression {
+    val first= first
+    val firstInt= (first +step *from)
+    val finalInt= (first +step *(to -1))
+    return firstInt progressTo finalInt //IntProgression.fromClosedRange(firstInt, finalInt, step)
+}
+
+operator fun <T> Progression<T>.get(range: IntRange): List<T> = slice(range)
+operator fun <T> Progression<T>.get(from: Int, to: Int): List<T> = slice(from, to)
 operator fun <T> Progression<T>.get(index: Int): T?{
     for((i, e) in this.withIndex())
         if(i == index)
             return e
     return null
+}
+
+operator fun <T> NumberProgression<T>.get(range: IntRange): NumberProgression<T> where T: Number, T: Comparable<T> = slice(range)
+operator fun <T> NumberProgression<T>.get(from: Int, to: Int): NumberProgression<T> where T: Number, T: Comparable<T> = slice(from, to)
+operator fun <T> NumberProgression<T>.get(index: Int): T where T: Number, T: Comparable<T> {
+    val e= first +step *index
+    if(step > 0 && e > last || step < 0 && e < last)
+        throw IndexOutOfBoundsException("last= $last namun int pada index $index sama dg (int= $e) di luar range.")
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
+    return e as T
+}
+
+operator fun CharProgression.get(range: IntRange): CharProgression = slice(range)
+operator fun CharProgression.get(from: Int, to: Int): CharProgression = slice(from, to)
+operator fun CharProgression.get(index: Int): Char {
+    val e= first +step *index
+    if(step > 0 && e > last || step < 0 && e < last)
+        throw IndexOutOfBoundsException("last= $last namun int pada index $index sama dg (int= $e) di luar range.")
+    return e
 }
 
 operator fun IntProgression.get(range: IntRange): IntProgression = slice(range)
@@ -96,10 +140,62 @@ operator fun IntProgression.get(index: Int): Int{
         throw IndexOutOfBoundsException("last= $last namun int pada index $index sama dg (int= $e) di luar range.")
     return e
 }
+
+/** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
 val IntProgression.size: Int
-    get()= (range / step) +1
+    get()= domain / step
+
+/** Menghitung jangkauan dari `this.extension` `IntProgression`. */
 val IntProgression.range: Int
-    get()= last -first
+    get()= (last -first).kAbsoluteValue
+
+/** Menghitung jml semua elemen yg terdapat di dalam `this.extension` `IntProgression`. */
+val IntProgression.domain: Int
+    get()= range +1
+
+/**
+ * Untuk menentukan apakah `this.extension` `IntRange` dapat memuat bin dg ukuran [binSize] sebanyak [binCount]
+ * dan tiap bin tidak ada yg overlap.
+ */
+fun IntProgression.canFit(binSize: Int, binCount: Int): Boolean = binSize * binCount <= domain
+
+
+/** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
+val NumberProgression<*>.size: Int
+    get()= (domain / step).toInt()
+
+/** Menghitung jangkauan dari `this.extension` `IntProgression`. */
+val NumberProgression<*>.range: Int
+    get()= (last -first).absoluteValue.toInt()
+
+/** Menghitung jml semua elemen yg terdapat di dalam `this.extension` `IntProgression`. */
+val NumberProgression<*>.domain: Int
+    get()= range +1
+
+/**
+ * Untuk menentukan apakah `this.extension` `IntRange` dapat memuat bin dg ukuran [binSize] sebanyak [binCount]
+ * dan tiap bin tidak ada yg overlap.
+ */
+fun NumberProgression<*>.canFit(binSize: Int, binCount: Int): Boolean = binSize * binCount <= domain
+
+
+/** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
+val CharProgression.size: Int
+    get()= (domain / step).toInt()
+
+/** Menghitung jangkauan dari `this.extension` `IntProgression`. */
+val CharProgression.range: Int
+    get()= (last -first).absoluteValue.toInt()
+
+/** Menghitung jml semua elemen yg terdapat di dalam `this.extension` `IntProgression`. */
+val CharProgression.domain: Int
+    get()= range +1
+
+/**
+ * Untuk menentukan apakah `this.extension` `IntRange` dapat memuat bin dg ukuran [binSize] sebanyak [binCount]
+ * dan tiap bin tidak ada yg overlap.
+ */
+fun CharProgression.canFit(binSize: Int, binCount: Int): Boolean = binSize * binCount <= domain
 
 // 1,3,5,7
 // f= 1 s= 2 l= 7/8

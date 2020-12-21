@@ -1,11 +1,9 @@
 package sidev.lib.progression
 
 import sidev.lib.`val`.Exclusiveness
-import sidev.lib.number.absoluteValue
+import sidev.lib.number.absoluteValueCast
 import sidev.lib.number.compareTo
-import sidev.lib.number.times
 import sidev.lib.number.timesCast
-import sidev.lib.range.rangeTo_
 
 open class MultiplicationalNumberProgressionIterator<T>(first: T, last: T, step: T)
     : NumberProgressionIterator<T>(first, last, step) where T: Number, T: Comparable<T> {
@@ -15,15 +13,15 @@ open class MultiplicationalNumberProgressionIterator<T>(first: T, last: T, step:
     override fun hasNext(prev: T, next: T, last: T, exclusiveness: Exclusiveness): Boolean = when {
         step > 1 || step < 1 ->
             if(exclusiveness == Exclusiveness.INCLUSIVE){
-                prev.absoluteValue <= last.absoluteValue
+                prev.absoluteValueCast <= last.absoluteValueCast
             } else{
-                prev.absoluteValue < last.absoluteValue
+                prev.absoluteValueCast < last.absoluteValueCast
             }
         else ->
             if(exclusiveness == Exclusiveness.INCLUSIVE){
-                prev.absoluteValue >= last.absoluteValue
+                prev.absoluteValueCast >= last.absoluteValueCast
             } else{
-                prev.absoluteValue > last.absoluteValue
+                prev.absoluteValueCast > last.absoluteValueCast
             }
     }
 }

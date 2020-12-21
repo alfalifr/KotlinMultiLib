@@ -2,7 +2,7 @@ package sidev.lib.progression
 
 import sidev.lib.`val`.Exclusiveness
 
-interface IntervalProgressionIterator<T: Comparable<T>, S: Comparable<S>>: Iterator<T> {
+interface IntervalProgressionIterator<T: Comparable<T>, S: Number>: Iterator<T> {
     /**
      * Mengambil nilai `next` dengan [prev] adalah nilai `next` sebelumnya dan [step] adalah faktor perubahnya.
      */
