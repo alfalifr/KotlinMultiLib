@@ -13,12 +13,12 @@ import sidev.lib.reflex.getHashCode
 interface StepProgression<T: Comparable<T>, S: Number>: Progression<T> {
     val step: S
 
-    operator fun contains(other: StepProgression<T, *>): Boolean {
+    infix operator fun contains(other: StepProgression<T, *>): Boolean {
         val pair= smallBigPair
         val otherPair= other.smallBigPair
         return otherPair.first >= pair.first && otherPair.second <= pair.second
     }
-    operator fun contains(e: T): Boolean {
+    infix operator fun contains(e: T): Boolean {
         val compareLimitFun: (e1: T, e: T) -> Boolean = if(step > 0) ::moreThan else ::lessThan
         for(e1 in this){
             if(e1.compareTo(e) == 0)

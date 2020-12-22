@@ -755,5 +755,23 @@ class StdLibCommonSampleTests {
         prin("prog_2.intersects(prog_)= ${prog_2.intersects(prog_)}")
         prin("prog_2 in prog_= ${prog_2 in prog_}")
         prin("prog_ in prog_2= ${prog_ in prog_2}")
+
+        val progr_= IntProgression.fromClosedRange(1, 10, 1)
+        val progr_1= IntProgression.fromClosedRange(17, 7, -1)
+        val progr_2= IntProgression.fromClosedRange(8, 3, -1)
+
+        prin("progr_ intersects progr_1 = ${progr_ intersects progr_1}")
+        prin("progr_1 in progr_ = ${progr_1 in progr_}")
+
+        prin("progr_ intersects progr_2 = ${progr_ intersects progr_2}")
+        prin("progr_2 in progr_ = ${progr_2 in progr_}")
+
+        val prog8= 3.progressTo(10, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        prin("prog= $prog8")
+        prin("6 in prog8= ${6 in prog8}")
+        prin("-6 in prog8= ${-6 in prog8}")
+        prin("3 in prog8= ${3 in prog8}")
+        prin("-3 in prog8= ${-3 in prog8}")
+        prog8.forEach { prin(it) }
     }
 }

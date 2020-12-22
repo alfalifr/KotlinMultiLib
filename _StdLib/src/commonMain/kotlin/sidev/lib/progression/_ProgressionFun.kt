@@ -111,7 +111,6 @@ fun <T> NumberProgression<T>.slice(from: Int, to: Int): NumberProgression<T> whe
     return firstInt progressTo finalInt //IntProgression.fromClosedRange(firstInt, finalInt, step)
 }
 
-@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun CharProgression.slice(range: IntRange): CharProgression = slice(range.first, range.last)
 fun CharProgression.slice(from: Int, to: Int): CharProgression {
     val first= first
@@ -182,6 +181,32 @@ val <T: Comparable<T>> StepProgression<T, *>.smallBigPair: Pair<T, T>
         else last to first
     }
 
+/** Mengambil nilai terbesar di antara [first] dan [last]. */
+val IntProgression.big: Int
+    get() {
+        val first= first
+        val last= last
+        return if(last >= first) last else first
+    }
+
+/** Mengambil nilai terkecil di antara [first] dan [last]. */
+val IntProgression.small: Int
+    get() {
+        val first= first
+        val last= last
+        return if(first <= last) first else last
+    }
+
+/** Mengambil pasangan nilai terkecil dan nilai terbesar secara berurutan di antara [first] dan [last]. */
+val IntProgression.smallBigPair: Pair<Int, Int>
+    get() {
+        val first= first
+        val last= last
+        return if(first <= last) first to last
+        else last to first
+    }
+
+
 /** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
 val IntProgression.size: Int
     get()= domain / step
@@ -206,8 +231,13 @@ val NumberProgression<*>.size: Int
     get()= (domain / step).toInt()
 
 /** Menghitung jangkauan dari `this.extension` `IntProgression`. */
-val NumberProgression<*>.range: Int
-    get()= (last -first).absoluteValue.toInt()
+val NumberProgression<*>.range: Int get() = (last -first).absoluteValue.toInt()
+/*
+= when(operationMode){  //
+    NumberOperationMode.INCREMENTAL -> (last -first).absoluteValue.toInt()
+    NumberOperationMode.MULTIPLICATIONAL ->
+}
+ */
 
 /** Menghitung jml semua elemen yg terdapat di dalam `this.extension` `IntProgression`. */
 val NumberProgression<*>.domain: Int
@@ -222,7 +252,7 @@ fun NumberProgression<*>.canFit(binSize: Int, binCount: Int): Boolean = binSize 
 
 /** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
 val CharProgression.size: Int
-    get()= (domain / step).toInt()
+    get()= domain / step
 
 /** Menghitung jangkauan dari `this.extension` `IntProgression`. */
 val CharProgression.range: Int
@@ -242,6 +272,20 @@ fun CharProgression.canFit(binSize: Int, binCount: Int): Boolean = binSize * bin
 // f= 1 s= 2 l= 7/8
 // 1,5,9,13
 // f= 1 s= 4 l= 13-16
+
+//fun IntProgression.isEmpty(): Boolean = first == last || (first < last && step < 0) || (first > last && step > 0)
+infix fun IntProgression.intersects(other: IntProgression): Boolean {
+    val pair= smallBigPair
+    val otherPair= other.smallBigPair
+    return !isEmpty() && !other.isEmpty()
+            && otherPair.first <= pair.second && otherPair.second >= pair.first
+}
+infix operator fun IntProgression.contains(other: IntProgression): Boolean {
+    val pair= smallBigPair
+    val otherPair= other.smallBigPair
+    return !isEmpty() && !other.isEmpty()
+            && otherPair.first >= pair.first && otherPair.second <= pair.second
+}
 
 fun IntProgression.slice(range: IntRange): IntProgression = slice(range.first, range.last)
 /**
