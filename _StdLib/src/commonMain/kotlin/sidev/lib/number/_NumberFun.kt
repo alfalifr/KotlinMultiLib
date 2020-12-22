@@ -1,7 +1,10 @@
 package sidev.lib.number
 
+import sidev.lib.`val`.NumberOperationMode
+import sidev.lib.`val`.Order
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.console.prine
+import sidev.lib.progression.progressTo
 import sidev.lib.structure.data.value.Var
 import kotlin.math.absoluteValue
 import kotlin.reflect.KClass
@@ -14,6 +17,89 @@ fun Number.isPositive(): Boolean = this > 0
 fun Number.isNotZero(): Boolean = !isZero()
 fun Number.isNotNegative(): Boolean = !isNegative()
 fun Number.isNotPositive(): Boolean = !isPositive()
+
+/**
+ * Mengambil tanda dari `this.extension` `Number` yang relatif terhadap 0
+ * Return:
+ *  - 0 jika `this.extension` == 0
+ *  - 1 jika `this.extension` positif
+ *  - -1 jika `this.extension` negatif
+ */
+val Number.signum: Int
+    get()= compareTo(0)
+
+/**
+ * Menentukan apakah angka `this.extension` merupakan faktor yang menyebabkan angka lain
+ * yang dioperasikan dengan [operationMode] menjadi lebih besar nilainya secara [absoluteValue].
+ */
+fun Number.isIncreasingFactor(operationMode: NumberOperationMode, absoluteValue: Boolean = true): Boolean = when(operationMode){
+    NumberOperationMode.INCREMENTAL -> isPositive()
+    NumberOperationMode.MULTIPLICATIONAL -> this > 1 || absoluteValue && this < -1
+    NumberOperationMode.EXPONENTIAL -> this > 1
+}
+/**
+ * Menentukan apakah angka `this.extension` merupakan faktor yang tidak menyebabkan angka lain
+ * yang dioperasikan dengan [operationMode] mengalami perubahan nilai secara [absoluteValue].
+ */
+fun Number.isNeutralFactor(operationMode: NumberOperationMode, absoluteValue: Boolean = true): Boolean = when(operationMode){
+    NumberOperationMode.INCREMENTAL -> isZero()
+    NumberOperationMode.MULTIPLICATIONAL -> this == 1 || absoluteValue && this == -1
+    NumberOperationMode.EXPONENTIAL -> this == 1
+}
+/**
+ * Menentukan apakah angka `this.extension` merupakan faktor yang menyebabkan angka lain
+ * yang dioperasikan dengan [operationMode] menjadi lebih kecil nilainya secara [absoluteValue].
+ */
+fun Number.isDecreasingFactor(operationMode: NumberOperationMode, absoluteValue: Boolean = true): Boolean =
+    !isIncreasingFactor(operationMode, absoluteValue) && !isNeutralFactor(operationMode, absoluteValue)
+/**
+ * Menentukan apakah angka `this.extension` merupakan faktor yang menyebabkan angka lain
+ * yang dioperasikan dengan [operationMode] mengalami perubahan ke nilai yang sama untuk semua angka.
+ */
+fun Number.isNeutralizingFactor(operationMode: NumberOperationMode): Boolean = when(operationMode){
+    NumberOperationMode.INCREMENTAL -> false //Tidak ada angka yang bisa menetralkan angka lain pada mode penjumlahan.
+    else -> this == 0
+}
+/**
+ * Menentukan apakah angka `this.extension` merupakan faktor yang menyebabkan angka lain
+ * yang dioperasikan dengan [operationMode] mengalami perubahan nilai ke arah sesuai [order] secara [absoluteValue].
+ */
+fun Number.isProgressingFactor(operationMode: NumberOperationMode, order: Order, absoluteValue: Boolean = true): Boolean = when(operationMode){
+    NumberOperationMode.INCREMENTAL -> order == Order.ASC && this > 0 || this < 0
+    NumberOperationMode.MULTIPLICATIONAL -> !isNeutralizingFactor(operationMode)
+            && (if(absoluteValue) this.absoluteValue else this).run { order == Order.ASC && this > 1 || this < 1 }
+    NumberOperationMode.EXPONENTIAL -> !isNeutralizingFactor(operationMode)
+            && order == Order.ASC && this > 1 || this < 1
+}
+
+
+inline fun <reified T: Number> getMinProgressingFactor(
+    operationMode: NumberOperationMode,
+    order: Order = Order.ASC,
+    toNegative: Boolean = false
+): T = getMinProgressingFactor(T::class, operationMode, order)
+
+/**
+ * [toNegative] berguna pada operasi [NumberOperationMode.MULTIPLICATIONAL] yang melibatkan angka negatif.
+ */
+fun <T: Number> getMinProgressingFactor(
+    cls: KClass<T>,
+    operationMode: NumberOperationMode,
+    order: Order = Order.ASC,
+    returnInt: Boolean = false,
+    toNegative: Boolean = false
+): T = when(operationMode){
+    NumberOperationMode.INCREMENTAL -> if(order == Order.ASC) 1 else -1
+    NumberOperationMode.MULTIPLICATIONAL -> (if(order == Order.ASC || returnInt) 2 else 0.5).run { if(toNegative) -this else this }
+    NumberOperationMode.EXPONENTIAL -> if(order == Order.ASC || returnInt) 2 else 0.5
+}.toFormat(cls)
+
+
+fun getProgressingOrder(operationMode: NumberOperationMode, n1: Number, n2: Number): Order = if(
+    if(operationMode == NumberOperationMode.INCREMENTAL) n1 <= n2
+    else n1.absoluteValue <= n2.absoluteValue
+) Order.ASC else Order.DESC
+
 
 /** @return true jika `this.extension` merupakan angka dg tipe data yg memiliki angka di belakang koma. */
 fun Number.isFloatingType(): Boolean = this is Double || this is Float

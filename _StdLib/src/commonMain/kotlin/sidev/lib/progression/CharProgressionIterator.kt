@@ -1,12 +1,14 @@
 package sidev.lib.progression
 
 import sidev.lib.`val`.Exclusiveness
+import sidev.lib.`val`.NumberOperationMode
 
 open class CharProgressionIterator(
-    first: Char, val last: Char, val step: Int,
+    first: Char, final override val last: Char, final override val step: Int,
     val startExclusiveness: Exclusiveness = Exclusiveness.INCLUSIVE,
-    val endExclusiveness: Exclusiveness = Exclusiveness.INCLUSIVE,
-): IntervalProgressionIterator<Char, Int> {
+    final override val endExclusiveness: Exclusiveness = Exclusiveness.INCLUSIVE,
+): OperableProgressionIterator<Char, Int> {
+    override val operationMode: NumberOperationMode = NumberOperationMode.INCREMENTAL
     private var hasNext: Boolean =
         if(startExclusiveness == Exclusiveness.INCLUSIVE && endExclusiveness == Exclusiveness.INCLUSIVE){
             if(step > 0) first <= last else first >= last
@@ -19,25 +21,24 @@ open class CharProgressionIterator(
         } else {
             if(endExclusiveness == Exclusiveness.INCLUSIVE) last else last -1
         }
+    private val limitFun: (next: Char, las: Char) -> Boolean =
+        if(step > 0) { next, last -> next > last }
+        else { next, last -> next < last }
 
     //Hanya sbg formalitas
-    override fun nextStep(prev: Char, step: Int): Char = prev +step
-    override fun hasNext(prev: Char, next: Char, last: Char, exclusiveness: Exclusiveness): Boolean =
-        if(exclusiveness == Exclusiveness.INCLUSIVE){
-            if(step > 0) prev <= last else prev >= last
-        } else {
-            if(step > 0) prev < last else prev > last
-        }
+    override fun operate(prev: Char, step: Int): Char = prev + step
+//    override fun nextStep(prev: Char): Char = prev +step
 
     override fun hasNext(): Boolean = hasNext
     override fun next(): Char {
         val value= next
-        if(value >= last){
+        val nextStep= value + step
+        if(limitFun(nextStep, last)){
             if(!hasNext)
                 throw NoSuchElementException()
             hasNext= false
         } else
-            next += step
+            next = nextStep
         return value
     }
 }

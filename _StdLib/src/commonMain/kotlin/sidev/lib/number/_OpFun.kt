@@ -97,7 +97,7 @@ infix fun Number.pow(exp: Number): Number{
     })
 }
 
-infix fun Number.root(root: Number): Number = this powCast (1.0/root)
+infix fun Number.root(root: Number): Number = this pow (1.0 / root)
 
 fun Number.sqrt(): Number {
     val base= toFloatingType()

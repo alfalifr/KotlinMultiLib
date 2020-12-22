@@ -2,7 +2,9 @@ package sidev.lib.progression
 
 import sidev.lib.`val`.Exclusiveness
 import sidev.lib.`val`.NumberOperationMode
+import sidev.lib.`val`.Order
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.console.prine
 import sidev.lib.number.*
 import kotlin.math.absoluteValue as kAbsoluteValue
 import kotlin.ranges.CharProgression as CharProgressionKt
@@ -43,25 +45,39 @@ infix fun <T> T.quartileUntil(other: Number): NumberProgression<Float> where T :
     this.toFloat().progressTo(other.toFloat(), 0.25f, endExclusiveness = Exclusiveness.EXCLUSIVE)
 
 
-infix fun <T> T.progressTo(other: Number): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 1)
+infix fun <T> T.progressTo(other: Number): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 0)
 fun <T> T.progressTo(
     other: Number,
-    step: Number = 1,
+    step: Number = 0,
     operationMode: NumberOperationMode= NumberOperationMode.INCREMENTAL,
     startExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE,
     endExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE
-): NumberProgression<T> where T : Number, T: Comparable<T> = NumberProgressionImpl(
-    this,
-    other.toFormatLike(this),
-    step.toFormatLike(this),
-    operationMode, startExclusiveness, endExclusiveness
-)
+): NumberProgression<T> where T : Number, T: Comparable<T> {
+    val isNotFloatingType= !isFloatingType()
+    val isNotIncremental= operationMode != NumberOperationMode.INCREMENTAL
+    val order= getProgressingOrder(operationMode, this, other)
+
+//    prine("progressTo() order= $order isNotFloatingType= $isNotFloatingType isNotIncremental= $isNotIncremental")
+
+    return NumberProgressionImpl(
+        this,
+        other.toFormatLike(this),
+        if(step == 0) getMinProgressingFactor(
+            this::class, operationMode, order,
+            isNotFloatingType,
+            isNotIncremental && isNegative() xor other.isNegative()
+        ) else step.toFormatLike(this),
+        operationMode,
+        isNotIncremental && isNotFloatingType && order == Order.DESC,
+        startExclusiveness, endExclusiveness
+    )
+}
 //infix fun <T> T.until(other: T): NumberProgression<T> where T : Number, T: Comparable<T> = progressTo(other, 1 as T)
 
-infix fun Char.progressTo(other: Char): CharProgression = progressTo(other, 1)
+infix fun Char.progressTo(other: Char): CharProgression = progressTo(other, if(this <= other) 1 else -1)
 fun Char.progressTo(
     other: Char,
-    step: Int = 1,
+    step: Int = if(this <= other) 1 else -1,
     startExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE,
     endExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE
 ): CharProgression = CharProgressionImpl(this, other, step, startExclusiveness, endExclusiveness)
@@ -86,8 +102,8 @@ fun <T> Progression<T>.slice(from: Int, to: Int): List<T>{
     return list
 }
 
-@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> NumberProgression<T>.slice(range: IntRange): NumberProgression<T> where T: Number, T: Comparable<T> = slice(range.first, range.last)
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> NumberProgression<T>.slice(from: Int, to: Int): NumberProgression<T> where T: Number, T: Comparable<T> {
     val first= first
     val firstInt= (first +step *from) as T
@@ -140,6 +156,31 @@ operator fun IntProgression.get(index: Int): Int{
         throw IndexOutOfBoundsException("last= $last namun int pada index $index sama dg (int= $e) di luar range.")
     return e
 }
+
+/** Mengambil nilai terbesar di antara [first] dan [last]. */
+val <T: Comparable<T>> StepProgression<T, *>.big: T
+    get() {
+        val first= first
+        val last= last
+        return if(last >= first) last else first
+    }
+
+/** Mengambil nilai terkecil di antara [first] dan [last]. */
+val <T: Comparable<T>> StepProgression<T, *>.small: T
+    get() {
+        val first= first
+        val last= last
+        return if(first <= last) first else last
+    }
+
+/** Mengambil pasangan nilai terkecil dan nilai terbesar secara berurutan di antara [first] dan [last]. */
+val <T: Comparable<T>> StepProgression<T, *>.smallBigPair: Pair<T, T>
+    get() {
+        val first= first
+        val last= last
+        return if(first <= last) first to last
+        else last to first
+    }
 
 /** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
 val IntProgression.size: Int

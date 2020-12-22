@@ -9,5 +9,7 @@ enum class Order {
     /**
      * Urutan yang dimulai dari terbesar hingga terkecil.
      */
-    DESC
+    DESC;
+
+    val reverse: Order get() = if(this == ASC) DESC else ASC
 }

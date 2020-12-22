@@ -1,18 +1,18 @@
 package sidev.lib.`val`
 
-enum class NumberOperationMode {
+enum class NumberOperationMode(val sign: String, val reverseSign: String) {
     /**
      * Operasi angka yang menggunakan operator tambah atau kurang (+ -)
      */
-    INCREMENTAL,
+    INCREMENTAL("+", "-"),
 
     /**
      * Operasi angka yang menggunakan operator kali atau bagi (* /)
      */
-    MULTIPLICATIONAL,
+    MULTIPLICATIONAL("*", "/"),
 
     /**
      * Operasi angka yang menggunakan operator pangkat atau akar
      */
-    EXPONENTIAL
+    EXPONENTIAL("^", "~")
 }

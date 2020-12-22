@@ -359,7 +359,7 @@ class StdLibCommonSampleTests {
             prine(it)
         }
 
-        (2.3.progressTo(100, step = -2, operationMode = NumberOperationMode.MULTIPLICATIONAL)).forEach {
+        (2.3.progressTo(100, step = 2, operationMode = NumberOperationMode.MULTIPLICATIONAL)).forEach {
             prin(it)
         }
 
@@ -382,6 +382,20 @@ class StdLibCommonSampleTests {
         prine((1 .. 10)[1])
         prin("size= ${(1 .. 10).size}")
         prin("range= ${(1 .. 10).range}")
+
+        prin("'a' progressTo 'c'= ${'a' progressTo 'c'}")
+        prin("'f' progressTo 'a'= ${'f' progressTo 'a'}")
+
+        val charProg= 'f'.progressTo('z', 3)
+        prin("charProg= $charProg")
+        prin("'z'.toInt()= ${'z'.toInt()}")
+        for(c in charProg){
+            prin("c= $c int= ${c.toInt()}")
+        }
+
+        val charProg2= 'g' progressTo 'a'
+        prin("charProg2= $charProg2")
+        prin("'e' in charProg2= ${'e' in charProg2}")
     }
 
     @Test
@@ -680,5 +694,66 @@ class StdLibCommonSampleTests {
         mutMap["d"]= 100
         prin(roMap)
         prin(mutMap)
+    }
+
+    @Test
+    fun numFactorTest(){
+        val prog= 1.progressTo(-14, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        prin("prog= $prog")
+        prin("4 in prog= ${4 in prog}")
+        prin("6 in prog= ${6 in prog}")
+        prin("8 in prog= ${8 in prog}")
+        prin("-8 in prog= ${-8 in prog}")
+        prog.forEach { prin(it) }
+
+        val prog1= 10.0.progressTo(0.1, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        prin("prog1= $prog1")
+        prin("2.5 in prog1= ${2.5 in prog1}")
+        prin("1.25 in prog1= ${1.25 in prog1}")
+        prin("1.0 in prog1= ${1.0 in prog1}")
+        prog1.forEach { prin(it) }
+
+        val prog2= 10.progressTo(-1, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        prin("prog2= $prog2")
+        prog2.forEach { prin(it) }
+
+        val prog3= 2.progressTo(500, operationMode = NumberOperationMode.EXPONENTIAL)
+        prin("prog3= $prog3")
+        prin("16 in prog3= ${16 in prog3}")
+        prin("8 in prog3= ${8 in prog3}")
+        prog3.forEach { prin(it) }
+
+        val prog4= 'z' progressTo 'f'
+        prin("prog4= $prog4")
+        prog4.forEach { prin(it) }
+
+        val prog5= 11 progressTo 7
+        prin("prog5= $prog5")
+        prin("9 in prog5= ${9 in prog5}")
+        prin("6 in prog5= ${6 in prog5}")
+        prog5.forEach { prin(it) }
+
+        val prog6= 11 progressTo 20
+        prin("prog6= $prog6")
+        prog6.forEach { prin(it) }
+
+        val prog7= 256.progressTo(1, operationMode = NumberOperationMode.EXPONENTIAL)
+        prin("prog7= $prog7")
+        prin("4 in prog7= ${4 in prog7}")
+        prin("16 in prog7= ${16 in prog7}")
+        prin("8 in prog7= ${8 in prog7}")
+        prog7.forEach { prin(it) }
+
+        val prog_= 1 progressTo 10
+        val prog_1= 17 progressTo 7
+        val prog_2= 8 progressTo 3
+
+        prin("prog_ intersects prog_1= ${prog_ intersects prog_1}")
+        prin("prog_1 in prog_= ${prog_1 in prog_}")
+        prin("prog_ in prog_1= ${prog_ in prog_1}")
+        prin("prog_ intersects prog_2= ${prog_ intersects prog_2}")
+        prin("prog_2.intersects(prog_)= ${prog_2.intersects(prog_)}")
+        prin("prog_2 in prog_= ${prog_2 in prog_}")
+        prin("prog_ in prog_2= ${prog_ in prog_2}")
     }
 }
