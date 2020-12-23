@@ -1,9 +1,6 @@
 package sidev.lib
 
-import sidev.lib.`val`.NumberOperationMode
-import sidev.lib.`val`.Order
-import sidev.lib.`val`.RoundingMode
-import sidev.lib.`val`.StringLiteral
+import sidev.lib.`val`.*
 import sidev.lib.algo.*
 import sidev.lib.collection.*
 import sidev.lib.collection.array.copy
@@ -698,7 +695,7 @@ class StdLibCommonSampleTests {
 
     @Test
     fun numFactorTest(){
-        val prog= 1.progressTo(-14, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val prog= 1.progressTo(-14, operationMode = NumberOperationMode.MULTIPLICATIONAL, startExclusiveness = Exclusiveness.EXCLUSIVE)
         prin("prog= $prog")
         prin("4 in prog= ${4 in prog}")
         prin("6 in prog= ${6 in prog}")
@@ -723,8 +720,12 @@ class StdLibCommonSampleTests {
         prin("8 in prog3= ${8 in prog3}")
         prog3.forEach { prin(it) }
 
-        val prog4= 'z' progressTo 'f'
+        val prog4= 'z'.progressTo('f', 3, startExclusiveness = Exclusiveness.EXCLUSIVE)
         prin("prog4= $prog4")
+        prin("'g' in prog4= ${'g' in prog4}")
+        prin("'e' in prog4= ${'e' in prog4}")
+        prin("'n' in prog4= ${'n' in prog4}")
+        prin("'z' in prog4= ${'z' in prog4}")
         prog4.forEach { prin(it) }
 
         val prog5= 11 progressTo 7
@@ -747,6 +748,7 @@ class StdLibCommonSampleTests {
         val prog_= 1 progressTo 10
         val prog_1= 17 progressTo 7
         val prog_2= 8 progressTo 3
+        val prog_3= 10.progressTo(3, startExclusiveness = Exclusiveness.EXCLUSIVE)
 
         prin("prog_ intersects prog_1= ${prog_ intersects prog_1}")
         prin("prog_1 in prog_= ${prog_1 in prog_}")
@@ -755,6 +757,10 @@ class StdLibCommonSampleTests {
         prin("prog_2.intersects(prog_)= ${prog_2.intersects(prog_)}")
         prin("prog_2 in prog_= ${prog_2 in prog_}")
         prin("prog_ in prog_2= ${prog_ in prog_2}")
+        prin("prog_ intersects prog_3= ${prog_ intersects prog_3}")
+        prin("prog_3 intersects prog_= ${prog_3 intersects prog_}")
+        prin("prog_3 in prog_= ${prog_3 in prog_}")
+        prin("prog_ in prog_3= ${prog_ in prog_3}")
 
         val progr_= IntProgression.fromClosedRange(1, 10, 1)
         val progr_1= IntProgression.fromClosedRange(17, 7, -1)
@@ -773,5 +779,236 @@ class StdLibCommonSampleTests {
         prin("3 in prog8= ${3 in prog8}")
         prin("-3 in prog8= ${-3 in prog8}")
         prog8.forEach { prin(it) }
+
+        //2 log 20 = 4
+        //2 log 3 = 1
+        //2 log 17 = 4
+        //2 log 6 = 2
+
+        //2 log 9 = 3
+
+        //1
+        //
+        //2 log 14 = 3
+        //2 log 3 = 1
+        //2 log 11 = 3
+        //2 log 3 = 1
+
+        //2 log 60 = 5
+        //5 / 3 = 1
+        //2 log 42 = 5
+        //5 / 3 = 1
+
+        //2 log 30 = 4
+        //2 log 6 = 2
+
+        //2 log 30 = 4
+        //2 log 30 = 4
+
+        //3 log 30 = 3
+        //3 log 15 = 2
+        //      2
+        //3 log 17 =
+
+        //3 log 35 = 3
+        //3 log 8 = 1
+        //3 log 4 = 1
+
+        //3 log 12 = 2
+
+        //8 + 5 = 13
+        //3 log 13 = 2
+
+        //13 + 3 = 16
+        //4 log 16 = 2
+
+        //20 + 2 = 22
+        //3 log 22 = 2 + 1
+
+        //22 + 2 = 22
+        //5 log 22 = 1 + 1
+
+        //22
+        //6 log 22 = 1 + 1
+
+        //22
+        //4 log 22 = 2 + 1
+
+        //10 + 4 = 14
+        //2 log 14 = 3 + 1
+
+        //8 + 5 = 13
+        //2 log 13 = 3 + 1
+
+        //8 + 5 = 13
+        //3 log 13 = 2
+
+        //20 + 2 = 22
+        //5 log 22 = 1 + 1
+
+        //17 + 2 = 19
+        //5 log 19 = 1 +1
+
+        //13 + 3 = 16
+        //6 log 16 = 1 + 1
+
+        //6 + 7 = 13
+        //5 log 13 = 1 + 1
+
+        //11 + 7 = 18
+        //5 log 18 = 1 + 1
+
+        //18
+        //2 log 18 = 4 + 1
+        val prog9= 7.progressTo(80, 2, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        prin("prog9= $prog9")
+        prog9.forEach { prin(it) }
+    }
+
+    @Test
+    fun progSizeTest(){
+        //1 + 7 = 8
+        //2 log 8 = 3
+        //7 log 1 = 0
+        //2 log 7 = 2
+        //2 log 1 = 0
+        //
+        //
+        //4 + 7 = 11
+        //2 log 7 = 2
+        //2 log 4 = 2
+        //4 log 2 = 0
+        //2 log 5 = 1
+        //2 log 3 = 1
+
+        //11 + 7 = 18
+        //2 log 18 = 4 + 1
+        //
+        //30 / 7 = 4
+        //4
+        //2 log 30 = 4
+        val prog1= 7.progressTo(8, 2, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls1= prog1.toList()
+        val size1= prog1.size
+        val size1_l= ls1.size
+
+        prin("prog1= $prog1 size1= $size1 size1_l= $size1_l ls1= $ls1 same= ${size1 == size1_l}")
+
+        val prog2= 9.progressTo(132, 4, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls2= prog2.toList()
+        val size2= prog2.size
+        val size2_l= ls2.size
+
+        prin("prog2.canFit(31,4)= ${prog2.canFit(31,4)}")
+        prin("prog2.canFit(1,124)= ${prog2.canFit(1,124)}")
+        prin("prog2.canFit(1,125)= ${prog2.canFit(1,125)}")
+        prin("prog2= $prog2 size2= $size2 size2_l= $size2_l ls2= $ls2 same= ${size2 == size2_l}")
+
+        val prog3= 6.progressTo(-132, -11, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls3= prog3.toList()
+        val size3= prog3.size
+        val size3_l= ls3.size
+
+        prin("prog3.canFit(31,4)= ${prog3.canFit(31,4)}")
+        prin("prog3.canFit(1,127)= ${prog3.canFit(1,127)}")
+        prin("prog3.canFit(1,128)= ${prog3.canFit(1,128)}")
+        prin("prog3= $prog3 size3= $size3 size3_l= $size3_l ls3= $ls3 same= ${size3 == size3_l}")
+
+        val prog4= 6.progressTo(6911237, 51, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls4= prog4.toList()
+        val size4= prog4.size
+        val size4_l= ls4.size
+
+        prin("prog4= $prog4 size4= $size4 size4_l= $size4_l ls4= $ls4 same= ${size4 == size4_l}")
+
+        val prog5= 9.progressTo(14131, 17, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls5= prog5.toList()
+        val size5= prog5.size
+        val size5_l= ls5.size
+
+        prin("prog5= $prog5 size5= $size5 size5_l= $size5_l ls5= $ls5 same= ${size5 == size5_l}")
+
+        val prog6= 7.progressTo(45414, 2, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls6= prog6.toList()
+        val size6= prog6.size
+        val size6_l= ls6.size
+
+        prin("prog6= $prog6 size6= $size6 size6_l= $size6_l ls6= $ls6 same= ${size6 == size6_l}")
+
+        val prog7= 42.progressTo(-345414, -5, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls7= prog7.toList()
+        val size7= prog7.size
+        val size7_l= ls7.size
+
+        prin("prog7= $prog7 size7= $size7 size7_l= $size7_l ls7= $ls7 same= ${size7 == size7_l}")
+
+        val prog8= 127.0.progressTo(3454143.0, 5.0, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls8= prog8.toList()
+        val size8= prog8.size
+        val size8_l= ls8.size
+
+        prin("prog8= $prog8 size8= $size8 size8_l= $size8_l ls8= $ls8 same= ${size8 == size8_l}")
+
+        val prog9= 127.progressTo(0.1, -5, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls9= prog9.toList()
+        val size9= prog9.size
+        val size9_l= ls9.size
+
+        prin("5 in prog9= ${5 in prog9}")
+        prin("-5 in prog9= ${-5 in prog9}")
+        prin("-1 in prog9= ${-1 in prog9}")
+        prin("1 in prog9= ${1 in prog9}")
+        prin("prog9= $prog9 size9= $size9 size9_l= $size9_l ls9= $ls9 same= ${size9 == size9_l}")
+
+        val prog10= 127.0.progressTo(0.01, 1.0/5, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls10= prog10.toList()
+        val size10= prog10.size
+        val size10_l= ls10.size
+
+
+        prin("1.016 in prog10= ${1.016 in prog10}")
+        prin("prog10= $prog10 size10= $size10 size10_l= $size10_l ls10= $ls10 same= ${size10 == size10_l}")
+
+        val prog11= 127.0.progressTo(0.01, 5, operationMode = NumberOperationMode.MULTIPLICATIONAL)
+        val ls11= prog11.toList()
+        val size11= prog11.size
+        val size11_l= ls11.size
+
+        prin("1.016 in prog11= ${1.016 in prog11}")
+        prin("prog11= $prog11 size11= $size11 size11_l= $size11_l ls11= $ls11 same= ${size11 == size11_l}")
+
+        val prog12= 12.progressTo(-17, 4)
+        val ls12= prog12.toList()
+        val size12= prog12.size
+        val size12_l= ls12.size
+
+        prin("prog12.canFit(7,4)= ${prog12.canFit(7,4)}")
+        prin("prog12.canFit(1,29)= ${prog12.canFit(1,29)}")
+        prin("prog12.canFit(1,30)= ${prog12.canFit(1,30)}")
+        prin("prog12.canFit(1,31)= ${prog12.canFit(1,31)}")
+        prin("prog12.canFit(3,10)= ${prog12.canFit(3,10)}")
+        prin("-8 in prog12= ${-8 in prog12}")
+        prin("8 in prog12= ${8 in prog12}")
+        prin("16 in prog12= ${16 in prog12}")
+        prin("-16 in prog12= ${-16 in prog12}")
+        prin("-15 in prog12= ${-15 in prog12}")
+        prin("prog12 containsInRange -15= ${prog12 containsInRange -15}")
+        prin("prog12= $prog12 size12= $size12 size12_l= $size12_l ls12= $ls12 same= ${size12 == size12_l}")
+
+        val prog13= 12.progressTo(17, -4)
+        val ls13= prog13.toList()
+        val size13= prog13.size
+        val size13_l= ls13.size
+
+        prin("-8 in prog13= ${-8 in prog13}")
+        prin("prog13 containsInRange -8= ${prog13 containsInRange -8}")
+        prin("16 in prog13= ${16 in prog13}")
+        prin("prog13.canFit(2,2)= ${prog13.canFit(2,2)}")
+        prin("prog13.canFit(2,3)= ${prog13.canFit(2,3)}")
+        prin("prog13.canFit(3,2)= ${prog13.canFit(3,2)}")
+        prin("prog13.canFit(2,4)= ${prog13.canFit(2,4)}")
+        prin("prog13.canFit(1,6)= ${prog13.canFit(1,6)}")
+        prin("prog13.canFit(1,7)= ${prog13.canFit(1,7)}")
+        prin("prog13= $prog13 size13= $size13 size13_l= $size13_l ls13= $ls13 same= ${size13 == size13_l}")
     }
 }

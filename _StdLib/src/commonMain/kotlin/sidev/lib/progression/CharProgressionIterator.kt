@@ -17,9 +17,9 @@ open class CharProgressionIterator(
         }
     private var next: Char=
         if(hasNext) {
-            if(startExclusiveness == Exclusiveness.INCLUSIVE) first else first +1
+            if(startExclusiveness == Exclusiveness.INCLUSIVE) first else first +step
         } else {
-            if(endExclusiveness == Exclusiveness.INCLUSIVE) last else last -1
+            if(endExclusiveness == Exclusiveness.INCLUSIVE) last else last -step
         }
     private val limitFun: (next: Char, las: Char) -> Boolean =
         if(step > 0) { next, last -> next > last }

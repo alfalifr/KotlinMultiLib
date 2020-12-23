@@ -11,42 +11,74 @@ import sidev.lib.reflex.getHashCode
 interface NumberProgression<T>: OperableProgression<T, T> where T: Number, T: Comparable<T>{
     override val operationMode: NumberOperationMode
     val reverseOperation: Boolean
-    override fun iterator(): NumberProgressionIterator<T>
+
+    override fun iterator(): NumberProgressionIterator<T> = NumberProgressionIterator(
+        first, last, step, operationMode, reverseOperation, startExclusiveness, endExclusiveness
+    )
 
     fun operate(
         e: T, step: T, //operationMode: NumberOperationMode = this.operationMode,
         reverseOperation: Boolean = this.reverseOperation
     ): T
-    override operator fun contains(e: T): Boolean {
-        val pair= smallBigPair
+
+    override infix fun containsInRange(e: T): Boolean {
+        val (leftPair, rightPair)= smallBigPairWithExclusiveness
 //        val firstSmall: T
 //        val step: T
-        val isInDomain= if(
+        val left: Pair<T, Exclusiveness>
+        val right: Pair<T, Exclusiveness>
+        val usedE: T
+        if(
             operationMode != NumberOperationMode.MULTIPLICATIONAL
-            || first * last >= 0
+            || (first * last >= 0 && step > 0)
         ){
 //            step= this.step
 //            firstSmall= pair.first
-            pair.first <= e && e <= pair.second
+//            otherPair.second <= pair.second
+            left= leftPair
+            right= rightPair
+            usedE= e
+//            pair.first <= e && e <= pair.second
         } else {
-            val firstAbs= pair.first.absoluteValueCast
-            val lastAbs= pair.second.absoluteValueCast
-            val small: T
-            val big= if(lastAbs >= firstAbs) {
-                small= firstAbs
-                lastAbs
+            val firstAbs= leftPair.first.absoluteValueCast
+            val lastAbs= rightPair.first.absoluteValueCast
+            val smallPair: Pair<T, Exclusiveness>
+            val bigPair= if(lastAbs >= firstAbs) {
+                smallPair= leftPair.copy(firstAbs)
+                rightPair.copy(lastAbs)
             } else {
-                small= lastAbs
-                firstAbs
+                smallPair= rightPair.copy(lastAbs)
+                leftPair.copy(firstAbs)
             }
-            val eAbs= e.absoluteValue
+            val eAbs= e.absoluteValueCast
+            usedE= eAbs
+            left= smallPair
+            right= bigPair
+
 //            firstSmall= small
 //            step= this.step.absoluteValueCast
-            small <= eAbs && eAbs <= big
+//            small <= eAbs && eAbs <= big
         }
-//        prine("contains e= $e pair= $pair step= $step isInDomain= $isInDomain") //firstSmall= $firstSmall
-//        prine("4 root -2= ${4 root -2} 4 root 2= ${4 root 2} 2.0 % 1 == 0 = ${2.0 % 1 == 0.0} 0.0625 pow 0.5 = ${0.0625 pow 0.5} 0.0625 log 0.25 = ${0.0625 log 0.25}")
 
+//        val leftAbs= left.first.absoluteValue
+//        val rightAbs= right.first.absoluteValue
+
+        val moreThanFirst= left.first < usedE
+                || left.second == Exclusiveness.INCLUSIVE && left.first == usedE
+        val lessThanLast= usedE < right.first
+                || right.second == Exclusiveness.INCLUSIVE && usedE == right.first
+//        prine("containsInRange() e= $e usedE= $usedE moreThanFirst= $moreThanFirst lessThanLast= $lessThanLast left= $left right= $right")
+        return moreThanFirst && lessThanLast
+    }
+
+    override operator fun contains(e: T): Boolean {
+//        val pair= smallBigPair
+//        val firstSmall: T
+//        val step: T
+        val isInRange= containsInRange(e)
+        if(!isInRange) return false
+        if(e == first) return startExclusiveness == Exclusiveness.INCLUSIVE
+        if(e == last) return endExclusiveness == Exclusiveness.INCLUSIVE
 
         fun containsIteratively(): Boolean {
             val reverse= step < 1 || reverseOperation
@@ -60,15 +92,22 @@ interface NumberProgression<T>: OperableProgression<T, T> where T: Number, T: Co
             return false
         }
 
-        return isInDomain
+//        prine("contains e= $e pair= $pair step= $step isInRange= $isInRange first= $first") //firstSmall= $firstSmall
+//        prine("4 root -2= ${4 root -2} 4 root 2= ${4 root 2} 2.0 % 1 == 0 = ${2.0 % 1 == 0.0} 0.0625 pow 0.5 = ${0.0625 pow 0.5} 0.0625 log 0.25 = ${0.0625 log 0.25}")
+
+        return isInRange
         && when(operationMode){
-            NumberOperationMode.INCREMENTAL -> operate(e, -pair.first, reverseOperation = reverseOperation) % step == 0 //.also { prine("INC it= $it") }
+            NumberOperationMode.INCREMENTAL -> ((e -first) % step) == 0 //.also { prine("INC it= $it") }
             NumberOperationMode.MULTIPLICATIONAL -> {
-                val operatedVal= operate(e, first.absoluteValueCast, reverseOperation = !reverseOperation).let {
+                val operatedVal= (e.toDouble() / first.absoluteValue).let {
                     if(step > 0) it else it.absoluteValue
                 }
-                val logRes= step.absoluteValue log operatedVal
-                val resSignum= if(step > 0) 1 else (-1 pow logRes).toInt()
+                val step= if(reverseOperation) 1.0/step else step
+                val logRes= (step.absoluteValue log operatedVal).let {
+                    if(e.isFloatingType() || !reverseOperation) it else it.toFormatLike(e) /* Agar log yg dihasilkan pada Int reverse jadi bulat. */
+                }
+                val resSignum= if(step > 0) 1 else (-1 pow logRes).toInt() //Untuk menentukan tanda - atau +
+//                prine("operatedVal= $operatedVal logRes= $logRes resSignum= $resSignum step= $step logRes % 1= ${logRes % 1}")
                 (logRes % 1).compareTo(0) == 0 && e.signum == resSignum
             }
             else -> containsIteratively() // Karena aturan untuk deret EXPONENTIAL masih belum diketahui.
@@ -93,7 +132,7 @@ internal class NumberProgressionImpl<T>(
         if(!step.isProgressingFactor(operationMode, order, true))
             throw IllegalArgExc(
                 paramExcepted = arrayOf("step"),
-                detailMsg = "Param `step` ($step) dapat menyebabkan infinite loop. `operationMode` ($operationMode), `first` ($first), `last` ($last)"
+                detailMsg = "Param `step` ($step) dapat menyebabkan infinite loop. `operationMode` ($operationMode), `first` ($first), `last` ($last), `order` ($order)"
             )
 /*
         if(
@@ -115,10 +154,6 @@ internal class NumberProgressionImpl<T>(
         NumberOperationMode.EXPONENTIAL -> if(!reverseOperation) e powCast step else e rootCast step
     } as T
     override fun operate(e: T, step: T): T = operate(e, step, reverseOperation)
-
-    override fun iterator(): NumberProgressionIterator<T> = NumberProgressionIterator(
-        first, last, step, operationMode, reverseOperation, startExclusiveness, endExclusiveness
-    )
 
     override fun hashCode(): Int = getHashCode(super.hashCode(), operationMode, calculateOrder = false)
 

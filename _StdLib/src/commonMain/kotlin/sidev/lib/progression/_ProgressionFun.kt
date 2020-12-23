@@ -56,19 +56,24 @@ fun <T> T.progressTo(
     val isNotFloatingType= !isFloatingType()
     val isNotIncremental= operationMode != NumberOperationMode.INCREMENTAL
     val order= getProgressingOrder(operationMode, this, other)
+    val step= if(isNotIncremental) step else {
+        if(order == Order.DESC && step > 0 || order == Order.ASC && step < 0) -step else step
+    }
+    val reverseOp= isNotIncremental && order == Order.DESC && (step.absoluteValue > 1 || isNotFloatingType)
+//    val step= if()
 
-//    prine("progressTo() order= $order isNotFloatingType= $isNotFloatingType isNotIncremental= $isNotIncremental")
+//    prine("progressTo() order= $order isNotFloatingType= $isNotFloatingType isNotIncremental= $isNotIncremental reverseOp= $reverseOp step= $step step==0 => ${step==0}")
 
     return NumberProgressionImpl(
         this,
         other.toFormatLike(this),
         if(step == 0) getMinProgressingFactor(
             this::class, operationMode, order,
-            isNotFloatingType,
+            isNotFloatingType || reverseOp,
             isNotIncremental && isNegative() xor other.isNegative()
         ) else step.toFormatLike(this),
         operationMode,
-        isNotIncremental && isNotFloatingType && order == Order.DESC,
+        reverseOp, //isNotIncremental && order == Order.DESC,
         startExclusiveness, endExclusiveness
     )
 }
@@ -80,7 +85,11 @@ fun Char.progressTo(
     step: Int = if(this <= other) 1 else -1,
     startExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE,
     endExclusiveness: Exclusiveness= Exclusiveness.INCLUSIVE
-): CharProgression = CharProgressionImpl(this, other, step, startExclusiveness, endExclusiveness)
+): CharProgression {
+    val order= if(this <= other) Order.ASC else Order.DESC
+    val step= if(order == Order.ASC && step < 0 || order == Order.DESC && step > 0) -step else step
+    return CharProgressionImpl(this, other, step, startExclusiveness, endExclusiveness)
+}
 
 
 fun <T> Progression<T>.toList(): List<T>{
@@ -163,6 +172,16 @@ val <T: Comparable<T>> StepProgression<T, *>.big: T
         val last= last
         return if(last >= first) last else first
     }
+/**
+ * Mengambil nilai terbesar di antara [first] dan [last].
+ * Properti ini juga mengambil [Exclusiveness] dari tiap elemen [first] dan [last] agar selalu berpasangan.
+ */
+val <T: Comparable<T>> StepProgression<T, *>.bigWithExclusiveness: Pair<T, Exclusiveness>
+    get() {
+        val first= first
+        val last= last
+        return if(last >= first) last to endExclusiveness else first to startExclusiveness
+    }
 
 /** Mengambil nilai terkecil di antara [first] dan [last]. */
 val <T: Comparable<T>> StepProgression<T, *>.small: T
@@ -170,6 +189,16 @@ val <T: Comparable<T>> StepProgression<T, *>.small: T
         val first= first
         val last= last
         return if(first <= last) first else last
+    }
+/**
+ * Mengambil nilai terkecil di antara [first] dan [last].
+ * Properti ini juga mengambil [Exclusiveness] dari tiap elemen [first] dan [last] agar selalu berpasangan.
+ */
+val <T: Comparable<T>> StepProgression<T, *>.smallWithExclusiveness: Pair<T, Exclusiveness>
+    get() {
+        val first= first
+        val last= last
+        return if(first <= last) first to startExclusiveness else last to endExclusiveness
     }
 
 /** Mengambil pasangan nilai terkecil dan nilai terbesar secara berurutan di antara [first] dan [last]. */
@@ -179,6 +208,19 @@ val <T: Comparable<T>> StepProgression<T, *>.smallBigPair: Pair<T, T>
         val last= last
         return if(first <= last) first to last
         else last to first
+    }
+/**
+ * Mengambil pasangan nilai terkecil dan nilai terbesar secara berurutan di antara [first] dan [last].
+ * Properti ini juga mengambil [Exclusiveness] dari tiap elemen [first] dan [last] agar selalu berpasangan.
+ */
+val <T: Comparable<T>> StepProgression<T, *>.smallBigPairWithExclusiveness: Pair<Pair<T, Exclusiveness>, Pair<T, Exclusiveness>>
+    get() {
+        val first= first
+        val last= last
+        val firstPair= first to startExclusiveness
+        val lastPair= last to endExclusiveness
+        return if(first <= last) firstPair to lastPair
+        else lastPair to firstPair
     }
 
 /** Mengambil nilai terbesar di antara [first] dan [last]. */
@@ -209,7 +251,7 @@ val IntProgression.smallBigPair: Pair<Int, Int>
 
 /** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
 val IntProgression.size: Int
-    get()= domain / step
+    get()= (range / step.absoluteValue).toInt() + 1
 
 /** Menghitung jangkauan dari `this.extension` `IntProgression`. */
 val IntProgression.range: Int
@@ -227,17 +269,66 @@ fun IntProgression.canFit(binSize: Int, binCount: Int): Boolean = binSize * binC
 
 
 /** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
-val NumberProgression<*>.size: Int
-    get()= (domain / step).toInt()
+val NumberProgression<*>.size: Int get()= when(operationMode){
+    NumberOperationMode.INCREMENTAL -> (range / step.absoluteValue).toInt() +1 // Pake rumus a + b(n-1)
+    NumberOperationMode.MULTIPLICATIONAL -> {
+        val firstAbs= first.absoluteValue
+        val lastAbsOri= last.absoluteValue
+        val isNotFloatingTypeAndFirstZero= !firstAbs.isFloatingType() && lastAbsOri.compareTo(0) == 0
+            //Karena jika tipe data angka bkn floating dan elemen terahir 0, maka 0 merupakan elemen tambahan.
+        val lastAbs= lastAbsOri.let { if(isNotFloatingTypeAndFirstZero) 0.01 else it }
+        val stepAbs= step.absoluteValue.let { if(!reverseOperation) it else 1.0/it }
+
+//        prine("firstAb $firstAbs lastAbs= $lastAbs stepAbs= $stepAbs")
+        //.also { prine("lastAbs / firstAbs = $it") }
+        //.also { prine("step log () = $it") }
+
+        //Pake rumus ar^(n-1) = last
+        (stepAbs log (lastAbs / firstAbs.toDouble())).toInt().let {
+            if(isNotFloatingTypeAndFirstZero) it else it +1
+        }
+/*
+        var power= ((stepAbs log lastAbs).toInt() -1)
+        val base: Number
+        val res= if(firstAbs >= stepAbs){
+            base= stepAbs
+            firstAbs
+        } else {
+            base= firstAbs
+            stepAbs
+        }
+
+        val firstPower= (firstAbs log lastAbs).toInt()
+
+        val powerWithFirstAbs= (base log res).toInt()
+//        val subtraction= if(powerWithFirstAbs.toInt() * firstAbs > lastAbs) 1 else 0
+        if(firstAbs >= stepAbs){
+            power -= powerWithFirstAbs //subtraction
+        } else {
+            power += powerWithFirstAbs //subtraction
+        }
+
+        prine("firstAbs= $firstAbs lastAbs= $lastAbs stepAbs= $stepAbs power= $power powerWithFirstAbs= $powerWithFirstAbs firstPower= $firstPower")
+/*
+        (stepAbs log (lastAbs / firstAbs + firstAbs)).toInt() +
+                if(stepAbs > firstAbs) 1 else 0
+ */
+        power + 1
+ */
+    }
+    else -> { //Karena blum diketahui rumus pasti pada EXPONENTIAL.
+        var i= 0
+        for(e in this)
+            i++
+        i
+    }
+}
 
 /** Menghitung jangkauan dari `this.extension` `IntProgression`. */
-val NumberProgression<*>.range: Int get() = (last -first).absoluteValue.toInt()
-/*
-= when(operationMode){  //
+val NumberProgression<*>.range: Int get() = when(operationMode){  //(last -first).absoluteValue.toInt()
     NumberOperationMode.INCREMENTAL -> (last -first).absoluteValue.toInt()
-    NumberOperationMode.MULTIPLICATIONAL ->
+    else -> ((last.absoluteValue) - (first.absoluteValue)).absoluteValue.toInt()
 }
- */
 
 /** Menghitung jml semua elemen yg terdapat di dalam `this.extension` `IntProgression`. */
 val NumberProgression<*>.domain: Int
@@ -246,13 +337,16 @@ val NumberProgression<*>.domain: Int
 /**
  * Untuk menentukan apakah `this.extension` `IntRange` dapat memuat bin dg ukuran [binSize] sebanyak [binCount]
  * dan tiap bin tidak ada yg overlap.
+ *
+ * Untuk kasus [NumberProgression], canFit hanya dicek secara linier, artinya [binSize] untuk tiap bin sama besar
+ * dan mengabaikan [NumberProgression.operationMode].
  */
 fun NumberProgression<*>.canFit(binSize: Int, binCount: Int): Boolean = binSize * binCount <= domain
 
 
 /** Menghitung jml step yang dapat dilakukan oleh `this.extension` `IntProgression`. */
 val CharProgression.size: Int
-    get()= domain / step
+    get()= (range / step.absoluteValue).toInt() + 1 //domain / step
 
 /** Menghitung jangkauan dari `this.extension` `IntProgression`. */
 val CharProgression.range: Int
