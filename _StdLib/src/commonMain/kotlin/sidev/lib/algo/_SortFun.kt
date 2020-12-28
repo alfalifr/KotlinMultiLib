@@ -210,7 +210,8 @@ fun <T, E, R: Comparable<*>> T.mergeSortBy(
  */
 fun <T, E> T.mergeSortWith(
     from: Int = 0, until: Int = size,
-    order: Order= Order.ASC, comparator: (n1: E, n2: E) -> Int
+    order: Order= Order.ASC, //tieBreaker: ((n1: E, n2: E) -> Int),
+    comparator: (n1: E, n2: E) -> Int
 ) where T: Arrangeable<E>, T: RangeCopyable<T> {
     val checkFun: (Int, Int) -> Boolean = if(order == Order.ASC) ::univLessThanEqual else ::univMoreThanEqual
 

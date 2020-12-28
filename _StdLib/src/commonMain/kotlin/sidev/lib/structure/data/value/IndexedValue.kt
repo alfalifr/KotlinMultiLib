@@ -2,9 +2,9 @@ package sidev.lib.structure.data.value
 
 import sidev.lib.reflex.getHashCode
 
-interface IndexedValue<out T> {
+interface IndexedValue<out T>: Val<T> {
     val index: Int
-    val value: T
+    override val value: T
 }
 
 internal open class IndexedValueImpl<T>(override val index: Int, override val value: T): IndexedValue<T> {

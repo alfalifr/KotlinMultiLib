@@ -1,12 +1,13 @@
 package sidev.lib.exception
 
 import sidev.lib.reflex.clazz
+import sidev.lib.structure.prop.CodeProp
 import kotlin.reflect.KClass
 
 //import java.lang.Exception
 
 open class Exc(relatedClass: KClass<*>?, private val commonMsg: String= "", private val detMsg: String= "",
-               override var cause: Throwable?= null, var code: Int= 1)
+               override var cause: Throwable?= null, override var code: Int= 1)
     : Exception("=================== \n" +
         "======================================================================= \n" +
         "Related Class  : ${(relatedClass ?: cause?.clazz ?: Exc::class.simpleName)} \n" +
@@ -15,7 +16,7 @@ open class Exc(relatedClass: KClass<*>?, private val commonMsg: String= "", priv
         "Code           : $code \n" +
         "Cause          : $cause \n" +
         "======================================================================= "
-    ){
+    ), CodeProp {
 //    override var cause: Throwable?= cause
     override var message: String?= null
 //        get()= field ?: super.message

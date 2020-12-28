@@ -153,10 +153,10 @@ infix operator fun Number.compareTo(other: Number): Int{
     }
 }
 
-operator fun <T: Number> T.inc(): T = (this +1) as T
-operator fun <T: Number> T.dec(): T = (this -1) as T
+operator fun <T: Number> T.inc(): T = this plusCast 1
+operator fun <T: Number> T.dec(): T = this minusCast 1
 operator fun <T: Number> T.unaryPlus(): T = this
-operator fun <T: Number> T.unaryMinus(): T = (this * -1) as T
+operator fun <T: Number> T.unaryMinus(): T = this timesCast -1
 
 
 

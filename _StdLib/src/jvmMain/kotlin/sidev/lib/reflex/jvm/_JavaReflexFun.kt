@@ -1,6 +1,7 @@
 @file:JvmName("_JavaReflexFun")
 package sidev.lib.reflex.jvm
 
+import sidev.lib.exception.IllegalStateExc
 import sidev.lib.reflex.SiVisibility
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
@@ -32,3 +33,22 @@ val Method.parameterCount_: Int
  */
 val Constructor<*>.parameterCount_: Int
     get()= parameterTypes.size
+
+/**
+ * Mengambil `Package` paling dasar dari `this.extension`,
+ * yaitu package yang memiliki nama terpendek.
+ */
+val Class<*>.rootPackage: Package
+    get(){
+        val thisPkgName= packageName
+        val foundPkgs= classLoader.definedPackages.filter { thisPkgName.startsWith(it.name) }
+        if(foundPkgs.isEmpty())
+            throw IllegalStateExc(
+                stateOwner = this.kotlin,
+                currentState = "foundPkgs.size == 0",
+                expectedState = "foundPkgs.size > 0",
+                detMsg = "Seharusnya `ClassLoader` dari `this` ($this) memuat package dari `this`, namun tidak. \nOleh karena itu terjadi kesalahan internal sistem."
+            )
+        if(foundPkgs.size == 1) return foundPkgs[0]
+        return foundPkgs.reduce { acc, p -> if(acc.name.length <= p.name.length) acc else p }
+    }

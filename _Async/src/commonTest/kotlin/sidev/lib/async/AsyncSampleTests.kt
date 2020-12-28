@@ -32,4 +32,10 @@ class AsyncSampleTests {
             prin("i= $i itr= $it rep= ${it.repetition}")
         }
     }
+    @Test
+    fun asyncTest(){
+        async({}){
+
+        }
+    }
 }

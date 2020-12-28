@@ -1,6 +1,6 @@
 package sidev.lib.structure.data.value
 
-interface Val<T> {
+interface Val<out T> {
     val value: T
 }
 

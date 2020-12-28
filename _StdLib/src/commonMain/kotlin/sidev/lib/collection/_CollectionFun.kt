@@ -10,6 +10,8 @@ import kotlin.collections.toTypedArray as kToTypedArray
 import kotlin.collections.toList as kToList
 import sidev.lib.number.compareTo
 import sidev.lib.number.minus
+import sidev.lib.structure.data.value.indexes
+import sidev.lib.structure.data.value.kIndexes
 
 
 inline fun <reified T> Collection<T>.toTypedArray(): Array<T> = kToTypedArray()
@@ -277,6 +279,26 @@ fun <T> MutableList<T>.removeLast(element: T): Boolean{ //= if(isEmpty()) throw 
     return false
 }
 
+/** Menghapus last occurrence jika [predicate] menghasilkan `true`. */
+inline fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean): Boolean { //= if(isEmpty()) throw NoSuchElementException("List is Empty") else removeAt(lastIndex)
+    for(i in size -1 downTo 0)
+        if(predicate(this[i])){
+            removeAt(i)
+            return true
+        }
+    return false
+}
+
+/** Menghapus first occurrence jika [predicate] menghasilkan `true`. */
+inline fun <T> MutableList<T>.removeIf_(predicate: (T) -> Boolean): Boolean { //= if(isEmpty()) throw NoSuchElementException("List is Empty") else removeAt(lastIndex)
+    for((i, e) in this.withIndex())
+        if(predicate(e)){
+            removeAt(i)
+            return true
+        }
+    return false
+}
+
 
 /**
  * [chekcFun] return `true` brarti element yg akan dimasukan adalah identik dg yg udah ada dan tidak dimasukan.
@@ -410,6 +432,16 @@ fun <T> Iterable<T>.findIndexed(predicate: (IndexedValue<T>) -> Boolean): Indexe
 fun <T> Iterable<T>.findLastIndexed(predicate: (IndexedValue<T>) -> Boolean): IndexedValue<T>?{
     var foundElement: IndexedValue<T>?= null
     for(vals in this.withIndex()){
+        if(predicate(vals))
+            foundElement= vals
+    }
+    return foundElement
+}
+
+fun <T> List<T>.findLastIndexed(predicate: (IndexedValue<T>) -> Boolean): IndexedValue<T>?{
+    var foundElement: IndexedValue<T>?= null
+    for(i in lastIndex downTo 0){
+        val vals= i kIndexes this[i]
         if(predicate(vals))
             foundElement= vals
     }

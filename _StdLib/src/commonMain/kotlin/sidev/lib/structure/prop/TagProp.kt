@@ -1,5 +1,5 @@
 package sidev.lib.structure.prop
 
-interface TagProp<T> {
+interface TagProp<out T> {
     val tag: T?
 }

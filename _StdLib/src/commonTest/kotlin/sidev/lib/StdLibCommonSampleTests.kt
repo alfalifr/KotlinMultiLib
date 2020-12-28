@@ -19,6 +19,9 @@ import sidev.lib.util.Locale
 import sidev.lib.collection.array.get
 import sidev.lib.structure.util.Filter
 import sidev.lib.text.Charset
+import sidev.lib.text.removePrefixWhitespace
+import sidev.lib.text.removeSuffixWhitespace
+import sidev.lib.text.removeSurroundingWhitespace
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
@@ -1010,5 +1013,27 @@ class StdLibCommonSampleTests {
         prin("prog13.canFit(1,6)= ${prog13.canFit(1,6)}")
         prin("prog13.canFit(1,7)= ${prog13.canFit(1,7)}")
         prin("prog13= $prog13 size13= $size13 size13_l= $size13_l ls13= $ls13 same= ${size13 == size13_l}")
+    }
+
+    @Test
+    fun removeWhitespaceTest(){
+        val ori= "  agafa afh a 5    "
+        val prefRem= ori.removePrefixWhitespace()
+        val suffRem= ori.removeSuffixWhitespace()
+        val surrRem= ori.removeSurroundingWhitespace()
+
+        prin("ori= '$ori'")
+        prin("prefRem= '$prefRem'")
+        prin("suffRem= '$suffRem'")
+        prin("surrRem= '$surrRem'")
+    }
+
+    @Test
+    fun numBitShiftTest(){
+        val i= 21
+        val u= 56
+        prin(i shl 4)
+        prin(i shr 4)
+        prin(u shr 5)
     }
 }

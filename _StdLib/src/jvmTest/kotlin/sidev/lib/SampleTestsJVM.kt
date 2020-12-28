@@ -1,6 +1,7 @@
 package sidev.lib
 
 //import com.sun.org.apache.xalan.internal.lib.ExsltMath.power
+import sidev.data.Source
 import sidev.lib.`val`.Order
 import sidev.lib.console.prin
 /*
@@ -19,7 +20,9 @@ import sidev.lib.collection.fastSortWith
 import sidev.lib.collection.iterator.iteratorSimple
 import sidev.lib.collection.sequence.nestedSequenceSimple
 import sidev.lib.collection.toTypedArray
+import sidev.lib.reflex.jvm.rootPackage
 import sidev.lib.structure.data.asArrangeable
+import sidev.lib.structure.data.value.indexes
 import kotlin.collections.ArrayList
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -517,5 +520,20 @@ class SampleTestsJVM {
         }
 //        Arrays.copyOf()
 //        Collections.reverseOrder<>()
+    }
+
+    @Test
+    fun pkgTest(){
+        val pkg= Source.javaClass.`package`
+        prin(pkg)
+        prin(Source.javaClass.classLoader.definedPackages.joinToString("\n"))
+
+        val pkg2= Source.javaClass.classLoader.definedPackages.find { pkg.name.startsWith(it.name) }
+        prin(pkg2)
+
+        val ind= 1 indexes "halo"
+        val pkg3= ind.javaClass.rootPackage
+        prin("pkg3= $pkg3")
+        prin("ind.javaClass.`package`= ${ind.javaClass.`package`}")
     }
 }
