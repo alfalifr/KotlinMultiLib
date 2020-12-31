@@ -54,6 +54,8 @@ fun <V> Pair<Int, V>.toIndexedVal(): IndexedValue<V> = first indexes second
 fun <V> Pair<Int, V>.toRefIndexedVal(): RefIndexedValue<V> = first refIndexes second
 fun <V> Pair<Int, V>.toLeveledValue(): LeveledValue<V> = first levels second
 
+//fun <E, P> E.asPostable(postBlock: (P) -> Unit): PostableWrapper<E, P> = PostableWrapperImpl(this, postBlock)
+
 operator fun <T> Val<T>.component1(): T = value
 
 operator fun <T> TaggedVal<T, *>.component1(): T? = tag

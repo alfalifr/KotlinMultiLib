@@ -2,18 +2,21 @@ package sidev.lib.number
 
 import sidev.lib.`val`.RoundingMode
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.console.prine
 
 
 infix fun Int.roundClosest(range: IntRange): Int{
-    val diffToFirst= (this -range.first).asNumber().absoluteValueCast //Dijadikan number agar Int.MIN_VALUE dan Long.MIN_VLAUE dapat diubah jadi absolute value.
-    val diffToLast= (this -range.last).asNumber().absoluteValueCast
+    val thisNum= toLong() //Dijadikan Long agar Int.MIN_VALUE dan Long.MIN_VLAUE dapat diubah jadi absolute value.
+    val diffToFirst= (thisNum -range.first).absoluteValue
+    val diffToLast= (thisNum -range.last).absoluteValue
 
     return if(diffToFirst < diffToLast) range.first
     else range.last
 }
-infix fun Number.roundClosest(range: IntRange): Int{
-    val diffToFirst= (this -range.first).absoluteValueCast
-    val diffToLast= (this -range.last).absoluteValueCast
+infix fun Number.roundClosest(range: IntRange): Int {
+    val thisNum= if(!isFloatingType()) toLong() else toDouble() // Mengambil angka dg format yg jangkauannya paling besar agar dapat memproses MAX_VALUE dan MIN_VALUE
+    val diffToFirst= (thisNum -range.first).absoluteValue
+    val diffToLast= (thisNum -range.last).absoluteValue
 
     return if(diffToFirst < diffToLast) range.first
     else range.last

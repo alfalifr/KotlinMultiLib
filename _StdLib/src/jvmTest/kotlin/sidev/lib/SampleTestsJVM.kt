@@ -536,4 +536,9 @@ class SampleTestsJVM {
         prin("pkg3= $pkg3")
         prin("ind.javaClass.`package`= ${ind.javaClass.`package`}")
     }
+
+    @Test
+    fun strTest(){
+        "afaf".contains("af")
+    }
 }

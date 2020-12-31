@@ -3,6 +3,9 @@ package sidev.lib;
 public class Cob {
     public Cob(String a, int b){
         System.out.println("Hallo world");
+        String ae = "";
+
+        ae.contains("aaf");
     }
 /*
     public int ada(){
