@@ -118,14 +118,18 @@ fun <K, V, A : Appendable> Map<K, V>.joinTo(
 
 fun <K, V> Map<K, V>.copy(from: Int= 0, until: Int= size): Map<K, V> {
     val res= mutableMapOf<K, V>()
-    val itr= iterator()
     val range= if(from == 0 && until == size) null else from until until
 
-    var i= -1
-    while(itr.hasNext()){
-        val (k, v)= itr.next()
-        if(range == null || ++i in range)
-            res[k]= v
+    if(range != null){
+        val itr= iterator()
+        var i= -1
+        while(itr.hasNext()){
+            val (k, v)= itr.next()
+            if(++i in range)
+                res[k]= v
+        }
+    } else {
+        res.putAll(this)
     }
     return res
 }

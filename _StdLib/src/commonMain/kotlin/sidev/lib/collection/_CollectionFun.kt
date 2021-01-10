@@ -8,9 +8,6 @@ import sidev.lib.structure.data.value.Var
 import kotlin.jvm.JvmOverloads
 import kotlin.collections.toTypedArray as kToTypedArray
 import kotlin.collections.toList as kToList
-import sidev.lib.number.compareTo
-import sidev.lib.number.minus
-import sidev.lib.structure.data.value.indexes
 import sidev.lib.structure.data.value.kIndexes
 
 
@@ -343,15 +340,17 @@ inline fun <reified T> Array<T>.copyTo(dest: Array<T>, from: Int= 0, until: Int=
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> List<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): List<T> =
-    (this as List<*>).toTypedArray(from, until, reversed).asList() as List<T>
+    if(from == 0 && until == size && !reversed) ArrayList(this)
+    else (this as List<*>).toTypedArray(from, until, reversed).asList() as List<T>
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> Set<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Set<T> =
-    (this as Set<*>).toTypedArray(from, until, reversed).toSet() as Set<T>
+    if(from == 0 && until == size && !reversed) HashSet(this)
+    else (this as Set<*>).toTypedArray(from, until, reversed).toSet() as Set<T>
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
-fun <T> Collection<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Collection<T> =
-    (this as Collection<*>).toTypedArray(from, until, reversed).asList() as Collection<T>
+fun <T> Collection<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Collection<T> = (this as List).copy(from, until, reversed)
+    //(this as Collection<*>).toTypedArray(from, until, reversed).asList() as Collection<T>
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> Iterable<T>.copy(from: Int= 0, until: Int= size, reversed: Boolean= false): Iterable<T> = when(this) {
@@ -677,8 +676,33 @@ fun <T, R> Iterable<T>.countDuplicationBy(selector: (T) -> R): Map<R, Int> {
     }
     return map
 }
-
 fun <T> Iterable<T>.countDuplication(): Map<T, Int> = countDuplicationBy { it }
+
+/**
+ * Menghitung jumlah tiap elemen unik berdasakan hasil return [selector].
+ */
+fun <T, R> Iterable<T>.countUniqueBy(selector: (T) -> R): Map<R, Int> {
+    val map= mutableMapOf<R, Int>()
+    for(e in this){
+        val key= selector(e)
+        map[key]= map[key]?.plus(1) ?: 1
+    }
+    return map
+}
+fun <T> Iterable<T>.countUnique(): Map<T, Int> = countUniqueBy { it }
+
+
+fun <T, R> Iterable<T>.countProbabilitiesBy(selector: (T) -> R): Map<R, Double> {
+    val unique= countUniqueBy(selector)
+    val sum= unique.values.sum().toDouble()
+    val map= mutableMapOf<R, Double>()
+    for((key, dup) in unique){
+        map[key]= dup / sum
+    }
+    return map
+}
+
+fun <T> Iterable<T>.countProbabilities(): Map<T, Double> = countProbabilitiesBy { it }
 
 
 /**

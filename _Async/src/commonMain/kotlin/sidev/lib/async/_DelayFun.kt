@@ -2,12 +2,10 @@ package sidev.lib.async
 
 import kotlinx.coroutines.*
 import sidev.lib.async.`val`.AsyncConst
-import sidev.lib.console.prine
 import sidev.lib.exception.IllegalStateExc
 import sidev.lib.structure.data.iteration.MutableIteration
 import sidev.lib.structure.data.iteration.mutableIterationOf
 import sidev.lib.structure.data.value.*
-import kotlin.coroutines.CoroutineContext
 
 //import kotlinx.coroutines.run
 
@@ -65,7 +63,7 @@ fun whileAndWait(
         try {
 //            delay()
             while(conditionCheck(state)){
-                prine("whileAndWait() i= $i")
+                //prine("whileAndWait() i= $i")
                 block(state)
 //            state= refIterationOf(++i, rep) //++i refIndexes stateContainer
                 state.index += 1
@@ -74,9 +72,10 @@ fun whileAndWait(
             }
             loop= false
         } catch (e: Exception){
-            prine("whileAndWait() i= $i e= $e")
+            //prine("whileAndWait() i= $i e= $e")
             if(exceptionWaitCheck(e)){
-                runBlocking { printDelay(delayMillis, delayMsg) }
+                if(delayMillis > 0)
+                    runBlocking { printDelay(delayMillis, delayMsg) }
                 state.repetition = ++currRep
                 currExc= e
 /*
@@ -94,7 +93,8 @@ fun whileAndWait(
     }
 }
 
-suspend fun printDelay(delay: Long = 5000, msg: String= "Menunggu") = coroutineScope {
+suspend fun printDelay(delay: Long = 5000, msg: String= "Menunggu"): Job? = if(delay <= 0) null
+else coroutineScope {
 //    val loop= true.asBoxed()
     val job= launch {
         var dotLen= -1
@@ -118,4 +118,5 @@ suspend fun printDelay(delay: Long = 5000, msg: String= "Menunggu") = coroutineS
     delay(delay)
     println()
     job.cancelAndJoin()
+    job
 }

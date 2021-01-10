@@ -64,7 +64,7 @@ actual fun <T: Any> T.nativeCloneOp(
     }
     val valueMapTree= javaFieldValuesTree
 
-    prine("jvm nativeClone() class= $clazz this= $this")
+    //prine("jvm nativeClone() class= $clazz this= $this")
 
     val constructorPropertyList= mutableListOf<Field>()
     val newInsConstrParamValFunc= constructorParamValFunc ?: { clazz, param ->

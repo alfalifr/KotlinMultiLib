@@ -1,10 +1,13 @@
-package main
+package sidev.lib.math
 
-import sidev.lib.collection.duplicatUnion
+import sidev.lib.collection.*
+import sidev.lib.collection.countDuplication
 import sidev.lib.console.prin
-import sidev.lib.math.*
 import sidev.lib.math.arithmetic.*
 import sidev.lib.math.number.*
+import sidev.lib.math.random.DistributedRandomImpl
+import sidev.lib.math.random.distRandomOf
+import sidev.lib.math.random.randomBoolean
 import sidev.lib.math.stat.mean
 import sidev.lib.math.stat.medianNode
 import sidev.lib.math.stat.mode
@@ -597,5 +600,64 @@ class MathSampleTests {
         val sysEq1= systemEquationOf(eq1, eq2, eq3)
         prin("sysEq1= $sysEq1")
         prin("sysEq1.solve()= ${sysEq1.solve()}")
+    }
+
+    @Test
+    fun distRandomTest(){
+        val distRand= distRandomOf<Int>()
+        distRand[1]= 2
+        distRand[2]= 6
+        distRand[4]= 1
+        distRand[6]= 1
+///*
+        distRand[7]= 3
+///*
+        distRand[8]= 9
+        distRand[9]= 5
+// */
+        prin("(distRand as DistributedRandomImpl).distributions = ${(distRand as DistributedRandomImpl).distributions}")
+
+        val occurences= mutableListOf<Int>()
+        for(i in 0 until 100){
+            occurences += distRand.next()
+        }
+        val unique= occurences.countUnique()
+        val probs= occurences.countProbabilities()
+        prin("occurences= $occurences")
+        prin("occurences.countUnique()= $unique")
+        prin("occurences.countProbabilities()= $probs")
+///*
+        val prob9= probs[9]!!
+        val prob2= probs[2]!!
+        val prob1= probs[1]!!
+        val prob7= probs[7]!!
+        val prob4= probs[4]
+
+        prin("prob2 >= prob9 = ${prob2 >= prob9}")
+        prin("prob7 >= prob1 = ${prob7 >= prob1}")
+        prin("prob2 > prob7 = ${prob2 > prob7}")
+        prin("prob1 >= prob4 = ${prob4?.compareTo(prob1)?.equals(-1)}")
+        prin("prob7 > prob4 = ${prob4?.compareTo(prob7)?.equals(-1)}")
+// */
+    }
+
+    @Test
+    fun boolRandTest(){
+        val prob= 0.6
+
+        val occurences= mutableListOf<Boolean>()
+        for(i in 0 until 10_000){
+            occurences += randomBoolean(prob)
+        }
+
+        val unique= occurences.countUnique()
+        val probs= occurences.countProbabilities()
+        prin("occurences= $occurences")
+        prin("occurences.countUnique()= $unique")
+        prin("occurences.countProbabilities()= $probs")
+
+        val probT= probs[true]!!
+        val probF= probs[false]!!
+        prin("probF > probT = ${probF > probT}")
     }
 }

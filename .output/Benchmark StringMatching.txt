@@ -1,0 +1,152 @@
+
+a.len= 21
+b len= 6
+c len= 156
+d len= 9
+e len= 433
+f len= 36
+g len= 1528
+h len= 49
+i len= 6901
+j len= 110
+k len= 14639
+l len= 679
+m len= 48752
+n len= 2399
+
+========================= boyer
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 1.37ms
+tb2 = 8.80us
+tb3 = 13.7us
+tb4 = 41.9us
+tb5 = 296us
+tb6 = 1.21ms
+tb7 = 2.16ms
+tbM= 728us l= [1.37ms, 8.80us, 13.7us, 41.9us, 296us, 1.21ms, 2.16ms]
+
+func= fun boyerMoore1(kotlin.String, kotlin.String): kotlin.Int
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 1.11ms
+tb2 = 10.9us
+tb3 = 15.9us
+tb4 = 49.8us
+tb5 = 350us
+tb6 = 1.30ms
+tb7 = 1.96ms
+tbM= 685us l= [1.11ms, 10.9us, 15.9us, 49.8us, 350us, 1.30ms, 1.96ms]
+
+============================ knuth
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 1.05ms
+tb2 = 18.4us
+tb3 = 35.1us
+tb4 = 80.0us
+tb5 = 1.44ms
+tb6 = 1.18ms
+tb7 = 3.26ms
+tbM= 1.01ms l= [1.05ms, 18.4us, 35.1us, 80.0us, 1.44ms, 1.18ms, 3.26ms]
+
+func= fun knuthMorrisPratt(kotlin.String, kotlin.String): kotlin.Int
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 2.01ms
+tb2 = 25.6us
+tb3 = 56.2us
+tb4 = 114us
+tb5 = 2.23ms
+tb6 = 1.89ms
+tb7 = 4.81ms
+tbM= 1.59ms l= [2.01ms, 25.6us, 56.2us, 114us, 2.23ms, 1.89ms, 4.81ms]
+
+================================= greedy
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 1.67ms
+tb2 = 11.8us
+tb3 = 22.1us
+tb4 = 65.2us
+tb5 = 1.30ms
+tb6 = 1.08ms
+tb7 = 2.63ms
+tbM= 969us l= [1.67ms, 11.8us, 22.1us, 65.2us, 1.30ms, 1.08ms, 2.63ms]
+
+func= fun greedySearch(kotlin.String, kotlin.String): kotlin.Int
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 1.93ms
+tb2 = 20.3us
+tb3 = 41.7us
+tb4 = 124us
+tb5 = 2.30ms
+tb6 = 1.80ms
+tb7 = 5.34ms
+tbM= 1.65ms l= [1.93ms, 20.3us, 41.7us, 124us, 2.30ms, 1.80ms, 5.34ms]
+
+================================= original
+func= fun sidev.lib.StdLibCommonSampleTests.originalMatchString(kotlin.String, kotlin.String): kotlin.Int
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 18.2ms
+tb2 = 6.40us
+tb3 = 2.40us
+tb4 = 2.00us
+tb5 = 308us
+tb6 = 569us
+tb7 = 1.72ms
+tbM= 2.97ms l= [18.2ms, 6.40us, 2.40us, 2.00us, 308us, 569us, 1.72ms]
+
+func= fun sidev.lib.StdLibCommonSampleTests.originalMatchString(kotlin.String, kotlin.String): kotlin.Int
+ib1 = 5
+ib2 = 72
+ib3 = 293
+ib4 = 975
+ib5 = 5985
+ib6 = 13491
+ib7 = 38517
+tb1 = 32.7ms
+tb2 = 13.4us
+tb3 = 5.70us
+tb4 = 4.10us
+tb5 = 658us
+tb6 = 1.37ms
+tb7 = 3.96ms
+tbM= 5.53ms l= [32.7ms, 13.4us, 5.70us, 4.10us, 658us, 1.37ms, 3.96ms]
