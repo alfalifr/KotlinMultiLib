@@ -7,6 +7,7 @@ import sidev.lib.math.arithmetic.*
 import sidev.lib.math.number.*
 import sidev.lib.math.random.DistributedRandomImpl
 import sidev.lib.math.random.distRandomOf
+import sidev.lib.math.random.plusAssign
 import sidev.lib.math.random.randomBoolean
 import sidev.lib.math.stat.mean
 import sidev.lib.math.stat.medianNode
@@ -639,6 +640,11 @@ class MathSampleTests {
         prin("prob1 >= prob4 = ${prob4?.compareTo(prob1)?.equals(-1)}")
         prin("prob7 > prob4 = ${prob4?.compareTo(prob7)?.equals(-1)}")
 // */
+        val dist6_b= distRand[6]!!
+        distRand += 6 to 19
+        val dist6_a= distRand[6]!!
+
+        prin("dist6_b= $dist6_b dist6_a= $dist6_a")
     }
 
     @Test
@@ -659,5 +665,13 @@ class MathSampleTests {
         val probT= probs[true]!!
         val probF= probs[false]!!
         prin("probF > probT = ${probF > probT}")
+    }
+
+    @Test
+    fun distRandAddTest(){
+        val distRand = distRandomOf<Int>() as DistributedRandomImpl
+        distRand.add(1)
+        distRand.add(4)
+        prin("distRand.distributions= ${distRand.distributions}")
     }
 }

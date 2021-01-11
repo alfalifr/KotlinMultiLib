@@ -1,7 +1,7 @@
 package sidev.lib.math.random
 
 import sidev.lib.collection.findIndexed
-import sidev.lib.console.prine
+//import sidev.lib.console.prine
 import sidev.lib.exception.IllegalStateExc
 import kotlin.math.max
 import kotlin.math.min
@@ -9,15 +9,25 @@ import kotlin.random.Random
 
 
 interface DistributedRandom<T> {
+    val distSum: Int
+    operator fun get(e: T): Int?
     operator fun set(e: T, distribution: Int)
+    /**
+     * Menambah distribusi [e] sebanyak [distribution].
+     * Mengembalikan distribusi lama.
+     */
+    fun add(e: T, distribution: Int = 1): Int
     fun remove(e: T): Int?
     fun next(): T
+    /** `true` jika tidak terdapat distribusi pada `this`. */
+    fun isEmpty(): Boolean
 }
 
 internal class DistributedRandomImpl<T>: DistributedRandom<T> {
     internal val distributions: MutableList<Pair<T, Int>> = mutableListOf()
     private val keys: MutableSet<T> = mutableSetOf()
-    private var distSum= 0
+    override var distSum: Int= 0
+        private set
     //private var maxDist= 0
 
     private fun search(dist: Int, left: Int= 0, right: Int= distributions.lastIndex): Int {
@@ -27,9 +37,9 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
         val midVal= distributions[mid].second
         val midLeftVal= distributions[midLeft].second
         val midRightVal= distributions[midRight].second
-        prine("search() dist= $dist left= $left right= $right mid= $mid midLeft= $midLeft midRight= $midRight")
+        //prine("search() dist= $dist left= $left right= $right mid= $mid midLeft= $midLeft midRight= $midRight")
         return when {
-            dist in midLeft..midRight -> {
+            dist in midLeftVal..midRightVal -> {
                 if(midVal < dist) mid + 1
                 else mid
             }
@@ -44,6 +54,7 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
         }
     }
 
+    override fun get(e: T): Int? = distributions.find { it.first == e }?.second
     override fun set(e: T, distribution: Int) {
         //var computeMaxDist= false
         //var index: Int
@@ -55,10 +66,31 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
             distributions[i] = e to distribution
         } else {
             val index= if(distributions.isNotEmpty()) search(distribution) else 0
-            prine("prev dists= $distributions")
+            //prine("prev dists= $distributions")
             distributions.add(index, e to distribution)
+            keys.add(e)
         }
         distSum += distribution
+    }
+
+    override fun add(e: T, distribution: Int): Int {
+        val old= if(e in keys){
+            val (i, value)= distributions.findIndexed { it.value.first == e }!!
+            val old= value.second
+            //computeMaxDist= old == maxDist
+            //prine("prev old= $old")
+            distributions[i] = e to old + distribution
+            old
+        } else {
+            val index= if(distributions.isNotEmpty()) search(distribution) else 0
+            //prine("prev dists= $distributions")
+            //prine("prev new= $distribution")
+            distributions.add(index, e to distribution)
+            keys.add(e)
+            0
+        }
+        distSum += distribution
+        return old
     }
 
     override fun remove(e: T): Int? {
@@ -116,4 +148,6 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
             detMsg = "Terjadi kesalahan internal. Seharusnya tidak mungkin `randomRatio` melebihi 1 karena `randomRatio` merupakan kemungkinan (0-1)"
         )
     }
+
+    override fun isEmpty(): Boolean = distSum == 0
 }
