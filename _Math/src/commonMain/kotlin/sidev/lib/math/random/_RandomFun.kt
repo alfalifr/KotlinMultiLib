@@ -7,6 +7,15 @@ import kotlin.random.Random
 operator fun <T> DistributedRandom<T>.plusAssign(pair: Pair<T, Int>){
     this.add(pair.first, pair.second)
 }
+val <T> DistributedRandom<T>.probabilities: Map<T, Double>
+    get(){
+        val dists= entries
+        val distSum= distSum.toDouble()
+        val res= mutableMapOf<T, Double>()
+        for((k, v) in dists)
+            res[k]= v / distSum
+        return res
+    }
 
 fun <T> distRandomOf(vararg e: T): DistributedRandom<T> = DistributedRandomImpl<T>().apply {
     if(e.isNotEmpty())

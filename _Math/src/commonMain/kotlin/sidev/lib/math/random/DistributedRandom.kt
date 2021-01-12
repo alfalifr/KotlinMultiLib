@@ -1,8 +1,10 @@
 package sidev.lib.math.random
 
+import sidev.lib.collection.copy
 import sidev.lib.collection.findIndexed
 //import sidev.lib.console.prine
 import sidev.lib.exception.IllegalStateExc
+import sidev.lib.reflex.getContentHashCode
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -10,6 +12,10 @@ import kotlin.random.Random
 
 interface DistributedRandom<T> {
     val distSum: Int
+    val keys: Set<T>
+    val distributions: Collection<Int>
+    val entries: Collection<Pair<T, Int>>
+
     operator fun get(e: T): Int?
     operator fun set(e: T, distribution: Int)
     /**
@@ -24,20 +30,26 @@ interface DistributedRandom<T> {
 }
 
 internal class DistributedRandomImpl<T>: DistributedRandom<T> {
-    internal val distributions: MutableList<Pair<T, Int>> = mutableListOf()
-    private val keys: MutableSet<T> = mutableSetOf()
+    internal val distributions_: MutableList<Pair<T, Int>> = mutableListOf()
+    private val keys_: MutableSet<T> = mutableSetOf()
+    override val keys: Set<T>
+        get() = keys_.copy()
+    override val distributions: Collection<Int>
+        get() = distributions_.map { it.second }
+    override val entries: Collection<Pair<T, Int>>
+        get() = distributions_.copy()
     override var distSum: Int= 0
         private set
     //private var maxDist= 0
 
-    private fun search(dist: Int, left: Int= 0, right: Int= distributions.lastIndex): Int {
+    private fun search(dist: Int, left: Int= 0, right: Int= distributions_.lastIndex): Int {
         val mid= (left + right) / 2
         val midLeft= max(mid - 1, left)
         val midRight= min(mid + 1, right)
-        val midVal= distributions[mid].second
-        val midLeftVal= distributions[midLeft].second
-        val midRightVal= distributions[midRight].second
-        //prine("search() dist= $dist left= $left right= $right mid= $mid midLeft= $midLeft midRight= $midRight")
+        val midVal= distributions_[mid].second
+        val midLeftVal= distributions_[midLeft].second
+        val midRightVal= distributions_[midRight].second
+        //prine("search() dist= $dist left= $left right= $right mid= $mid midLeft= $midLeft midRight= $midRight midLeftVal= $midLeftVal midRightVal= $midRightVal")
         return when {
             dist in midLeftVal..midRightVal -> {
                 if(midVal < dist) mid + 1
@@ -49,44 +61,65 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
             }
             else /*dist < midLeftVal*/ -> {
                 if(midLeft < mid) search(dist, left, midLeft)
-                else mid - 1
+                else mid //- 1
             }
         }
     }
 
-    override fun get(e: T): Int? = distributions.find { it.first == e }?.second
+    private fun searchNextSortedIndex(from: Int, checkDist: Int): Int {
+        var isFirstFound= false
+        val lastIndex= distributions_.lastIndex
+        for(i in from until distributions_.size){
+            val (e, dist)= distributions_[i]
+            if(!isFirstFound && dist <= checkDist)
+                isFirstFound= true
+            else if(isFirstFound && (dist >= checkDist || i == lastIndex))
+                return i -1
+        }
+        return if(isFirstFound) lastIndex else -1
+    }
+
+    override fun get(e: T): Int? = distributions_.find { it.first == e }?.second
     override fun set(e: T, distribution: Int) {
         //var computeMaxDist= false
         //var index: Int
-        if(e in keys){
-            val (i, value)= distributions.findIndexed { it.value.first == e }!!
+        if(e in keys_){
+            val (i, value)= distributions_.findIndexed { it.value.first == e }!!
             val old= value.second
             distSum -= old
             //computeMaxDist= old == maxDist
-            distributions[i] = e to distribution
+            distributions_[i] = e to distribution
         } else {
-            val index= if(distributions.isNotEmpty()) search(distribution) else 0
+            val index= if(distributions_.isNotEmpty()) search(distribution) else 0
             //prine("prev dists= $distributions")
-            distributions.add(index, e to distribution)
-            keys.add(e)
+            distributions_.add(index, e to distribution)
+            keys_.add(e)
         }
         distSum += distribution
     }
 
     override fun add(e: T, distribution: Int): Int {
-        val old= if(e in keys){
-            val (i, value)= distributions.findIndexed { it.value.first == e }!!
+        val old= if(e in keys_){
+            val (i, value)= distributions_.findIndexed { it.value.first == e }!!
             val old= value.second
             //computeMaxDist= old == maxDist
-            //prine("prev old= $old")
-            distributions[i] = e to old + distribution
+            //prine("prev old= $old i= $i dists= $distributions")
+            val newDist= old + distribution
+            if(i < distributions_.lastIndex && distributions_[i+1].second < newDist){
+                val newIndex= searchNextSortedIndex(i + 1, newDist)
+                distributions_.removeAt(i)
+                distributions_.add(newIndex, e to newDist)
+                //prine("prev dalem old= $old i= $i dists= $distributions")
+            } else {
+                distributions_[i] = e to newDist
+            }
             old
         } else {
-            val index= if(distributions.isNotEmpty()) search(distribution) else 0
+            val index= if(distributions_.isNotEmpty()) search(distribution) else 0
             //prine("prev dists= $distributions")
             //prine("prev new= $distribution")
-            distributions.add(index, e to distribution)
-            keys.add(e)
+            distributions_.add(index, e to distribution)
+            keys_.add(e)
             0
         }
         distSum += distribution
@@ -94,9 +127,9 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
     }
 
     override fun remove(e: T): Int? {
-        val res= distributions.findIndexed { it.value.first == e }
+        val res= distributions_.findIndexed { it.value.first == e }
         return if(res != null){
-            distributions.removeAt(res.index)
+            distributions_.removeAt(res.index)
             val dist= res.value.second
             distSum -= dist
             dist
@@ -134,7 +167,7 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
         //val ratio = 1.0 / distSum
         var tempDist = 0
         //prine("DistRandom.next() distSum= $distSum maxDist= $maxDist rand= $randomRatio")
-        for ((key, dist) in distributions) {
+        for ((key, dist) in distributions_) {
             tempDist += dist
             //prine("DistRandom.next() distSum= $distSum rand= $randomRatio rand * distSum= ${randomRatio * distSum} tempDist= $tempDist")
             if (randomRatio * distSum <= tempDist) {
@@ -150,4 +183,7 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
     }
 
     override fun isEmpty(): Boolean = distSum == 0
+    override fun toString(): String = "DistributedRandom{${distributions_.joinToString()}}"
+    override fun hashCode(): Int = getContentHashCode(distributions_, false)
+    override fun equals(other: Any?): Boolean = other is DistributedRandom<*> && other.hashCode() == hashCode()
 }

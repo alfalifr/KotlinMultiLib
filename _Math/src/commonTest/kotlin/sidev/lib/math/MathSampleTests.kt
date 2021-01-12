@@ -1,7 +1,6 @@
 package sidev.lib.math
 
 import sidev.lib.collection.*
-import sidev.lib.collection.countDuplication
 import sidev.lib.console.prin
 import sidev.lib.math.arithmetic.*
 import sidev.lib.math.number.*
@@ -616,7 +615,7 @@ class MathSampleTests {
         distRand[8]= 9
         distRand[9]= 5
 // */
-        prin("(distRand as DistributedRandomImpl).distributions = ${(distRand as DistributedRandomImpl).distributions}")
+        prin("(distRand as DistributedRandomImpl).distributions = ${(distRand as DistributedRandomImpl).distributions_}")
 
         val occurences= mutableListOf<Int>()
         for(i in 0 until 100){
@@ -670,8 +669,25 @@ class MathSampleTests {
     @Test
     fun distRandAddTest(){
         val distRand = distRandomOf<Int>() as DistributedRandomImpl
-        distRand.add(1)
         distRand.add(4)
-        prin("distRand.distributions= ${distRand.distributions}")
+        distRand.add(4)
+        distRand.add(1)
+        prin("distRand.distributions= ${distRand.distributions_}")
+        distRand.add(3)
+        prin("distRand.distributions= ${distRand.distributions_}")
+        distRand.add(3)
+        distRand.add(4)
+        distRand.add(5)
+        distRand.add(6)
+        distRand.add(8)
+        distRand.add(5)
+        distRand.add(2)
+        distRand.add(20)
+        distRand.add(6)
+
+        distRand.add(8)
+        distRand.add(5)
+        distRand.add(6)
+        prin("distRand.distributions= ${distRand.distributions_}")
     }
 }
