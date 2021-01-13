@@ -689,5 +689,9 @@ class MathSampleTests {
         distRand.add(5)
         distRand.add(6)
         prin("distRand.distributions= ${distRand.distributions_}")
+        distRand.add(4, -1)
+        prin("distRand.distributions= ${distRand.distributions_}")
+        distRand.add(2, -1)
+        prin("distRand.distributions= ${distRand.distributions_}")
     }
 }

@@ -20,6 +20,8 @@ interface DistributedRandom<T> {
     operator fun set(e: T, distribution: Int)
     /**
      * Menambah distribusi [e] sebanyak [distribution].
+     * Fungsi ini dapat digunakan untuk mengurangi distribusi
+     * dengan memasukan [distribution] negatif.
      * Mengembalikan distribusi lama.
      */
     fun add(e: T, distribution: Int = 1): Int
@@ -66,17 +68,35 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
         }
     }
 
-    private fun searchNextSortedIndex(from: Int, checkDist: Int): Int {
+    /**
+     * [isIncreasing] == `true`, maka pencarian dilakukan dengan arah dari kiri ke kanan
+     * dan mengganggap [checkDist] lebih besar dari elemen di kanannya dan perlu digeser kanan.
+     */
+    private fun searchNextSortedIndex(from: Int, checkDist: Int, isIncreasing: Boolean = true): Int {
         var isFirstFound= false
-        val lastIndex= distributions_.lastIndex
-        for(i in from until distributions_.size){
-            val (e, dist)= distributions_[i]
-            if(!isFirstFound && dist <= checkDist)
-                isFirstFound= true
-            else if(isFirstFound && (dist >= checkDist || i == lastIndex))
-                return i -1
+        if(isIncreasing){
+            val lastIndex= distributions_.lastIndex
+            for(i in from until distributions_.size){
+                val (e, dist)= distributions_[i]
+                if(!isFirstFound && dist <= checkDist)
+                    isFirstFound= true
+                else if(isFirstFound && (dist >= checkDist || i == lastIndex))
+                    return i -1
+            }
+            if(isFirstFound)
+                return lastIndex
+        } else {
+            for(i in from downTo 0){
+                val (e, dist)= distributions_[i]
+                if(!isFirstFound && dist >= checkDist)
+                    isFirstFound= true
+                else if(isFirstFound && (dist <= checkDist || i == 0))
+                    return i +1
+            }
+            if(isFirstFound)
+                return 0
         }
-        return if(isFirstFound) lastIndex else -1
+        return -1
     }
 
     override fun get(e: T): Int? = distributions_.find { it.first == e }?.second
@@ -105,21 +125,38 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
             //computeMaxDist= old == maxDist
             //prine("prev old= $old i= $i dists= $distributions")
             val newDist= old + distribution
-            if(i < distributions_.lastIndex && distributions_[i+1].second < newDist){
-                val newIndex= searchNextSortedIndex(i + 1, newDist)
-                distributions_.removeAt(i)
-                distributions_.add(newIndex, e to newDist)
+            if(
+                (distribution > 0 && i < distributions_.lastIndex && distributions_[i+1].second < newDist)
+                || (distribution < 0 && i > 0 && distributions_[i-1].second > newDist)
+            ){
+                val fromInc: Int
+                val isIncreasing= if(distribution > 0){
+                    fromInc= 1
+                    true
+                } else {
+                    fromInc= -1
+                    false
+                }
+                if(newDist > 0){
+                    val newIndex= searchNextSortedIndex(i + fromInc, newDist, isIncreasing)
+                    distributions_.removeAt(i)
+                    distributions_.add(newIndex, e to newDist)
+                } else {
+                    distributions_.removeAt(i)
+                }
                 //prine("prev dalem old= $old i= $i dists= $distributions")
             } else {
                 distributions_[i] = e to newDist
             }
             old
         } else {
-            val index= if(distributions_.isNotEmpty()) search(distribution) else 0
-            //prine("prev dists= $distributions")
-            //prine("prev new= $distribution")
-            distributions_.add(index, e to distribution)
-            keys_.add(e)
+            if(distribution > 0){
+                val index= if(distributions_.isNotEmpty()) search(distribution) else 0
+                //prine("prev dists= $distributions")
+                //prine("prev new= $distribution")
+                distributions_.add(index, e to distribution)
+                keys_.add(e)
+            }
             0
         }
         distSum += distribution
