@@ -2,6 +2,7 @@ package sidev.lib.collection
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.collection.array.forEach
+import sidev.lib.collection.iterator.SkippableIteratorImpl
 import sidev.lib.collection.sequence.toOtherSequence
 import sidev.lib.exception.IllegalArgExc
 import sidev.lib.structure.data.value.Var
@@ -727,7 +728,9 @@ fun <T, R> Iterable<T>.isUniqueBy(selector: (T) -> R): Boolean {
  */
 //fun <T: Number> Iterable<T>.gaps(start: T?= null, end: T?= null): List<Int> {}
 fun Iterable<Int>.gaps(start: Int= -1, end: Int= -1): List<Int> {
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     var start= start
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     var end= end
 
     if(start < 0 || end < 0){
@@ -770,7 +773,9 @@ fun Iterable<Int>.gaps(start: Int= -1, end: Int= -1): List<Int> {
  */
 //fun <T: Number> Iterable<T>.gaps(start: T?= null, end: T?= null): List<Int> {}
 fun <T> Iterable<T>.gapsBy(start: Int= -1, end: Int= -1, selector: (T) -> Int): List<Int> {
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     var start= start
+    @Suppress(SuppressLiteral.NAME_SHADOWING)
     var end= end
 
     if(start < 0 || end < 0){
@@ -807,3 +812,14 @@ fun <T> Iterable<T>.gapsBy(start: Int= -1, end: Int= -1, selector: (T) -> Int): 
     }
     return gaps
 }
+
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Iterable<T?>.notNullIterator(): Iterator<T> =
+    object: SkippableIteratorImpl<T>(this.iterator() as Iterator<T>) {
+        override fun skip(now: T): Boolean = now == null
+    }
+@Suppress(SuppressLiteral.UNCHECKED_CAST)
+fun <T> Array<out T?>.notNullIterator(): Iterator<T> =
+    object: SkippableIteratorImpl<T>(this.iterator() as Iterator<T>) {
+        override fun skip(now: T): Boolean = now == null
+    }

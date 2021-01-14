@@ -1924,4 +1924,13 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
         //testMatsStr(::greedySearch)
         testMatsStr(::originalMatchString)
     }
+
+    @Test
+    fun notNullItrTest(){
+        val list= listOf(1,2,4,null,5,6,null,8,9)
+        prin("============= print awal ===============")
+        list.forEach { prin(it) }
+        prin("============= print akhir ===============")
+        list.notNullIterator().forEach { prin(it) }
+    }
 }

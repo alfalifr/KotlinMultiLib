@@ -4,6 +4,7 @@ import sidev.lib.collection.copy
 import sidev.lib.collection.findIndexed
 //import sidev.lib.console.prine
 import sidev.lib.exception.IllegalStateExc
+import sidev.lib.exception.InternalExc
 import sidev.lib.reflex.getContentHashCode
 import kotlin.math.max
 import kotlin.math.min
@@ -124,9 +125,10 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
             val old= value.second
             //computeMaxDist= old == maxDist
             //prine("prev old= $old i= $i dists= $distributions")
+            val lastIndex= distributions_.lastIndex
             val newDist= old + distribution
             if(
-                (distribution > 0 && i < distributions_.lastIndex && distributions_[i+1].second < newDist)
+                (distribution > 0 && i < lastIndex && distributions_[i+1].second < newDist)
                 || (distribution < 0 && i > 0 && distributions_[i-1].second > newDist)
             ){
                 val fromInc: Int
@@ -141,12 +143,20 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
                     val newIndex= searchNextSortedIndex(i + fromInc, newDist, isIncreasing)
                     distributions_.removeAt(i)
                     distributions_.add(newIndex, e to newDist)
+                    distSum += distribution
                 } else {
                     distributions_.removeAt(i)
+                    keys_.remove(e)
+                    distSum -= old
                 }
                 //prine("prev dalem old= $old i= $i dists= $distributions")
-            } else {
+            } else if(newDist > 0) {
                 distributions_[i] = e to newDist
+                distSum += distribution
+            } else {
+                distributions_.removeAt(i)
+                keys_.remove(e)
+                distSum= 0
             }
             old
         } else {
@@ -156,10 +166,10 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
                 //prine("prev new= $distribution")
                 distributions_.add(index, e to distribution)
                 keys_.add(e)
+                distSum += distribution
             }
             0
         }
-        distSum += distribution
         return old
     }
 
@@ -176,6 +186,13 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
     }
 
     override fun next(): T {
+        if(isEmpty())
+            throw IllegalStateExc(
+                stateOwner = this::class,
+                currentState = "`distSum` ($distSum) <= 0",
+                expectedState = "`distSum` ($distSum) > 0",
+                detMsg = "`this.DistributedRandom` kosong."
+            )
 /*
         //prine("DistRandom.next() distSum= $distSum maxDist= $maxDist")
         return if(distSum > maxDist){
@@ -211,11 +228,13 @@ internal class DistributedRandomImpl<T>: DistributedRandom<T> {
                 return key
             }
         }
-        throw IllegalStateExc(
+        if(randomRatio > 1) throw IllegalStateExc(
             stateOwner = this::class,
             currentState = "`randomRatio` ($randomRatio) > 1",
             expectedState = "`randomRatio` ($randomRatio) <= 1",
             detMsg = "Terjadi kesalahan internal. Seharusnya tidak mungkin `randomRatio` melebihi 1 karena `randomRatio` merupakan kemungkinan (0-1)"
+        ) else throw InternalExc(
+            msg = "`randomRatio` ($randomRatio), `distSum` ($distSum), `isEmpty()` (${isEmpty()}), `tempDist` ($tempDist)"
         )
     }
 
