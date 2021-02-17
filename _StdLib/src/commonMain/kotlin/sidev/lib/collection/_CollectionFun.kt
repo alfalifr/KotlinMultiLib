@@ -48,6 +48,7 @@ inline fun <reified T> Iterable<T>.toTypedArray(from: Int = 0, until: Int = size
         }
         if(reversed)
             arr.reverse()
+        @Suppress(SuppressLiteral.UNCHECKED_CAST)
         arr as Array<T>
     }
 }
@@ -66,6 +67,11 @@ fun <T> Collection<T>.asMutableList(): MutableList<T> = when(this){
 fun <T> Collection<T>.asList(): List<T> = when(this){
     is List<*> -> this as List<T>
     else -> kToList()
+}
+
+fun <T> Set<T>.asMutableSet(): MutableSet<T> = when(this){
+    is MutableSet<*> -> this as MutableSet<T>
+    else -> toMutableSet()
 }
 
 fun <T> listOf(size: Int, init: (index: Int) -> T): List<T>{

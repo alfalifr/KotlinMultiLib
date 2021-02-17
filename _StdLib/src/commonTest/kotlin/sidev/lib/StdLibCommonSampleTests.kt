@@ -3,8 +3,7 @@ package sidev.lib
 import sidev.lib.`val`.*
 import sidev.lib.algo.*
 import sidev.lib.collection.*
-import sidev.lib.collection.array.copy
-import sidev.lib.collection.array.forEach
+import sidev.lib.collection.array.*
 import sidev.lib.collection.common.*
 import sidev.lib.collection.lazy_list.CachedSequence
 import sidev.lib.collection.lazy_list.LazyHashMap
@@ -16,9 +15,10 @@ import sidev.lib.number.*
 import sidev.lib.progression.*
 import sidev.lib.reflex.getHashCode
 import sidev.lib.util.Locale
-import sidev.lib.collection.array.get
 import sidev.lib.structure.util.Filter
 import sidev.lib.text.*
+import kotlin.arrayOf
+import kotlin.intArrayOf
 import kotlin.math.exp
 import kotlin.math.log
 import kotlin.ranges.until
@@ -1933,4 +1933,70 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
         prin("============= print akhir ===============")
         list.notNullIterator().forEach { prin(it) }
     }
+
+    @Test
+    fun collTest(){
+        val arr1= arrayOf(1,2,3)
+        val arr2= arrayOf(3,2,1)
+
+        val arr3= arrayOf(arr1)
+        val arr4= arrayOf(arr2)
+
+        prin(arr1.contentEquals(arr2))
+
+        val ls1= listOf(1,2,3)
+        val ls2= listOf(3,2,1)
+
+        prin(ls1 == ls2)
+    }
+/*
+    @ExperimentalTime
+    @Test
+    fun collTest_2(){
+        val arr1= intArrayOf(1,2,3)
+        val arr2= intArrayOf(3,2,1)
+
+        val arr3= arrayOf(arr1)
+        val arr4= arrayOf(arr2)
+        val arr5= arrayOf(arr4)
+
+        prin((arr1.asList() as List<Any>).containsAll(arr2.asList()))
+
+        val t1= measureTime { prin(arr1.contentEquals(arr2, checkOrder = false)) }
+        prin(arr3.contentEquals(arr4, true, false))
+        prin(arr3.contentEquals(arr4, false, true))
+        prin("==== t1= $t1 ===")
+        prin(arr3.contentEquals(arr4, false, false))
+        prin(arr3.contentEquals(arr5, false, false))
+
+        val t2= measureTime { prin(arr1.ktContentEquals(arr2)) }
+        prin("t2= $t2")
+
+
+        val ls1= listOf(1,2,3)
+        val ls2= listOf(3,2,1)
+
+        prin(ls1 == ls2)
+
+        prin("+==========")
+        val arr6= arrayOf(1,2,3)
+        val arr7= arrayOf(3L,2L,1L)
+
+        val t3= measureTime { prin(arr6.contentEquals(arr7, checkOrder = false) { e1, e2 -> e1.compareTo(e2) == 0 }) }
+
+        prin("t3= $t3")
+
+
+        val arr8= intArrayOf(1,2,3)
+        val arr9= intArrayOf(3,2,2)
+
+        prin("===== arr8 & arr9 ======")
+        prin(arr8.contentEquals(arr9, false))
+
+        //val arrI= intArrayOf(1,3,4)
+        //val arrO= arrI as Array<Any>
+
+        //prin(arrO)
+    }
+ */
 }

@@ -1,8 +1,5 @@
 package sidev.lib.annotation
 
-/**
- * Penanda bahwa elemen yg di-anotasi adalah dummy.
- */
 @Target(
     AnnotationTarget.CLASS,
     AnnotationTarget.ANNOTATION_CLASS,
@@ -21,4 +18,4 @@ package sidev.lib.annotation
     AnnotationTarget.TYPEALIAS
 )
 @Retention(AnnotationRetention.SOURCE)
-annotation class Dummy(val msg: String = "")
+annotation class Warning(val msg: String)

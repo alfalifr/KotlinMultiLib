@@ -4,6 +4,7 @@ import sidev.lib.collection.toTypedArray
 import sidev.lib.console.prine
 import sidev.lib.exception.isUninitializedExc
 import kotlin.Exception
+
 //import kotlin.collections.toTypedArray as kToTypedArray
 
 /**
@@ -242,10 +243,6 @@ fun KTypeParameter.contentEquals(other: KTypeParameter, ignoreAcclamation: Boole
         && isReified == isReified
  */
 
-fun <T> Collection<T>.contentEquals(other: Collection<T>): Boolean = size == other.size && containsAll(other)
-fun <T> Collection<T>.contentEquals(other: Array<out T>): Boolean = size == other.size && containsAll(other.toList())
-fun <T> Array<T>.contentEquals(other: Array<out T>): Boolean = size == other.size && toList().containsAll(other.toList())
-fun <T> Array<T>.contentEquals(other: Collection<T>): Boolean = size == other.size && toList().containsAll(other)
 
 
 fun <T> T.equalsAny(vararg others: T): Boolean {
