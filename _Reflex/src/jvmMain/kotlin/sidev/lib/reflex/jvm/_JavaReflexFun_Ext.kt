@@ -20,10 +20,11 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-
+/*
+19 Feb 2021 -> Dipindah ke StdLib karena potesial untuk digunakan sering.
 @get:JvmName("isPrimitiveWrapper")
 val Class<*>.isPrimitiveWrapper: Boolean get()= //_JavaReflexFun_java.isPrimitiveWrapper(this)
-///*
+/// *
     when(this){
         Int::class.javaObjectType -> true
         Long::class.javaObjectType -> true

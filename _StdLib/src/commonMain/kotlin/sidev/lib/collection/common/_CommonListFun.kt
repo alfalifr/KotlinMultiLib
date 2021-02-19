@@ -187,7 +187,7 @@ fun <V> CommonList<*, V>.toCommonIndexedMutableList(): CommonIndexedMutableList<
 /** Fungsi delegasi untuk [Array]. */
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 inline operator fun <reified T> ArrayWrapper<T>.getValue(owner: Any?, prop: KProperty<*>): Array<T> = when(this){
-    is ArrayWrapperImpl -> toArray()
+    is ArrayWrapperImpl_Object -> toTypedArray()
 /*
         <28 Agustus 2020> => Refleksi tidak jadi dipake karena berat untuk operasi yg simpel.
         (this::class.si.declaredMemberProperties.find { it.name == "array" }!! as SiProperty1<ArrayWrapper<T>, Any?>)

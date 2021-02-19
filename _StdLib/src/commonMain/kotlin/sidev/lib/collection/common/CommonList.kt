@@ -3,16 +3,16 @@ package sidev.lib.collection.common
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
 import sidev.lib.annotation.Unused
-import sidev.lib.collection.copy
-import sidev.lib.collection.fastSort
-import sidev.lib.collection.newUniqueValueIn
-import sidev.lib.collection.removeValue
+import sidev.lib.collection.*
+import sidev.lib.collection.array.arrayCopyAll
+import sidev.lib.collection.array.contentSize
 import sidev.lib.console.prine
 import sidev.lib.console.prinw
 import sidev.lib.exception.ClassCastExc
 import sidev.lib.structure.data.MapEntry
 import sidev.lib.structure.data.MutableMapEntry
 import sidev.lib.reflex.clazz
+import kotlin.collections.toList
 
 /**
  * Struktur data yg menunjukan semua jenis tipe yg dapat menyimpan banyak data dg jenis [V] dan key [K].
@@ -24,7 +24,9 @@ interface CommonList<K, V> : CommonIterable<V>, List<V>, Map<K, V>, ArrayWrapper
      * sehingga key tidak tidak perlu disebutkan scr langsung saat operasi [set].
      */
     val isIndexed: Boolean
-/*
+    override val isPrimitive: Boolean
+        get() = false
+    /*
     /** Iterator yg berisi [Map.Entry] dari [K] dan [V]. Iterator ini berguna terutama bagi [Map]. */
     val keyValueIterator: Iterator<Map.Entry<K, V>>
  */
@@ -32,6 +34,7 @@ interface CommonList<K, V> : CommonIterable<V>, List<V>, Map<K, V>, ArrayWrapper
     override fun iterator(): Iterator<V>
     override fun copy(): CommonList<K, V> = copy(0)
     override fun copy(from: Int, until: Int, reversed: Boolean): CommonList<K, V>
+    override fun toArray(copyFirst: Boolean): Any
 }
 /** [CommonList] dg key merupakan [Int]. */
 interface CommonIndexedList<T> : CommonList<Int, T> {
@@ -158,6 +161,14 @@ internal open class CommonListImpl_List<V>(open val list: List<V>): CommonIndexe
     override fun subList(fromIndex: Int, toIndex: Int): List<V> = list.subList(fromIndex, toIndex)
     override fun copy(from: Int, until: Int, reversed: Boolean): CommonIndexedList<V> =
         CommonListImpl_List(list.copy(from, until, reversed))
+
+    override fun toArray(in_: Array<V>, copyFirst: Boolean): Any = in_.apply {
+        arrayCopyAll(list.toArray(), 0, in_, 0, in_.size)
+    }
+    override fun toArray(in_: Any, copyFirst: Boolean): Any = in_.apply {
+        arrayCopyAll(list.toArray(), 0, in_, 0, contentSize)
+    }
+    override fun toArray(copyFirst: Boolean): Any = list.toArray()
 }
 internal open class CommonMutableListImpl_List<V>(override val list: MutableList<V>)
     : CommonListImpl_List<V>(list), CommonIndexedMutableList<V> {
@@ -290,6 +301,14 @@ internal open class CommonListImpl_Map<K, V>(open val map: Map<K, V>): CommonLis
         @Unused("`Map` tidak memakai index, sehingga urutan tidak dapat dipastikan")
         reversed: Boolean
     ): CommonList<K, V> = CommonListImpl_Map(map.copy(from, until))
+
+    override fun toArray(in_: Array<V>, copyFirst: Boolean): Any = in_.apply {
+        arrayCopyAll(values.toArray(), 0, in_, 0, in_.size)
+    }
+    override fun toArray(in_: Any, copyFirst: Boolean): Any = in_.apply {
+        arrayCopyAll(values.toArray(), 0, in_, 0, contentSize)
+    }
+    override fun toArray(copyFirst: Boolean): Any = values.toArray()
 }
 internal open class CommonMutableListImpl_Map<K, V>(override val map: MutableMap<K, V>)
     : CommonListImpl_Map<K, V>(map), CommonMutableList<K, V> {

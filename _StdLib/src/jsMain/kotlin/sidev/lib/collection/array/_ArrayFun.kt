@@ -14,3 +14,24 @@ actual fun <T> arrayCopy(
     for(i in 0 until length)
         dest[destStart+ i]= src[srcStart +i]
 }
+
+
+//TODO: 20 Feb 2021 -> Tambah pengecekan untuk mengecek tipe primitif di JS.
+actual fun arrayCopyAll(
+    src: Any, srcStart: Int,
+    dest: Any, destStart: Int,
+    length: Int
+){
+    when {
+        src is Array<*> -> {
+            when {
+                dest is Array<*> -> {
+                    dest as Array<Any?>
+                    for(i in 0 until length){
+                        dest[destStart+ i]= src[srcStart +i]
+                    }
+                }
+            }
+        }
+    }
+}

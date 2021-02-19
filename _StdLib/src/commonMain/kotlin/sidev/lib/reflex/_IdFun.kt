@@ -1,6 +1,8 @@
 package sidev.lib.reflex
 
-import sidev.lib.collection.maxSize
+import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.collection.common.ArrayWrapper
+import sidev.lib.collection.common.asWrapped
 import sidev.lib.collection.toTypedArray
 
 /*
@@ -35,29 +37,101 @@ fun getPairHashCode(vararg fromObjList: List<Any?>, calculateOrder: Boolean= tru
 }
  */
 
-fun getHashCode(vararg fromObj: Any?, calculateOrder: Boolean= true): Int{
+fun getHashCode(
+    vararg fromObj: Any?,
+    calculateOrder: Boolean= true,
+    nestedCalculation: Boolean = true,
+    ignoreLevel: Boolean= true,
+    level: Int= 0
+): Int{
     if(fromObj.isEmpty())
         return 0
     var result = 0 //fromObj.first().hashCode()
     val factor= if(calculateOrder) 31 else 1
-    for(obj in fromObj)
-        result = (factor * result) + when(obj){
-            is Iterable<*> -> getContentHashCode(obj, calculateOrder)
-            is Array<*> -> getHashCode(*obj, calculateOrder = calculateOrder)
-            is Map<*, *> -> getContentHashCode(obj, calculateOrder)
-            else -> obj.hashCode()
+    if(nestedCalculation) {
+        val levelFactor= if(ignoreLevel) 0 else 31
+        for(obj in fromObj){
+            result = (factor * result) + when(obj){
+                is Iterable<*> -> getContentHashCode(obj, calculateOrder)
+                is Array<*> -> getHashCode(
+                    *obj, calculateOrder = calculateOrder,
+                    nestedCalculation = nestedCalculation,
+                    ignoreLevel = ignoreLevel,
+                    level = level+1
+                )
+                //is ArrayWrapper<*> -> getContentHashCode(obj, calculateOrder)
+                is Map<*, *> -> getContentHashCode(obj, calculateOrder)
+                is ByteArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is ShortArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is IntArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is LongArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is FloatArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is DoubleArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is BooleanArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                is CharArray -> getContentHashCode(obj.asWrapped(false), calculateOrder, nestedCalculation, ignoreLevel, level+1)
+                else -> when {
+                    obj == null -> 0
+                    obj::class.simpleName == Array::class.simpleName ->
+                        @Suppress(SuppressLiteral.UNCHECKED_CAST)
+                        getHashCode(
+                            *(obj as Array<Any?>),
+                            calculateOrder = calculateOrder,
+                            nestedCalculation = nestedCalculation,
+                            ignoreLevel = ignoreLevel,
+                            level = level+1
+                        )
+                    else -> obj.hashCode()
+                }
+            }
+            result += levelFactor * level
         }
+    } else {
+        for(obj in fromObj)
+            result = (factor * result) + obj.hashCode()
+    }
     return result
 }
 
-fun getContentHashCode(iterable: Iterable<Any?>, calculateOrder: Boolean= true): Int =
-    getHashCode(*iterable.toTypedArray(), calculateOrder = calculateOrder)
-
-fun getContentHashCode(map: Map<out Any?, Any?>, calculateOrder: Boolean= true): Int =
+fun getContentHashCode(
+    iterable: Iterable<Any?>,
+    calculateOrder: Boolean= true,
+    nestedCalculation: Boolean = true,
+    ignoreLevel: Boolean= true,
+    level: Int= 0
+): Int =
     getHashCode(
-        *map.iterator().run { Array(map.size){ next().getContentHashCode(calculateOrder) } },
-        calculateOrder = calculateOrder
+        *iterable.toTypedArray(),
+        calculateOrder = calculateOrder,
+        nestedCalculation = nestedCalculation,
+        ignoreLevel = ignoreLevel,
+        level = level
     )
 
-fun Map.Entry<*, *>.getContentHashCode(calculateOrder: Boolean= true): Int =
-    getHashCode(key, value, calculateOrder = calculateOrder)
+fun getContentHashCode(
+    map: Map<out Any?, Any?>,
+    calculateOrder: Boolean= true,
+    nestedCalculation: Boolean = true,
+    ignoreLevel: Boolean= true,
+    level: Int= 0
+): Int =
+    getHashCode(
+        *map.iterator().run { Array(map.size){ next().getContentHashCode(calculateOrder) } },
+        calculateOrder = calculateOrder,
+        nestedCalculation = nestedCalculation,
+        ignoreLevel = ignoreLevel,
+        level = level
+    )
+
+fun Map.Entry<*, *>.getContentHashCode(
+    calculateOrder: Boolean= true,
+    nestedCalculation: Boolean = true,
+    ignoreLevel: Boolean= true,
+    level: Int= 0
+): Int =
+    getHashCode(
+        key, value,
+        calculateOrder = calculateOrder,
+        nestedCalculation = nestedCalculation,
+        ignoreLevel = ignoreLevel,
+        level = level
+    )

@@ -1,14 +1,16 @@
+@file:OptIn(ExperimentalStdlibApi::class)
 package sidev.lib.collection.array
 
 import sidev.lib.`val`.SuppressLiteral
 import sidev.lib.annotation.Unsafe
-import sidev.lib.collection.countDuplication
+import sidev.lib.collection.common.ArrayWrapper
+import sidev.lib.collection.shallowUnorderedContentEquals
+import sidev.lib.exception.ClassCastExc
+import sidev.lib.exception.IllegalAccessExc
 import sidev.lib.progression.asEndExclusive
 import sidev.lib.structure.data.value.Var
-import sidev.lib.reflex.clazz
-import sidev.lib.reflex.isPrimitiveArray
+import sidev.lib.structure.prop.SizeProp
 import kotlin.collections.contentEquals as ktContentEquals_
-import kotlin.collections.contentDeepEquals as ktContentDeepEquals_
 import kotlin.jvm.JvmOverloads
 
 /**
@@ -20,6 +22,18 @@ import kotlin.jvm.JvmOverloads
 expect fun <T> arrayCopy(
     src: Array<T>, srcStart: Int,
     dest: Array<T>, destStart: Int,
+    length: Int
+)
+
+/**
+ * Fungsi yang melakukan copy array scr native.
+ *
+ * [length] adalah banyaknya elemen yg akan di-copy dari [src] yang dihitung dari index [srcStart]
+ * menuju [dest] pada index yg dimulai dari [destStart].
+ */
+expect fun arrayCopyAll(
+    src: Any, srcStart: Int,
+    dest: Any, destStart: Int,
     length: Int
 )
 
@@ -777,566 +791,23 @@ internal fun Any.toGeneralArray(): Array<Any>? = when(this){
 }
 
 
-/*
-TODO <20 Jan 2021> -> Blum fix, nti dibetulkan.
-/**
- * [immediatePredicate] digunakan untuk mengecek elemen saat [shallowCheck] == `true`.
- * [nestedPredicate] digunakan untuk mengecek elemen saat [shallowCheck] == cfalse.
- *   Param ini berguna untuk diteruskan ke nested element karena tipe datanya berbeda dengan immediate element.
- */
-fun <T> Collection<T>.contentEquals(
-    other: Collection<T>,
-    shallowCheck: Boolean = true,
-    checkOrder: Boolean = true,
-    nestedPredicate: ((e1: Any?, e2: Any?) -> Boolean)?= null, // Untuk pengecekan terhadap elemen trahir jika elemen bkn brupa [T]
-    immediatePredicate: ((e1: T, e2: T) -> Boolean)?= null
-): Boolean {
-    return size == other.size && if(shallowCheck) {
-        if(checkOrder) {
-            if(immediatePredicate == null) this == other
-            else {
-                val otherItr= other.iterator()
-                for(e in this)
-                    if(!immediatePredicate(e, otherItr.next()))
-                        return false
-                true
-            }
-        } else {
-            if(immediatePredicate == null) {
-                val thisMapCount= countDuplication()
-                val otherMapCount= other.countDuplication()
-                val thisKeys= thisMapCount.keys
-                val otherKeys= otherMapCount.keys
-                if(thisKeys.size != otherKeys.size)
-                    return false
-                if(thisKeys != otherKeys)
-                    return false
-                for(k in thisKeys){
-                    if(thisMapCount[k] != otherMapCount[k])
-                        return false
-                }
-                true
-            } else {
-                for(e in this)
-                    if(!other.any { immediatePredicate(e, it) })
-                        return false
-                true
-            }
-        }
-    } else {
-        if(checkOrder){
-            val otherItr= other.iterator()
-            for(e in this){
-                val otherE= otherItr.next()
-                if(!when(e){
-                        is Collection<*> -> when(otherE){
-                            is Collection<*> -> e.contentEquals(otherE, shallowCheck, checkOrder, nestedPredicate)
-                            is Array<*> -> e.contentEquals(otherE, shallowCheck, checkOrder, nestedPredicate)
-                            else -> {
-                                if(otherE?.clazz?.isPrimitiveArray == true)
-                                    e.contentEquals(otherE.toGeneralArray()!!, shallowCheck, checkOrder, nestedPredicate)
-                                else nestedPredicate?.invoke(e, otherE) ?: (e == otherE)
-                            }
-                        }
-                        is Array<*> -> when(otherE){
-                            is Collection<*> -> e.contentEquals(otherE, shallowCheck, checkOrder, nestedPredicate)
-                            is Array<*> -> e.contentEquals(otherE, shallowCheck, checkOrder, nestedPredicate)
-                            else -> {
-                                if(otherE?.clazz?.isPrimitiveArray == true)
-                                    e.contentEquals(otherE.toGeneralArray()!!, shallowCheck, checkOrder, nestedPredicate)
-                                else nestedPredicate?.invoke(e, otherE) ?: (e == otherE)
-                            }
-                        }
-                        else -> {
-                            if(e?.clazz?.isPrimitiveArray == true
-                                && otherE?.clazz?.isPrimitiveArray == true)
-                                e.toGeneralArray()!!.contentEquals(
-                                    otherE.toGeneralArray()!!, shallowCheck, checkOrder, nestedPredicate
-                                )
-                            else nestedPredicate?.invoke(e, otherE) ?: (e == otherE)
-                        }
-                    }) return false
-            }
-            true
-        } else {
-            for(e in this){
-                if(!when(e){
-                        is Collection<*> -> other.any {
-                            when(it){
-                                is Collection<*> -> e.contentEquals(it, shallowCheck, checkOrder, nestedPredicate)
-                                is Array<*> -> e.contentEquals(it, shallowCheck, checkOrder, nestedPredicate)
-                                else -> {
-                                    if(it?.clazz?.isPrimitiveArray == true)
-                                        e.contentEquals(it.toGeneralArray()!!, shallowCheck, checkOrder, nestedPredicate)
-                                    else nestedPredicate?.invoke(e, it) ?: (e == it)
-                                }
-                            }
-                        }
-                        is Array<*> -> other.any {
-                            when(it){
-                                is Collection<*> -> e.contentEquals(it, shallowCheck, checkOrder, nestedPredicate)
-                                is Array<*> -> e.contentEquals(it, shallowCheck, checkOrder, nestedPredicate)
-                                else -> {
-                                    if(it?.clazz?.isPrimitiveArray == true)
-                                        e.contentEquals(it.toGeneralArray()!!, shallowCheck, checkOrder, nestedPredicate)
-                                    else nestedPredicate?.invoke(e, it) ?: (e == it)
-                                }
-                            }
-                        }
-                        else -> {
-                            if(e?.clazz?.isPrimitiveArray == true){
-                                val eArr= e.toGeneralArray()!!
-                                other.any {
-                                    if(it?.clazz?.isPrimitiveArray == true)
-                                        eArr.contentEquals(it.toGeneralArray()!!, shallowCheck, checkOrder, nestedPredicate)
-                                    else nestedPredicate?.invoke(e, it) ?: (e == it)
-                                }
-                            } else other.any {
-                                nestedPredicate?.invoke(e, it) ?: (e == it)
-                            }
-                        }
-                    }) return false
-            }
-            true
-        }
-    }
-}
-fun <T> Collection<T>.contentEquals(
-    other: Array<out T>,
-    shallowCheck: Boolean = true,
-    checkOrder: Boolean = true,
-    nestedPredicate: ((e1: Any?, e2: Any?) -> Boolean)?= null, // Untuk pengecekan terhadap elemen trahir jika elemen bkn brupa [T]
-    immediatePredicate: ((e1: T, e2: T) -> Boolean)?= null
-): Boolean {
-    return size == other.size && if(shallowCheck) {
-        if(checkOrder) {
-            val otherItr= other.iterator()
-            if(immediatePredicate == null){
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e != otherE)
-                        return false
-                }
-            } else {
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(!immediatePredicate(e, otherE))
-                        return false
-                }
-            }
-            true
-        } else {
-            if(immediatePredicate == null) containsAll(other.asList())
-            else {
-                for(e in this)
-                    if(!other.any { immediatePredicate(e, it) })
-                        return false
-                true
-            }
-        }
-    } else {
-        contentEquals(other.asList(), shallowCheck, checkOrder, nestedPredicate, immediatePredicate)
-    }
-}
-fun <T> Array<out T>.contentEquals(
-    other: Array<out T>,
-    shallowCheck: Boolean = true,
-    checkOrder: Boolean = true,
-    nestedPredicate: ((e1: Any?, e2: Any?) -> Boolean)?= null, // Untuk pengecekan terhadap elemen trahir jika elemen bkn brupa [T]
-    immediatePredicate: ((e1: T, e2: T) -> Boolean)?= null
-): Boolean {
-    return size == other.size && if(shallowCheck) {
-        if(checkOrder) {
-            if(immediatePredicate == null) ktContentEquals_(other)
-            else {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(!immediatePredicate(e, otherE))
-                        return false
-                }
-                true
-            }
-        } else {
-            if(immediatePredicate == null) asList().containsAll(other.asList())
-            else {
-                for(e in this)
-                    if(!other.any { immediatePredicate(e, it) })
-                        return false
-                true
-            }
-        }
-    } else {
-        if(checkOrder && nestedPredicate == null) ktContentDeepEquals_(other)
-        else asList().contentEquals(other.asList(), shallowCheck, checkOrder, nestedPredicate, immediatePredicate)
-    }
-}
-fun <T> Array<out T>.contentEquals(
-    other: Collection<T>,
-    shallowCheck: Boolean = true,
-    checkOrder: Boolean = true,
-    nestedPredicate: ((e1: Any?, e2: Any?) -> Boolean)?= null, // Untuk pengecekan terhadap elemen trahir jika elemen bkn brupa [T]
-    immediatePredicate: ((e1: T, e2: T) -> Boolean)?= null
-): Boolean {
-    return size == other.size && if(shallowCheck) {
-        if(checkOrder) {
-            val otherItr= other.iterator()
-            if(immediatePredicate == null){
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e != otherE)
-                        return false
-                }
-            } else {
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(!immediatePredicate(e, otherE))
-                        return false
-                }
-            }
-            true
-        } else {
-            if(immediatePredicate == null) asList().containsAll(other)
-            else {
-                for(e in this)
-                    if(!other.any { immediatePredicate(e, it) })
-                        return false
-                true
-            }
-        }
-    } else {
-        asList().contentEquals(other, shallowCheck, checkOrder, nestedPredicate, immediatePredicate)
-    }
-}//= size == other.size && asList().containsAll(other)
-
-/*
-internal fun Any.arrayContentEquals(
-    other: Any,
-    shallowCheck: Boolean = true,
-    checkOrder: Boolean = true
-): Boolean {
-    return when(this){
-        is Array<*> -> contentEquals(when(other){
-            is Array<*> -> other
-            is ByteArray -> other.toGeneral()
-            is ShortArray -> other.toGeneral()
-            is IntArray -> other.toGeneral()
-            is LongArray -> other.toGeneral()
-            is FloatArray -> other.toGeneral()
-            is DoubleArray -> other.toGeneral()
-            is BooleanArray -> other.toGeneral()
-            is CharArray -> other.toGeneral()
-            else -> return false
-        }, shallowCheck, checkOrder)
-        is ByteArray -> if(other is ByteArray) contentEquals(other, checkOrder)
-        else toGeneral().contentEquals(when(other) {
-            is Array<*> -> other
-            is ByteArray -> other.toGeneral()
-            is ShortArray -> other.toGeneral()
-            is IntArray -> other.toGeneral()
-            is LongArray -> other.toGeneral()
-            is FloatArray -> other.toGeneral()
-            is DoubleArray -> other.toGeneral()
-            is BooleanArray -> other.toGeneral()
-            is CharArray -> other.toGeneral()
-            else -> return false
-        }, shallowCheck, checkOrder)
-        is ShortArray -> if(other is ShortArray) contentEquals(other, checkOrder)
-        else toGeneral().contentEquals(when(other) {
-            is Array<*> -> other
-            is ByteArray -> other.toGeneral()
-            is ShortArray -> other.toGeneral()
-            is IntArray -> other.toGeneral()
-            is LongArray -> other.toGeneral()
-            is FloatArray -> other.toGeneral()
-            is DoubleArray -> other.toGeneral()
-            is BooleanArray -> other.toGeneral()
-            is CharArray -> other.toGeneral()
-            else -> return false
-        }, shallowCheck, checkOrder)
-        is IntArray -> if(other is IntArray) contentEquals(other, checkOrder)
-        else toGeneral().contentEquals(when(other) {
-            is Array<*> -> other
-            is ByteArray -> other.toGeneral()
-            is ShortArray -> other.toGeneral()
-            is IntArray -> other.toGeneral()
-            is LongArray -> other.toGeneral()
-            is FloatArray -> other.toGeneral()
-            is DoubleArray -> other.toGeneral()
-            is BooleanArray -> other.toGeneral()
-            is CharArray -> other.toGeneral()
-            else -> return false
-        }, shallowCheck, checkOrder)
-        is LongArray -> other.toGeneral()
-        is FloatArray -> other.toGeneral()
-        is DoubleArray -> other.toGeneral()
-        is BooleanArray -> other.toGeneral()
-        is CharArray -> other.toGeneral()
-    }
-}
-
-// */
-
-internal fun ByteArray.numberArrayEquals(other: Any, checkOrder: Boolean = true): Boolean {
-    return when(other){
-        is ByteArray -> {
-            if(checkOrder) ktContentEquals_(other)
-            else {
-                for(e in this){
-                    if(e !in other)
-                        return false
-                }
-                true
-            }
-        }
-        is ShortArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is IntArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is LongArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        else -> false
-    }
-}
-internal fun ShortArray.numberArrayEquals(other: Any, checkOrder: Boolean = true): Boolean {
-    return when(other){
-        is ShortArray -> {
-            if(checkOrder) ktContentEquals_(other)
-            else {
-                for(e in this){
-                    if(e !in other)
-                        return false
-                }
-                true
-            }
-        }
-        is ByteArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is IntArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is LongArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        else -> false
-    }
-}
-internal fun IntArray.numberArrayEquals(other: Any, checkOrder: Boolean = true): Boolean {
-    return when(other){
-        is IntArray -> {
-            if(checkOrder) ktContentEquals_(other)
-            else {
-                for(e in this){
-                    if(e !in other)
-                        return false
-                }
-                true
-            }
-        }
-        is ByteArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is ShortArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is LongArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        else -> false
-    }
-}
-
-internal fun LongArray.numberArrayEquals(other: Any, checkOrder: Boolean = true): Boolean {
-    return when(other){
-        is LongArray -> {
-            if(checkOrder) ktContentEquals_(other)
-            else {
-                for(e in this){
-                    if(e !in other)
-                        return false
-                }
-                true
-            }
-        }
-        is ByteArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is ShortArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        is IntArray -> {
-            if(checkOrder) {
-                val otherItr= other.iterator()
-                for(e in this){
-                    val otherE= otherItr.next()
-                    if(e.compareTo(otherE) != 0)
-                        return false
-                }
-            } else {
-                for(e in this)
-                    if(!other.any { e.compareTo(it) == 0 })
-                        return false
-            }
-            true
-        }
-        else -> false
-    }
-}
-
- */
-
 fun ByteArray.contentEquals(other: ByteArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList()) //asList().containsAll(other.asList())
 fun ShortArray.contentEquals(other: ShortArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
 fun IntArray.contentEquals(other: IntArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
 fun LongArray.contentEquals(other: LongArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
 fun FloatArray.contentEquals(other: FloatArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
 fun DoubleArray.contentEquals(other: DoubleArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
 fun BooleanArray.contentEquals(other: BooleanArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
 fun CharArray.contentEquals(other: CharArray, checkOrder: Boolean = true): Boolean =
-    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().containsAll(other.asList())
+    size == other.size && if(checkOrder) ktContentEquals_(other) else asList().shallowUnorderedContentEquals(other.asList())
+
 
 fun <T> Array<out T>.ktContentEquals(other: Array<out T>): Boolean = ktContentEquals_(other)
 fun ByteArray.ktContentEquals(other: ByteArray): Boolean = ktContentEquals_(other)
@@ -1346,3 +817,31 @@ fun FloatArray.ktContentEquals(other: FloatArray): Boolean = ktContentEquals_(ot
 fun DoubleArray.ktContentEquals(other: DoubleArray): Boolean = ktContentEquals_(other)
 fun BooleanArray.ktContentEquals(other: BooleanArray): Boolean = ktContentEquals_(other)
 fun CharArray.ktContentEquals(other: CharArray): Boolean = ktContentEquals_(other)
+
+
+internal val Any.contentSize: Int get()= when(this){
+    is ByteArray -> size
+    is ShortArray -> size
+    is IntArray -> size
+    is LongArray -> size
+    is FloatArray -> size
+    is DoubleArray -> size
+    is BooleanArray -> size
+    is CharArray -> size
+    is Collection<*> -> size
+    is SizeProp -> size
+    is Array<*> -> size
+    else -> {
+        if(this::class.simpleName == Array::class.simpleName) try {
+            @Suppress(SuppressLiteral.UNCHECKED_CAST)
+            (this as Array<Any?>).size
+        } catch (e: ClassCastException){
+            throw ClassCastExc(
+                fromClass = this::class,
+                toClass = Array::class
+            )
+        } else throw IllegalAccessExc(
+            msg = "`this` ($this) bukan merupakan Array<*>"
+        )
+    }
+}

@@ -1,7 +1,9 @@
 package sidev.lib.text
 
+import sidev.lib.collection.joinToString
 import sidev.lib.console.prine
 import sidev.lib.exception.IllegalArgExc
+import sidev.lib.reflex.isPrimitiveArray
 import kotlin.jvm.JvmOverloads
 import kotlin.math.ceil
 
@@ -221,5 +223,32 @@ private fun CharSequence.bufferedGetPrefix(
         val decBuff = ceil(buffer - buffer * decay).also { prine("ceil = $it") }.toInt()
         val sentBuff = if(direction < 0) decBuff else decBuff -1
         bufferedGetPrefix(long, start, i - decBuff, sentBuff, decay, -1)
+    }
+}
+
+
+fun Any?.toBeautyString(): String = when(this){
+    null -> "null"
+    is ByteArray -> joinToString(prefix = "[", postfix = "]")
+    is ShortArray -> joinToString(prefix = "[", postfix = "]")
+    is IntArray -> joinToString(prefix = "[", postfix = "]")
+    is LongArray -> joinToString(prefix = "[", postfix = "]")
+    is FloatArray -> joinToString(prefix = "[", postfix = "]")
+    is DoubleArray -> joinToString(prefix = "[", postfix = "]")
+    is BooleanArray -> joinToString(prefix = "[", postfix = "]")
+    is CharArray -> joinToString(prefix = "[", postfix = "]")
+    is Set<*> -> joinToString(prefix = "{", postfix = "}") { it.toBeautyString() }
+    is Map<*, *> -> joinToString(prefix = "{", postfix = "}") { it.toBeautyString() }
+    is List<*> -> joinToString(prefix = "[", postfix = "]") { it.toBeautyString() }
+    is Collection<*> -> joinToString { it.toBeautyString() }
+    //is Array<*> ->
+    else -> {
+        prine("toBeautyString() else , this::class.simpleName = ${this::class.simpleName} this::class= ${this::class}")
+        if(this::class.simpleName == Array::class.simpleName) (this as Array<*>).joinToString(prefix = "[", postfix = "]") {
+            prine("toBeautyString() this is Array<*> , it= $it")
+            if(it == null || (it !is Array<*> && !it::class.isPrimitiveArray)) it.toString()
+            else it.toBeautyString()
+        } else
+            toString()
     }
 }

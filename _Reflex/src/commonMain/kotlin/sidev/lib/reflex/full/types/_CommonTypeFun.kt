@@ -1,10 +1,11 @@
 package sidev.lib.reflex.full.types
 
-import sidev.lib.check.contentEquals
+//import sidev.lib.check.contentEquals
 import sidev.lib.collection.sequence.flattenToNested
 import sidev.lib.collection.sequence.withLevel
 import sidev.lib.collection.toArrayOfNotNul
 import sidev.lib.`val`.SuppressLiteral
+import sidev.lib.collection.contentEquals
 import sidev.lib.collection.intersect
 import sidev.lib.collection.leveledIterator
 import sidev.lib.reflex.SiClass
@@ -60,7 +61,7 @@ fun getCommonType(vararg types: SiType): SiType {
         // Contoh kasus ini adalah Int, String, dan Double di mana common-class adalah Comparable<T> di mana T merupakan cyclic type-param.
         // Jika scr program, foundTypeArgs == [Int, String, Double] di mana jika dipanggil fungsi [getCommonType] ini lagi,
         // maka akan terjadi infinite loop.
-        if(foundTypeArgs.flatten().mapNotNull{ it.type }.contentEquals(usedTypes))
+        if(foundTypeArgs.flatten().mapNotNull{ it.type }.contentEquals(usedTypes, checkOrder = false))
             commonTypeArgs += commonClass.supertypes[0].simpleTypeProjection
         else{
             for(typeArgs in foundTypeArgs.leveledIterator){

@@ -1,4 +1,4 @@
-@file:JvmName("_JavaReflexFun")
+@file:JvmName("_JavaReflexFunJvm")
 package sidev.lib.reflex.jvm
 
 import sidev.lib.exception.IllegalStateExc
@@ -52,3 +52,35 @@ val Class<*>.rootPackage: Package
         if(foundPkgs.size == 1) return foundPkgs[0]
         return foundPkgs.reduce { acc, p -> if(acc.name.length <= p.name.length) acc else p }
     }
+
+
+@get:JvmName("isPrimitiveWrapper")
+val Class<*>.isPrimitiveWrapper: Boolean get()= //_JavaReflexFun_java.isPrimitiveWrapper(this)
+///*
+    when(this){
+        Int::class.javaObjectType -> true
+        Long::class.javaObjectType -> true
+//        String::class.javaObjectType -> true
+        Float::class.javaObjectType -> true
+        Double::class.javaObjectType -> true
+        Char::class.javaObjectType -> true
+        Short::class.javaObjectType -> true
+        Boolean::class.javaObjectType -> true
+        Byte::class.javaObjectType -> true
+        else -> false
+/*
+        Integer::class.javaObjectType -> true
+        java.lang.Long::class.javaObjectType -> true
+        java.lang.Float::class.javaObjectType -> true
+        java.lang.Double::class.javaObjectType -> true
+        Character::class.javaObjectType -> true
+        java.lang.Short::class.javaObjectType -> true
+        java.lang.Boolean::class.javaObjectType -> true
+        java.lang.Byte::class.javaObjectType -> true
+        else -> false
+*/
+    }
+
+@get:JvmName("isPrimitiveLike")
+val Class<*>.isPrimitiveLike: Boolean
+    get()= isPrimitive || isPrimitiveWrapper

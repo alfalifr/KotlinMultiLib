@@ -3,7 +3,7 @@ package sidev.lib.structure.data
 import sidev.lib.structure.prop.SizeProp
 
 
-interface FiniteIndexable<T>: Indexable<T>, SizeProp
+interface FiniteIndexable<out T>: Indexable<T>, SizeProp
 
 internal class ArrayIndexable<T>(val array: Array<T>): FiniteIndexable<T> {
     constructor(size: Int, init: (Int) -> T): this(Array<Any?>(size, init) as Array<T>)

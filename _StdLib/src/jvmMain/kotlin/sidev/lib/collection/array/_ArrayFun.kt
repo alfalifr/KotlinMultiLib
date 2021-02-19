@@ -13,3 +13,10 @@ actual fun <T> arrayCopy(
     dest: Array<T>, destStart: Int,
     length: Int
 ) = System.arraycopy(src, srcStart, dest, destStart, length)
+
+
+actual fun arrayCopyAll(
+    src: Any, srcStart: Int,
+    dest: Any, destStart: Int,
+    length: Int
+) = System.arraycopy(src, srcStart, dest, destStart, length)

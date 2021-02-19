@@ -1949,7 +1949,8 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
 
         prin(ls1 == ls2)
     }
-/*
+///*
+    @ExperimentalStdlibApi
     @ExperimentalTime
     @Test
     fun collTest_2(){
@@ -1960,12 +1961,19 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
         val arr4= arrayOf(arr2)
         val arr5= arrayOf(arr4)
 
+        prin("arr4 == Array::class= ${arr4 == Array::class}")
+
         prin((arr1.asList() as List<Any>).containsAll(arr2.asList()))
 
         val t1= measureTime { prin(arr1.contentEquals(arr2, checkOrder = false)) }
         prin(arr3.contentEquals(arr4, true, false))
         prin(arr3.contentEquals(arr4, false, true))
         prin("==== t1= $t1 ===")
+
+    prin("getHashCode(arr3, calculateOrder = false)= ${getHashCode(arr3, calculateOrder = false, ignoreLevel = false)}")
+    prin("getHashCode(arr4, calculateOrder = false)= ${getHashCode(arr4, calculateOrder = false, ignoreLevel = false)}")
+    prin("getHashCode(arr5, calculateOrder = false)= ${getHashCode(arr5, calculateOrder = false, ignoreLevel = false)}")
+
         prin(arr3.contentEquals(arr4, false, false))
         prin(arr3.contentEquals(arr5, false, false))
 
@@ -1979,12 +1987,19 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
         prin(ls1 == ls2)
 
         prin("+==========")
-        val arr6= arrayOf(1,2,3)
-        val arr7= arrayOf(3L,2L,1L)
+        val arr6= arrayOf(1,2,3).asList()
+        val arr7= arrayOf(3L,2L,1L).asList()
 
-        val t3= measureTime { prin(arr6.contentEquals(arr7, checkOrder = false) { e1, e2 -> e1.compareTo(e2) == 0 }) }
+        val t3= measureTime { prin(arr6.shallowContentEquals(arr7, checkOrder = false) { it.toInt() })  } //, { e1, e2 -> e1.compareTo(e2) == 0 }
 
         prin("t3= $t3")
+
+        val arr10= arrayOf(1,2,3).asList()
+        val arr11= arrayOf(1L,2L,3L).asList()
+
+        val t4= measureTime { prin(arr10.shallowContentEquals(arr11) { it.toInt() })  } //, { e1, e2 -> e1.compareTo(e2) == 0 }
+
+        prin("t4= $t4")
 
 
         val arr8= intArrayOf(1,2,3)
@@ -1998,5 +2013,5 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
 
         //prin(arrO)
     }
- */
+// */
 }
