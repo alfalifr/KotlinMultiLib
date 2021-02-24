@@ -18,7 +18,7 @@ open class Exc(relatedClass: KClass<*>?, private val commonMsg: String= "", priv
         "======================================================================= "
     ), CodeProp {
 //    override var cause: Throwable?= cause
-    override var message: String?= null
+    override val message: String?= null
 //        get()= field ?: super.message
         get()= field ?: "=================== \n" +
                         "======================================================================= \n" +
