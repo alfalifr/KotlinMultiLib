@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
     dependencies {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
@@ -22,7 +24,7 @@ task initFile{
 
 def GROUP_ID= 'sidev.lib.kotlin' //'sidev.lib.kotlin.multi'
 def ARTIFACT_ID= 'KtReflex'
-def BINTRAY_REPOSITORY= 'SidevLib'
+def PKG_REPOSITORY= 'SidevLib_Private'
 def BINTRAY_ORGINIZATION= ""
 def ISSUE_URL= ""
 def SITE_URL= ""
@@ -198,7 +200,7 @@ bintray {
     publish = false
 
     pkg {
-        repo = BINTRAY_REPOSITORY
+        repo = PKG_REPOSITORY
         name = ARTIFACT_ID
         userOrg = BINTRAY_ORGINIZATION
         licenses = ['Apache-2.0']
@@ -227,8 +229,25 @@ bintrayUpload.doFirst {
     }
 }
 
+
+///*
 task modifySource{
     doFirst {
+/*
+        publishing.publications.forEach {
+            (it as MavenPublication).artifacts.removeAll {
+                def willBeRemoved=
+                        it.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated" &&
+                                it.classifier == "sources"
+                if(willBeRemoved){
+                    //def file= (File) arti.file
+                    //println "artifact $arti file is about to be changed: file in ${file.path}"
+                    println "artifact $it is removed"
+                }
+            }
+        }
+// */
+///*
         project.publishing.publications.all {
             for(arti in it.artifacts){
                 if(arti.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated"
@@ -248,6 +267,7 @@ task modifySource{
                 }
             }
         }
+// */
     }
 }
 // */
@@ -257,3 +277,185 @@ task modifySource{
 modifySource.dependsOn publishToMavenLocal
 bintrayUpload.dependsOn publishToMavenLocal
 bintrayUpload.dependsOn modifySource
+
+
+/*
+========================
+Github Package
+========================
+ */
+
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            /** Configure path of your package repository on Github
+             *  Replace GITHUB_USERID with your/organisation Github userID and REPOSITORY with the repository name on GitHub
+             */
+            //this@maven.
+            url = uri("https://maven.pkg.github.com/$githubUser/$PKG_REPOSITORY") // Github Package
+            credentials {
+                //Fetch these details from the properties file or from Environment variables
+                username = githubUser //githubProperties.get("gpr.usr") as String? ?: System.getenv("GPR_USER")
+                password = githubApiKey //githubProperties.get("gpr.key") as String? ?: System.getenv("GPR_API_KEY")
+            }
+            //publish = false
+        }
+    }
+}
+
+
+/*
+publish.doFirst {
+    publications = publishing.publications.collect {
+        it.name
+    }.findAll {
+        it != "kotlinMultiplatform"
+    }
+    println("publish.doFirst.publications() $publications")
+}
+ */
+
+generateMetadataFileForKotlinMultiplatformPublication.enabled = false
+generatePomFileForKotlinMultiplatformPublication.enabled = false
+publishKotlinMultiplatformPublicationToGitHubPackagesRepository.enabled = false
+publishKotlinMultiplatformPublicationToMavenLocal.enabled = false
+compileKotlinMetadata.enabled = false
+
+/*
+publishJsPublicationToGitHubPackagesRepository.doFirst {
+}
+ */
+/*
+publishJvmPublicationToGitHubPackagesRepository.doFirst {
+    deleteGithubPkgVersion(publications)
+}
+ */
+/*
+publishing.publications.forEach {
+    it as MavenPublication
+}
+ */
+
+//import java.net.URL as URL
+task deleteAllPkg {
+    doFirst {
+        publishing.publications.forEach {
+            it.groupId = GROUP_ID
+            if (it.name.contains('metadata')) {
+                it.artifactId = "${ARTIFACT_ID.toLowerCase()}"
+            } else if(it.name == "kotlinMultiplatform") {
+                println("afterEvaluate() artifactId= ${it.artifactId}")
+                it.artifactId = "${ARTIFACT_ID.toLowerCase()}-kotlin_multiplatform"
+            } else {
+                println("afterEvaluate() ELSE artifactId= ${it.artifactId}")
+                it.artifactId = "${ARTIFACT_ID.toLowerCase()}-${it.name}"
+            }
+            deleteGithubPkgVersion(it as MavenPublication)
+        }
+    }
+}
+
+def deleteGithubPkgVersion(MavenPublication pub){
+    //def urlStr= "https://api.github.com/user/packages/maven/${pub.groupId}.${pub.artifactId}/versions/${pub.version}"
+    def urlStr= "https://api.github.com/graphql"
+    println("Querying version id $urlStr")
+    def conn = new URL(urlStr).openConnection() as HttpURLConnection
+    conn.requestMethod = "POST"
+    conn.setRequestProperty("Authorization", "bearer $githubApiKey")
+    conn.setRequestProperty("Accept", "application/vnd.github.package-deletes-preview+json")
+///*
+    conn.doOutput= true
+    try {
+        def PKG_REPOSITORY= 'SidevLib_Private'
+        def os = new DataOutputStream(conn.outputStream)
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageVersionId:\\\"${pub.version}\\\"}) { success }}\"}"
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageVersionId:\\\"MDE0OlBhY2thZ2VWZXJzaW9uNzM1Mzg3Nw==\\\"}) { success }}\"}"
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageName:\\\"${pub.groupId}.${pub.artifactId}\\\",packageVersionName:\\\"${pub.version}\\\"}) { success }}\"}"
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageName:\\\"${pub.groupId}.${pub.artifactId}\\\"}) { success }}\"}"
+        println("PKG_REPOSITORY= $PKG_REPOSITORY")
+        //def data= "{\"query\":\"query{repository(owner:\\\"alfalifr\\\",name:\\\"$PKG_REPOSITORY\\\"){packages(first:10){nodes{packageType,name,id,versions(first:10){nodes{id,version,readme}}}}}}\"}"
+        def data= "{\"query\":\"query{repository(owner:\\\"alfalifr\\\",name:\\\"$PKG_REPOSITORY\\\"){packages(last:50){nodes{packageType,name,id,versions(last:50){nodes{id,version,readme}}}}}}\"}"
+        os.write(data.getBytes("UTF-8"))
+        os.flush()
+    } catch(Throwable e){
+        println("ERROR $e")
+    }
+// */
+    println("responseCode= ${conn.responseCode} responseMessage= ${conn.responseMessage}")
+    def qureyBytes= conn.inputStream.readAllBytes()
+    println("queryRes: ========")
+    def queryRes= new String(qureyBytes)
+    println(queryRes)
+
+    def json= new JsonSlurper().parseText(queryRes)
+    //groovy.json.Json
+    def nodes= json.data.repository.packages.nodes
+    println("nodes= $nodes")
+    def vers = nodes.find {
+        println("it.name= ${it.name}")
+        println("it.name == \"${pub.groupId}.${pub.artifactId}\" => ${it.name == "${pub.groupId}.${pub.artifactId}"}")
+        if(it.versions.nodes.size == 0) false
+        else {
+            it.name == "${pub.groupId}.${pub.artifactId}" &&
+                    it.versions.nodes.first().version == pub.version
+        }
+    }
+
+    if(vers == null) {
+        println("${pub.groupId}.${pub.artifactId}:${pub.version} gakda, SKIP!!!")
+        return
+    }
+    def versionId= vers.versions.nodes.first().id
+
+    println("Removing $urlStr ${pub.groupId}.${pub.artifactId}:${pub.version} versionId= $versionId")
+    def conn2 = new URL(urlStr).openConnection() as HttpURLConnection
+    conn2.requestMethod = "POST"
+    conn2.setRequestProperty("Authorization", "bearer $githubApiKey")
+    conn2.setRequestProperty("Accept", "application/vnd.github.package-deletes-preview+json")
+///*
+    conn2.doOutput= true
+    try {
+        def PKG_REPOSITORY= 'SidevLib_Private'
+        def os = new DataOutputStream(conn2.outputStream)
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageVersionId:\\\"${pub.version}\\\"}) { success }}\"}"
+        def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageVersionId:\\\"$versionId\\\"}) { success }}\"}"
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageName:\\\"${pub.groupId}.${pub.artifactId}\\\",packageVersionName:\\\"${pub.version}\\\"}) { success }}\"}"
+        //def data= "{\"query\":\"mutation { deletePackageVersion(input:{packageName:\\\"${pub.groupId}.${pub.artifactId}\\\"}) { success }}\"}"
+        println("PKG_REPOSITORY= $PKG_REPOSITORY")
+        //def data= "{\"query\":\"query{repository(owner:\\\"alfalifr\\\",name:\\\"$PKG_REPOSITORY\\\"){packages(first:10){nodes{packageType,name,id,versions(first:10){nodes{id,version,readme}}}}}}\"}"
+        //def data= "{\"query\":\"query{repository(owner:\\\"alfalifr\\\",name:\\\"$PKG_REPOSITORY\\\"){packages(last:10){nodes{packageType,name,id,versions(first:10){nodes{id,version,readme}}}}}}\"}"
+        os.write(data.getBytes("UTF-8"))
+        os.flush()
+    } catch(Throwable e){
+        println("ERROR $e")
+    }
+// */
+    println("responseCode= ${conn2.responseCode} responseMessage= ${conn2.responseMessage}")
+    def removalBytes= conn2.inputStream.readAllBytes()
+    println("removalRes: ========")
+    def removalRes= new String(removalBytes)
+    println(removalRes)
+
+    //`java.net`.URLConnection(url)
+}
+
+
+
+task reupload {
+    doFirst {
+        tasks["jsTest"].enabled = false
+        tasks["jvmTest"].enabled = false
+        tasks["allTests"].enabled = false
+        //tasks["jsSourcesJar"].enabled = false
+        //tasks["jvmSourcesJar"].enabled = false
+        tasks["compileTestKotlinJvm"].enabled = false
+        tasks["compileTestKotlinJs"].enabled = false
+    }
+}
+
+reupload.dependsOn deleteAllPkg
+reupload.finalizedBy tasks["build"]
+reupload.finalizedBy modifySource
+reupload.finalizedBy publish
