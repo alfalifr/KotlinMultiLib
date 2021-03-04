@@ -25,10 +25,22 @@ fun <T> T.asBoxedVal(): Val<T> = ValImpl(this)
 fun <T> varOf(value: T): Var<T> = VarImpl(value)
 fun <T> valOf(value: T): Val<T> = ValImpl(value)
 
+fun <T> T.asLive(): LiveVar<T> = LiveVarImpl(this)
+fun <T> T.asLiveVal(): LiveVal<T> = LiveValImpl(this)
+fun <T> liveVarOf(value: T): LiveVar<T> = LiveVarImpl(value)
+fun <T> liveValOf(value: T): LiveVal<T> = LiveValImpl(value)
+
+
 fun <T> T?.asNullableBoxed(): NullableVar<T> = NullableVarImpl(this)
 //fun <T> T?.asNullableBoxedVal(): NullableVal<T> = NullableValImpl(this)
 
-fun <T> nullableVarOf(value: T?= null): NullableVar<T> = value.asNullableBoxed()
+fun <T> nullableVarOf(value: T?= null): NullableVar<T> = NullableVarImpl(value)
+//fun <T> nullableValOf(value: T?= null): NullableVal<T> = value.asNullableBoxedVal()
+
+fun <T> T?.asLiveNullable(): LiveNullableVar<T> = LiveNullableVarImpl(this)
+//fun <T> T?.asNullableBoxedVal(): NullableVal<T> = NullableValImpl(this)
+
+fun <T> liveNullableVarOf(value: T?= null): LiveNullableVar<T> = LiveNullableVarImpl(value)
 //fun <T> nullableValOf(value: T?= null): NullableVal<T> = value.asNullableBoxedVal()
 
 fun <T> T.asLeveled(level: Int= 0): LeveledValue<T> = LeveledValue(level, this)

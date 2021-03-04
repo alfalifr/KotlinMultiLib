@@ -292,7 +292,7 @@ task deleteAllPkg {
         publishing.publications.forEach {
             it.groupId = GROUP_ID
             if (it.name.contains('metadata')) {
-                it.artifactId = "${ARTIFACT_ID.toLowerCase()}"
+                it.artifactId = ARTIFACT_ID.toLowerCase()
             } else if(it.name == "kotlinMultiplatform") {
                 println("afterEvaluate() artifactId= ${it.artifactId}")
                 it.artifactId = "${ARTIFACT_ID.toLowerCase()}-kotlin_multiplatform"

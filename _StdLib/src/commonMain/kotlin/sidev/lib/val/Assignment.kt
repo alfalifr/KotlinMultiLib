@@ -12,6 +12,11 @@ enum class Assignment {
     ASSIGN,
 
     /**
+     * Meng-assign nilai yg sama ke variabel.
+     */
+    RE_ASSIGN,
+
+    /**
      * Menghilangkan nilai dari suatu variabel dan status kembali ke [INIT].
      */
     REMOVE,
@@ -19,5 +24,5 @@ enum class Assignment {
     /**
      * Kebalikan dari [INIT], yaitu menghilangkan nilai dari suatu variabel dan sekaligus menghilangkan variabel.
      */
-    UNINIT
+    UN_INIT
 }
