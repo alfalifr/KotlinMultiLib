@@ -107,25 +107,63 @@ Template Task
  */
 
 afterEvaluate {
+    println("afterEvaluate() ======== ")
     project.publishing.publications.all {
         // rename artifacts
         groupId = GROUP_ID
+
         if (it.name.contains('metadata')) {
-            artifactId = "$ARTIFACT_ID"
+            artifactId = ARTIFACT_ID.toLowerCase()
+        } else if(it.name == "kotlinMultiplatform") {
+            println("afterEvaluate() kotlinMultiplatform artifactId= $artifactId")
+            artifactId = "${ARTIFACT_ID.toLowerCase()}-kotlin_multiplatform"
         } else {
-            artifactId = "$ARTIFACT_ID-$name"
+            println("afterEvaluate() ELSE artifactId= $artifactId")
+            artifactId = "${ARTIFACT_ID.toLowerCase()}-${it.name}"
         }
 
         pom {
             developers {
                 developer {
                     id = "alfalifr"
-                    name = "Aliffiro"
+                    name = "Aliffiro" //"Aliaksandr Rasolka"
                     email = "fathf48@gmail.com"
                 }
             }
         }
+/*
+        for(arti in it.artifacts){
+            if(arti.class.name == "org.gradle.api.publish.maven.internal.artifact.PublishArtifactBasedMavenArtifact_Decorated"
+                && arti.classifier == "sources"){
+                def file= (File) arti.file
+                try{
+                    file.writable= true
+                    def pw= new PrintWriter(file)
+                    pw.println("blank")
+                    pw.close()
+                    println "artifact $arti file is changed: file in ${file.name}"
+                } catch(e){
+                    println "ERROR when modifying artifact $arti file: file in ${file.name}"
+                    println "  e= $e"
+                }
+            }
+        }
+ */
     }
+/*
+    publishing.publications.removeAll {
+        println("publishing.publications.removeAll it.name= ${it.name} it.name == \"kotlinMultiplatform\" => ${it.name == "kotlinMultiplatform"}")
+        it.name == "kotlinMultiplatform"
+    }
+// */
+/*
+    publishing.publications.collect {
+        it.name
+    }.findAll {
+        it != "kotlinMultiplatform"
+    }
+ */
+    println("afterEvaluate() ======== AKHIR publishing.publications= ${publishing.publications}")
 }
 
 def getBintrayUserProperty() {
@@ -265,11 +303,13 @@ publish.doFirst {
 }
  */
 
+/*
 generateMetadataFileForKotlinMultiplatformPublication.enabled = false
 generatePomFileForKotlinMultiplatformPublication.enabled = false
 publishKotlinMultiplatformPublicationToGitHubPackagesRepository.enabled = false
 publishKotlinMultiplatformPublicationToMavenLocal.enabled = false
 compileKotlinMetadata.enabled = false
+ */
 
 /*
 publishJsPublicationToGitHubPackagesRepository.doFirst {
@@ -292,9 +332,9 @@ task deleteAllPkg {
         publishing.publications.forEach {
             it.groupId = GROUP_ID
             if (it.name.contains('metadata')) {
-                it.artifactId = ARTIFACT_ID.toLowerCase()
+                it.artifactId = "${ARTIFACT_ID.toLowerCase()}"
             } else if(it.name == "kotlinMultiplatform") {
-                println("afterEvaluate() artifactId= ${it.artifactId}")
+                println("afterEvaluate() kotlin_multiplatform artifactId= ${it.artifactId}")
                 it.artifactId = "${ARTIFACT_ID.toLowerCase()}-kotlin_multiplatform"
             } else {
                 println("afterEvaluate() ELSE artifactId= ${it.artifactId}")
@@ -390,20 +430,49 @@ def deleteGithubPkgVersion(MavenPublication pub){
 }
 
 
+task delayedPublish {
+    doFirst {
+        def secs= 2500
+        println("Sleeping for $secs ms")
+        sleep(secs)
+    }
+}
+delayedPublish.finalizedBy publish
+
 
 task reupload {
     doFirst {
-        tasks["jsTest"].enabled = false
-        tasks["jvmTest"].enabled = false
-        tasks["allTests"].enabled = false
+/*
+        println "Tasks graph print ======="
+        gradle.taskGraph.whenReady {taskGraph ->
+            println "Tasks graph print ======= READY "
+            taskGraph.getAllTasks().eachWithIndex{ task, n ->
+                println "${n + 1} $task"
+                task.dependsOn.eachWithIndex{ depObj, m ->
+                    println "  ${ m + 1 } $depObj"
+                }
+            }
+        }
+        println "Tasks graph print ======= ITERATE "
+        gradle.taskGraph.getAllTasks().eachWithIndex{ task, n ->
+            println "${n + 1} $task"
+            task.dependsOn.eachWithIndex{ depObj, m ->
+                println "  ${ m + 1 } $depObj"
+            }
+        }
+ */
+        //tasks["jsTest"].enabled = false
+        //tasks["check"].enabled = false
+        //tasks["jvmTest"].enabled = false
+        //tasks["allTests"].enabled = false
         //tasks["jsSourcesJar"].enabled = false
         //tasks["jvmSourcesJar"].enabled = false
-        tasks["compileTestKotlinJvm"].enabled = false
-        tasks["compileTestKotlinJs"].enabled = false
+        //tasks["compileTestKotlinJvm"].enabled = false
+        //tasks["compileTestKotlinJs"].enabled = false
     }
 }
 
 reupload.dependsOn deleteAllPkg
-reupload.finalizedBy tasks["build"]
-reupload.finalizedBy modifySource
-reupload.finalizedBy publish
+reupload.finalizedBy tasks["assemble"]
+//reupload.finalizedBy modifySource
+reupload.finalizedBy delayedPublish

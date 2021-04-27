@@ -70,6 +70,10 @@ fun <T> Collection<T>.asMutableList(): MutableList<T> = when(this){
     is MutableList<*> -> this as MutableList<T>
     else -> toMutableList()
 }
+fun <T> Collection<T>.asArrayList(): ArrayList<T> = when(this){
+    is ArrayList<*> -> this as ArrayList<T>
+    else -> ArrayList(this)
+}
 fun <T> Collection<T>.asList(): List<T> = when(this){
     is List<*> -> this as List<T>
     else -> kToList()

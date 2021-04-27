@@ -2013,5 +2013,24 @@ Using smartphone apps in the delivery of healthcare is rapidly proliferating (Al
 
         //prin(arrO)
     }
+
+    @Test
+    fun delegateFun(){
+        val delg= Delegate()
+        prin(delg.a)
+        prin(delg.b)
+        delg.b= "oy"
+        prin(delg.b)
+        //prin(delg.c)
+        delg.c= "ahuy"
+        prin(delg.c)
+        prin(delg.c)
+        delg.c= "ahoyu"
+        prin(delg.c)
+        prin(delg.c)
+        prin(delg.c)
+        delg.c= "ahoyu_asa"
+        prin(delg.c)
+    }
 // */
 }

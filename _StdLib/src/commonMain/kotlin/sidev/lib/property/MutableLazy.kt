@@ -7,8 +7,8 @@ import kotlin.reflect.KProperty
 
 @ChangeLog("Rabu, 30 Sep 2020", "Penambahan custom setter dan getter")
 interface MutableLazy<in R, T>: ReadWriteProperty<R, T>, Lazy<T>{
-    var setter: ((value: T) -> Unit)?
-    var getter: (() -> T)?
+    val setter: ((value: T) -> Unit)?
+    val getter: (() -> T)?
 }
 
 internal open class MutableLazyImpl<in R, T>(init: () -> T): MutableLazy<R, T>{

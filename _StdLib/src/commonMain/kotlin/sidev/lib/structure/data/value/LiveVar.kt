@@ -13,7 +13,6 @@ internal open class LiveVarImpl<T>(v: T): LiveValImpl<T>(v), LiveVar<T> {
             field= v
             observer?.invoke(v, Assignment.ASSIGN)
         }
-
     override fun invoke(v: T) {
         value= v
     }

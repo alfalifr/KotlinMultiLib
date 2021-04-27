@@ -1,4 +1,11 @@
+@file:OptIn(ExperimentalStdlibApi::class)
 package sidev.lib
+
+import sidev.lib.annotation.Note
+import sidev.lib.property.oneInitVar
+import sidev.lib.property.vall
+import sidev.lib.property.varr
+
 /*
 import sidev.lib.console.prin
 
@@ -789,3 +796,20 @@ fun <T> Sequence<T>.cut(other: Sequence<T>): Sequence<T>{
 
 // */
 */
+
+class Delegate {
+    val a: String by vall("halo", isGetterPrivate = true)
+    var b: String by varr(
+        "oiya",
+        isSetterPrivate = true,
+        setter = { field, value ->
+            field.setValue_(value)
+        }
+    ){ it }
+    var c: String by oneInitVar()
+///*
+    { setCount, v ->
+        setCount <= 3
+    }
+// */
+}

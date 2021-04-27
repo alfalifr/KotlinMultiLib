@@ -4,7 +4,7 @@ import sidev.lib.`val`.SuppressLiteral
 import kotlin.reflect.KProperty
 
 interface Lazy_<T>: Lazy<T>{
-    var getter: (() -> T)?
+    val getter: (() -> T)?
 }
 
 internal open class LazyImpl<T>(init: () -> T): Lazy_<T>{

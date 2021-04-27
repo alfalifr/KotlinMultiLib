@@ -29,6 +29,14 @@ inline fun <T> T.iff(func: (T) -> Boolean): Boolean{
 }
 
 /**
+ * Meng-cast `this.extension` ke [T] atau [default] jika `this.extension` !is [T].
+ */
+inline fun <reified T> Any?.as_(default: T? = null): T? {
+    return if(this is T) this
+    else default
+}
+
+/**
  * Mirip dg [notNull] namun terdapat cast untuk input lambda.
  */
 inline fun <T1, reified T2> T1?.asNotNull(f: (T2) -> Unit): T1? {

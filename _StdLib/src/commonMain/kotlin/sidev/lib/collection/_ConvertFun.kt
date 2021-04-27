@@ -13,7 +13,7 @@ fun <T> Array<T>.toArrayList(): ArrayList<T> = this.toMutableList() as ArrayList
 
 @Suppress(SuppressLiteral.UNCHECKED_CAST)
 fun <T> Iterable<T>.toArrayList(): ArrayList<T> = when(this){
-    is ArrayList<*> -> this
+    //is ArrayList<*> -> this
     is Collection<*> -> ArrayList(this)
     else -> ArrayList(this.toList())
 } as ArrayList<T>
